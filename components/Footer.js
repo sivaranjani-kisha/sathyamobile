@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
+import { Ri24HoursLine } from "react-icons/ri";
 import { FiMail, FiPhone } from "react-icons/fi";
 import { FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { IoReload, IoStorefront, IoCardOutline, IoShieldCheckmark } from "react-icons/io5";
@@ -14,6 +15,10 @@ import { IoLogOut } from "react-icons/io5";
 const Footer = () => {
   const [categories, setCategories] = useState([]);
   const [groupedCategories, setGroupedCategories] = useState({ main: [], subs: {} });
+
+  const [stores, setStores] = useState([]);
+  const [loadingStores, setLoadingStores] = useState(true);
+  const [errorStores, setErrorStores] = useState(null);
   
   // Auth state
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -29,6 +34,32 @@ const Footer = () => {
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const response = await fetch('/api/store/get'); // Your new API endpoint
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data);
+        if (data.success) {
+          setStores(data.data);
+        } else {
+          setErrorStores(data.error || 'Failed to fetch stores');
+        }
+      } catch (error) {
+        console.error("Error fetching stores:", error);
+        setErrorStores(error.message);
+      } finally {
+        setLoadingStores(false);
+      }
+    };
+
+    fetchStores();
+  }, []); // Empty dependency array means this runs once on mount
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -138,126 +169,172 @@ const capitalizeFirstLetter = (str) =>
 
   return (
     <>
-      <footer className="bg-[#2e2a2a] text-gray-300 text-sm py-5">
-       <div className="bg-[#2e2a2a] text-gray-400  border-white ">
-  <div className="w-full flex justify-center">
-    <div className="w-full container mx-auto px-3  grid grid-cols-1 md:grid-cols-3 gap-16 justify-between">
-      
-      {/* Corporate Office */}
-      <div className="space-y-3">
-        <h3 className="text-white font-semibold text-lg mb-4">Corporate Office</h3>
-        <p>26/1 Drr. Alagappa Chettiyar Rd, Tatabad, Near Kovai Scan Centre, Coimbatore-641012</p>
-        <hr className="border-gray-600 my-3" />
-        <div className="flex items-center gap-2">
-          <FiPhone /> <span>9842344323</span>
-        </div>
-        <hr className="border-gray-600 my-3" />
-        <div className="flex items-center gap-2">
-          <FiMail /> <span>customercare@bharatelectronics.in</span>
-        </div>
-        <hr className="border-gray-600 my-3" />
-        <p><strong>Business Hours:</strong> 09:30AM - 09:30 PM (Mon to Sun)</p>
-      </div>
+      <footer className="bg-[#222529] text-gray-300 text-sm py-5">
+       <div className="bg-[#222529] text-gray-400  border-white ">
+        <div className="w-full flex justify-center">
+          <div className="w-full container mx-auto px-3  grid grid-cols-1 md:grid-cols-4 gap-16 justify-between mt-3">
+            
+            {/* Corporate Office */}
+            <div className="space-y-3">
+              <h3 className="text-white font-semibold text-lg mb-1">Corporate Office</h3>
+            <p>
+              SATHYA Mobiles India Pvt. Ltd., <br />
+              No.27, 27/1, 27/A, 27/B, Gipson Puram, <br />
+              Thoothukudi-628002, Tamilnadu, India.
+            </p>
+              <hr className="border-gray-600 my-3" />
+              <div className="flex items-center gap-2">
+                <FiPhone /> <span>+91 90470 48777</span>
+              </div>
+              <hr className="border-gray-600 my-3" />
+              <div className="flex items-center gap-2">
+                <FiMail /> <span>contact@sathyamobiles.store</span>
+              </div>
 
-      {/* My Account & Policy */}
-      <div className="flex flex-col space-y-6 md:mx-auto">
-        <div>
-          <h3 className="text-white font-semibold text-lg mb-4">My Account</h3>
-          <ul className="space-y-2">
-            {isLoggedIn ? (
-              <>
-                <li>
-                  <Link href="/order" className="hover:underline hover:text-white flex items-center gap-2">
-                    <FaShoppingBag /> My Orders
-                  </Link>
-                </li>
-                <li>
-                  <button 
-                    onClick={handleLogout}
-                    className="hover:underline hover:text-white flex items-center gap-2"
-                  >
-                    <IoLogOut /> Logout
-                  </button>
-                </li>
-              </>
-            ) : (
-              <li>
-                <button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="hover:underline hover:text-white"
-                >
-                  Sign In / Register
-                </button>
-              </li>
-            )}
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-white font-semibold text-lg mb-4">Policy</h3>
-          <ul className="space-y-2">
-            <li><Link href="/privacypolicy" className="hover:underline hover:text-white">Privacy Policy</Link></li>
-            <li><Link href="/shipping" className="hover:underline hover:text-white">Shipping Policy</Link></li>
-            <li><Link href="/terms-and-condition" className="hover:underline hover:text-white">Terms and Conditions</Link></li>
-            <li><Link href="/cancellation-refund-policy" className="hover:underline hover:text-white">Cancellation and Refund Policy</Link></li>
-          </ul>
-        </div>
-      </div>
+              <hr className="border-gray-600 my-3" />
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <Ri24HoursLine /><span>Online Support 24/7: +91 90470 48777</span>
+              </div>
+            </div>
 
-      {/* Company & Social Media */}
-      <div className="md:ml-12">
-        <div className="mb-8">
-          <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
-          <ul className="space-y-2">
-            <li><Link href="/aboutus" className="hover:underline hover:text-white">About Us</Link></li>
-            <li><Link href="/profile" className="hover:underline hover:text-white">Contact Us</Link></li>
-            <li><Link href="/blog" className="hover:underline hover:text-white">Blogs</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-white font-semibold text-lg mb-4">Connect With Us</h3>
-          <div className="flex space-x-4">
-            <Link href="#"><FaWhatsapp className="text-xl text-green-500" /></Link>
-            <Link href="#"><FaFacebookF className="text-xl text-customBlue" /></Link>
-            <Link href="#"><FaInstagram className="text-xl text-pink-500" /></Link>
-            <Link href="#"><FaYoutube className="text-xl text-red-500" /></Link>
-            <Link href="#"><FaXTwitter className="text-xl text-black-500" /></Link>
-            <Link href="#"><FaLinkedinIn className="text-xl text-customBlue" /></Link>
+            {/* My Account & Policy */}
+            <div className="flex flex-col space-y-3 md:mx-auto">
+              <div>
+                <h3 className="text-white font-semibold text-lg mb-1">My Account</h3>
+                <ul className="space-y-1">
+                  {isLoggedIn ? (
+                    <>
+                      <li>
+                        <Link href="/order" className="hover:underline hover:text-white flex items-center gap-2">
+                          <FaShoppingBag /> My Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <button 
+                          onClick={handleLogout}
+                          className="hover:underline hover:text-white flex items-center gap-2"
+                        >
+                          <IoLogOut /> Logout
+                        </button>
+                      </li>
+                    </>
+                  ) : (
+                    <li>
+                      <button 
+                        onClick={() => setShowAuthModal(true)}
+                        className="hover:underline hover:text-white"
+                      >
+                        Sign In / Register
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg mb-1">Policy</h3>
+                <ul className="space-y-1">
+                  <li><Link href="/privacypolicy" className="hover:underline hover:text-white">Privacy Policy</Link></li>
+                  <li><Link href="/terms-and-condition" className="hover:underline hover:text-white">Terms and Conditions</Link></li>
+                  <li><Link href="/cancellation-refund-policy" className="hover:underline hover:text-white">Cancellation Policy</Link></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Company & Social Media */}
+            <div className="md:ml-12">
+              <div className="mb-4">
+                <h3 className="text-white font-semibold text-lg mb-1">Company</h3>
+                <ul className="space-y-1">
+                  <li><Link href="/aboutus" className="hover:underline hover:text-white">About Us</Link></li>
+                  <li><Link href="/contact" className="hover:underline hover:text-white">Contact Us</Link></li>
+                  <li><Link href="/blog" className="hover:underline hover:text-white">FAQ</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg mb-2">Connect With Us</h3>
+                <div className="flex space-x-3"> 
+                <Link href="https://www.facebook.com/SathyaRetail.mobiles/">
+                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-blue-500 group">
+                    <FaFacebookF className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
+                  </div>
+                </Link>
+                <Link href="https://www.instagram.com/sathyamobiles.store/">
+                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-pink-500 group">
+                    <FaInstagram className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
+                  </div>
+                </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* --- NEW SECTION: Our Stores --- */}
+              <div className="space-y-3">
+                    <h3 className="text-white font-semibold text-lg mb-1">Our Stores</h3>
+                    {loadingStores ? (
+                      <p className="text-white">Loading stores...</p> // Use p tag for loading/error messages
+                    ) : errorStores ? (
+                      <p className="text-red-400">Error: {errorStores}</p>
+                    ) : stores.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-x-8"> {/* New grid container for two columns */}
+                        {/* Left Column (first 5 stores) */}
+                        <ul className="space-y-1">
+                          {stores.slice(0, 5).map(store => ( // Take the first 5 stores
+                            <li key={store._id}>
+                              <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
+                                {store.organisation_name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* Right Column (remaining stores, if any) */}
+                        <ul className="space-y-1">
+                          {stores.slice(5, 10).map(store => ( // Take the next 5 stores (from index 5 to 9)
+                            <li key={store._id}>
+                              <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
+                                {store.organisation_name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-white">No active stores found.</p> // Use p tag for no stores message
+                    )}
+                  </div>
+                  {/* --- END OF Our Stores Section --- */}
+
+
           </div>
         </div>
       </div>
-
-    </div>
-  </div>
-</div>
 
 
         {/* Bottom Section */}
-        <div className="bg-[#2e2a2a] text-gray-400 mt-10 pt-5 border-t border-white">
+        <div className="bg-[#222529] text-gray-400 mt-10 pt-5 border-t border-white">
           <div className="container mx-auto px-3 flex flex-col md:flex-row justify-between items-center gap-6 ">
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left mb-4">
               <p>
-                <a href="#" className="hover:underline text-white">Bharath Electronics ©</a> 2025 All rights reserved.
+                <a href="#" className="hover:underline text-white">© 2023-2024 SATHYA.</a> All Rights Reserved.
               </p>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="flex gap-2">
-                <img src="https://estore.bharathelectronics.in/assets/images/gplay-img.jpg" alt="Google Play" className="p-1 w-[120px]" />
-                <img src="https://estore.bharathelectronics.in/assets/images/app-store-img.jpg" alt="App Store" className="p-1 w-[120px]" />
-              </div>
+           
               <div>
-                <img src="https://estore.bharathelectronics.in/assets/images/payments.png" alt="Payment methods" className="p-2 w-[200px]" />
+                <img src="https://sathyamobiles.com/storefront/assets/images/payments.png" alt="Payment methods" className="p-2 w-[200px]" />
               </div>
             </div>
           </div>
-          <div className="bg-[#2e2a2a] ">
-            <div className="container mx-auto px-4 text-base font-medium space-y-4">
+          <div className="bg-[#222529] ">
+            <div className="container mx-auto px-4 text-base font-medium space-y-2">
+              <h3 className="text-white font-semibold text-lg mb-1">Categories</h3>
               {groupedCategories.main
                 .filter((mainCat) => groupedCategories.subs[mainCat._id]?.length > 0)
                 .map((mainCat) => (
                   <div key={mainCat._id}>
                     <Link
                       href={`/category/${mainCat.category_slug}`}
-                      className="font-semibold text-white hover:underline whitespace-nowrap"
+                      className=" text-white hover:underline whitespace-nowrap"
                     >
                       {capitalizeFirstLetter(mainCat.category_name)} :
                     </Link>

@@ -1,7 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
-import { FiRotateCcw, FiPackage, FiCheckCircle, FiClock } from 'react-icons/fi';
+import { FaTimesCircle } from "react-icons/fa";
+import { FaRightLeft, FaArrowsRotate, FaRegHandshake } from "react-icons/fa6";
+
+import { FiRotateCcw, FiPackage, FiCheckCircle, FiClock, FiUser, FiMail, FiPhone } from 'react-icons/fi';
 import { MdOutlinePolicy, MdOutlineMoneyOff } from "react-icons/md";
 
 const CancellationRefundPolicy = () => {
@@ -18,96 +21,79 @@ const CancellationRefundPolicy = () => {
   return (
     <div>
       {/* Header Bar */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-100 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Cancellation & Refund Policy</h2>
         <div className="flex items-center space-x-2">
-          <Link href="/" className="text-gray-600 hover:text-blue-600">🏠 Home</Link>
+          <Link href="/" className="text-gray-600 hover:text-red-600">🏠 Home</Link>
           <span className="text-gray-500">›</span>
-          <span className="text-blue-600 font-semibold">Cancellation & Refund</span>
+          <span className="text-red-600 font-semibold">Cancellation & Refund</span>
         </div>
       </div>
 
-      <div className="bg-gray-50 min-h-screen py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-9xl mx-auto">
-          {/* Header Section */}
-          <div className="text-center mb-16">
-            <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FiRotateCcw className="text-blue-600 text-3xl" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-customBlue mb-4">Cancellation & Refund Policy</h1>
-            {currentDate && (
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Last updated: {currentDate}
-              </p>
-            )}
-          </div>
+      
+    {/* Cancellation & Refund Policy Content */}
+      <div className="container mx-auto px-8 py-12 text-gray-800 leading-relaxed">
 
-          {/* Policy Content */}
-          <div className="rounded-xl shadow-md overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50">
-            {/* Cancellation Policy */}
-            <div className="p-8 border-b border-gray-100">
-              <h2 className="text-2xl font-bold text-customBlue mb-4 flex items-center gap-2">
-                <MdOutlinePolicy className="text-customBlue" /> Cancellation Policy
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Cancellations will be considered only if the request is made immediately after placing the order: however, the cancellation request may not be entertained if the orders have been communicated to the vendors/merchants and they have initated the process of shipping them.
-              </p>
-              <p className="text-gray-600">
-                Bharath Electronics and Appliances does not accept cancellation requests for perishable items etc. However, refund/replacement can be made if the customer establishes that the quality of product delivered is not good.
-              </p>
-            </div>
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center">Our Cancellation & Refund Policy</h1>
 
-            {/* Damaged/Defective Items */}
-            <div className="p-8 border-b border-gray-100 bg-blue-50/30">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <FiPackage className="text-2xl" />
-                Damaged or Defective Items
-              </h3>
-              <p className="text-gray-600">
-                In case of receipt of damaged or defective items, please report the same to our Customer Service team. The request will, however, be entertained once the merchant has checked and determined the same at his own end. This should be reported within 7 days of receipt of the products.
-              </p>
-            </div>
+        <p className="mb-8">
+          At Sathya Mobiles, we strive to ensure your satisfaction with every purchase. This policy outlines the terms and conditions for order cancellations, product returns, and refunds.
+        </p>
 
-            {/* Product Complaints */}
-            <div className="p-8 border-b border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <FiCheckCircle className="text-2xl" />
-                Product Complaints
-              </h3>
-              <p className="text-gray-600">
-                In case you feel that the product received is not as shown on the site or as per your expectations, you must bring it to the notice of our customer service within 7 days of receiving the product. The Customer Service Team, after looking into your complaint will take an appropirate decision.
-              </p>
-            </div>
+        <h2 className="text-2xl font-extrabold text-red-700 mb-6 pb-2 flex items-center border-b-2 border-red-200">
+          <FaTimesCircle className="mr-3 text-red-600 text-3xl" /> Terms and Conditions for Cancellation
+        </h2>
+        <ul className="list-disc pl-5 space-y-3 mb-8">
+          <li>
+            Cancellations will be taken into consideration at any time **before the delivery of the product**.
+          </li>
+          <li>
+            If you cancel your order **before it has been shipped**, we will refund the entire amount.
+          </li>
+          <li>
+            Cancellation will **not be accepted** for orders placed under the **Same Day Delivery** category.
+          </li>
+          <li>
+            If your product has shipped but has not yet been delivered, please **contact Customer Support** and inform them of the same.
+          </li>
+          <li>
+            If you have received the product, it will only be eligible for **replacement** in cases where **defects are found** with the product.
+          </li>
+          <li>
+            When the product is delivered by courier and the customer does not accept the package, the **2-way shipment charge** will be collected from the customer.
+          </li>
+        </ul>
 
-            {/* Warranty Items */}
-            <div className="p-8 border-b border-gray-100 bg-blue-50/30">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <FiPackage className="text-2xl" />
-                Warranty Products
-              </h3>
-              <p className="text-gray-600">
-                In case of complaints regarding products that come with a warranty from manufacturers, please refer the issue to them.
-              </p>
-            </div>
+     
 
-            {/* Refund Processing */}
-            <div className="p-8">
-              <h3 className="text-xl font-semibold text-customBlue mb-3 flex items-center gap-2">
-                <FiClock className="text-customBlue" />
-                Refund Processing Time
-              </h3>
-              <p className="text-gray-600 mb-6">
-                In case of any Refunds approved by Bharath Electronics and Appliances, it'll take 9-15 days for the refund to be processed to the end customer.
-              </p>
-              <a 
-                href="mailto:customercare@bharathelectronics.in" 
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
-              >
-                Contact Customer Care
-              </a>
-            </div>
-          </div>
-        </div>
+        <h2 className="text-2xl font-extrabold text-red-700 mb-6 pb-2 flex items-center border-b-2 border-red-200">
+          <FaArrowsRotate className="mr-3 text-red-600 text-3xl" /> The Return and Refund Policy
+        </h2>
+        <p className="mb-4">
+          There could be certain circumstances beyond our control where you might receive a damaged product or a product that doesn't match its visualization on the website. Sathya Mobiles always tries its best to help you with a replacement or refund.
+        </p>
+        <ul className="list-disc pl-5 space-y-3 mb-8">
+          <li>
+            The products sold by SATHYA Mobiles can be **returned or exchanged within 30 days** from the date of your in-store purchase or 30 days from the date your online order is delivered.
+          </li>
+        </ul>
+
+
+        <h2 className="text-2xl font-extrabold text-red-700 mb-6 pb-2 flex items-center border-b-2 border-red-200">
+          <FaRegHandshake className="mr-3 text-red-600 text-3xl" /> Grievance Officer
+        </h2>
+        <p className="mb-4">
+          In case of any escalation of customer service inquiries with regards to defects in products or complaints with services, you are free to contact our grievance officer at the below address:
+        </p>
+        <ul className="list-disc list-inside mb-8 space-y-2">
+          <li className="flex items-center"><FiUser className="mr-2 text-red-600"/> <strong>Name:</strong> Mr. Ian J</li>
+          <li className="flex items-center"><FiMail className="mr-2 text-red-600"/> <strong>Email Address:</strong> <a href="mailto:sathyamobiles@sathyaindia.com" className="text-red-600 hover:underline">sathyamobiles@sathyaindia.com</a></li>
+          <li className="flex items-center"><FiPhone className="mr-2 text-red-600"/> <strong>Phone:</strong> 8098872777</li>
+        </ul>
+
+        <p className="text-sm text-gray-500 mt-8">
+          <em>Last updated on: {currentDate}</em>
+        </p>
       </div>
     </div>
   );

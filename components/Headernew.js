@@ -125,6 +125,21 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target)
+    ) {
+      setDropdownOpen(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
 
   // Check auth status
   const checkAuthStatus = async () => {
@@ -394,7 +409,7 @@ const Header = () => {
                 <FiUser size={20} />
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-48 sm:w-56 bg-white rounded-xl shadow-xl z-50 transition-all">
+                <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-xl z-50 transition-all">
                   <div className="py-2 px-2">
                     
                     {isLoggedIn ? (

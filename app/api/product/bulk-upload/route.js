@@ -155,6 +155,10 @@ console.log("Actual product count:", validProducts.length);
           );
         }
       }
+      let highlights = [];
+        if (row[20] && typeof row[20] === 'string') {
+          highlights = row[20].split(',').map(item => item.trim()).filter(Boolean);
+        }
       // Prepare product data
       const productData = {
         item_code: row[0],
@@ -174,6 +178,7 @@ console.log("Actual product count:", validProducts.length);
         variants: variants,
         status: row[19],
         stock_status: row[2] > 0 ? "In Stock" : "Out of Stock",
+         product_highlights: highlights,
       };
 console.log(productData);
       // Check for existing product

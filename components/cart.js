@@ -279,7 +279,7 @@ export default function CartComponent() {
                 <div className="flex items-center space-x-1 text-sm">
                     <span className="text-gray-600">🏠 Home</span>
                     <span className="text-gray-500">›</span>
-                    <span className="text-orange-500 font-semibold">Product Cart</span>
+                    <span className="text-red-500 font-semibold">Product Cart</span>
                 </div>
             </div>
 
@@ -323,7 +323,7 @@ export default function CartComponent() {
   {/* Name with tooltip */}
   <div className="relative group w-fit">
     <Link href={`/product/${slugify(item.name)}`}>
-      <p className="font-semibold hover:text-orange-500 transition-colors duration-300">
+      <p className="font-semibold hover:text-red-500 transition-colors duration-300">
         {item.name.length > 50 ? item.name.slice(0, 50) + "..." : item.name}
       </p>
     </Link>
@@ -420,7 +420,7 @@ export default function CartComponent() {
           />
           <div>
             <Link href={`/product/${item.name}`}>
-              <p className="font-semibold hover:text-orange-500 transition-colors duration-300">
+              <p className="font-semibold hover:text-red-500 transition-colors duration-300">
                 {item.name}
               </p>
             </Link>
@@ -541,10 +541,10 @@ export default function CartComponent() {
                
                
                  <button
-                   className="mt-4 bg-orange-500 text-white w-full py-3 rounded-md hover:bg-orange-600 transition-all"
+                   className="mt-4 bg-red-500 text-white w-full py-3 rounded-md hover:bg-red-600 transition-all"
                    onClick={() => router.push('/checkout')}
                  >
-                   Proceed to Checkoutt
+                   Proceed to Checkout
                  </button>
                </div>
             </div>
