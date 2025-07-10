@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-200 px-4 py-3 lg:flex lg:items-center lg:justify-between">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-blue-600">
+        <Link href="/" className="text-2xl font-bold text-red-600">
           MyLogo
         </Link>
         <button
@@ -35,19 +35,19 @@ export default function Navbar() {
           isOpen ? 'block' : 'hidden'
         }`}
       >
-        <Link href="/" className="block px-2 py-2 text-gray-600 hover:text-blue-600">
+        <Link href="/" className="block px-2 py-2 text-gray-600 hover:text-red-600">
           Home
         </Link>
-        <Link href="/about" className="block px-2 py-2 text-gray-600 hover:text-blue-600">
+        <Link href="/about" className="block px-2 py-2 text-gray-600 hover:text-red-600">
           About Us
         </Link>
-        <Link href="/services" className="block px-2 py-2 text-gray-600 hover:text-blue-600">
+        <Link href="/services" className="block px-2 py-2 text-gray-600 hover:text-red-600">
           Services
         </Link>
-        <Link href="/pricing" className="block px-2 py-2 text-gray-600 hover:text-blue-600">
+        <Link href="/pricing" className="block px-2 py-2 text-gray-600 hover:text-red-600">
           Pricing
         </Link>
-        <Link href="/contact" className="block px-2 py-2 text-gray-600 hover:text-blue-600">
+        <Link href="/contact" className="block px-2 py-2 text-gray-600 hover:text-red-600">
           Contact
         </Link>
  
@@ -57,7 +57,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+            className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg"
           >
             Sign Up
           </Link>

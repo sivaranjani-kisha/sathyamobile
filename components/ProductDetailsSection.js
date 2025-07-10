@@ -75,7 +75,7 @@ export default function ProductDetailsSection({ product }) {
       <div key={product._id} className="border rounded-lg p-2 sm:p-3 hover:shadow-md transition-shadow relative">
         {discountPercentage > 0 && (
           <span className={`px-1 sm:px-2 py-1 text-xs font-bold text-white rounded absolute top-1 sm:top-2 left-1 sm:left-2 ${
-            discountPercentage > 30 ? "bg-blue-500" : "bg-red-500"
+            discountPercentage > 30 ? "bg-red-500" : "bg-red-500"
           }`}>
             {discountPercentage}% OFF
           </span>
@@ -97,7 +97,7 @@ export default function ProductDetailsSection({ product }) {
         </Link>
 
         <Link href={`/product/${product.slug || product._id}`}>
-          <h3 className="text-xs sm:text-sm font-medium mt-1 sm:mt-2 hover:text-blue-600 line-clamp-2">{product.name}</h3>
+          <h3 className="text-xs sm:text-sm font-medium mt-1 sm:mt-2 hover:text-red-600 line-clamp-2">{product.name}</h3>
         </Link>
         <p className="text-gray-600 text-xs">By {product.brand?.brand_name || "Our Store"}</p>
         <div className="flex items-center mt-1">
@@ -152,7 +152,7 @@ export default function ProductDetailsSection({ product }) {
         <div className="flex items-center gap-1 sm:gap-2 w-max min-w-full pb-2">
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "overview" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "overview" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("overview")}
           >
@@ -160,7 +160,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "description" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "description" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("description")}
           >
@@ -168,7 +168,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "videos" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "videos" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("videos")}
           >
@@ -176,7 +176,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "reviews" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "reviews" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("reviews")}
           >
@@ -184,7 +184,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "recentlyViewed" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "recentlyViewed" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("recentlyViewed")}
           >
@@ -192,15 +192,15 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "relatedProducts" ? "bg-customBlue text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "relatedProducts" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
             }`}
             onClick={() => setActiveTab("relatedProducts")}
           >
             Related
           </button>
           
-          <div className="ml-2 sm:ml-auto px-2 sm:px-4 py-1 sm:py-2 text-blue-600 font-medium flex items-center text-xs sm:text-sm whitespace-nowrap">
-            <SiTicktick className="text-customBlue mr-1 text-xs sm:text-sm" /> 100% Satisfaction
+          <div className="ml-2 sm:ml-auto px-2 sm:px-4 py-1 sm:py-2 text-red-600 font-medium flex items-center text-xs sm:text-sm whitespace-nowrap">
+            <SiTicktick className="text-customred mr-1 text-xs sm:text-sm" /> 100% Satisfaction
           </div>
         </div>
 

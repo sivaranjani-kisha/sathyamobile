@@ -470,7 +470,7 @@ export default function CheckoutPage() {
       <ToastContainer position="top-right" autoClose={5000} />
       
       {/* 🟠 Checkout Header Bar */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Checkout</h2>
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">🏠 Home</span>
@@ -615,7 +615,7 @@ export default function CheckoutPage() {
               className={`mt-6 w-full text-white font-semibold py-3 rounded-lg transition ${
                 loading || cartItems.length === 0 
                   ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-orange-500 hover:bg-orange-600'
+                  : 'bg-red-500 hover:bg-red-600'
               }`}
             >
               {loading ? 'Processing...' : 'Place Order'}

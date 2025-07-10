@@ -50,7 +50,7 @@ export default function BlogComponent() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
         </div>
       </div>
     );
@@ -60,7 +60,7 @@ export default function BlogComponent() {
 
   return (
     <>
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Blog</h2>
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">🏠 Home</span>

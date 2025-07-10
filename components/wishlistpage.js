@@ -151,7 +151,7 @@ const WishlistPage = () => {
         onClose={() => setShowSuccessModal(false)}
       />
 
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Wishlist</h2>
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">🏠 Home</span>
@@ -254,7 +254,7 @@ const WishlistPage = () => {
                   {item.name.length > 40 ? `${item.name.slice(0, 40)}...` : item.name}
                 </h3>
                 {/* <p className="text-xs text-gray-500 mt-1">⭐ {item.rating} | {item.reviews} reviews</p> */}
-                <p className="text-sm font-semibold text-customBlue mt-1">Rs. {item.price.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-customred mt-1">Rs. {item.price.toFixed(2)}</p>
               </div>
             </div>
             <div className="flex justify-between items-center mt-4">

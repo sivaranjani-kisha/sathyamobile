@@ -548,7 +548,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
             {navigating && (
             <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black bg-opacity-30">
               <div className="p-4 rounded-lg shadow-lg">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600 mx-auto"></div>
               </div>
             </div>
           )}
@@ -571,7 +571,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
           <div className="relative">
               {isBannerLoading ? (
                   <div className="p-6 flex justify-center items-center h-64">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
                   </div>
               ) : bannerData.banner.items.length > 0 ? (
                   bannerData.banner.items.length > 1 ? (
@@ -828,7 +828,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
 
                     {isFlashSalesLoading ? (
                     <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
                     </div>
                     ) : flashSalesData.length === 1 && flashSalesData[0].bgImage && flashSalesData[0].productImage ? (
                     <motion.div variants={itemVariants} className="px-2">

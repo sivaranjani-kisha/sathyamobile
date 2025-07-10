@@ -130,7 +130,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
           <button
             className={`pb-2 px-1 ${
               activeTab === 'login' 
-                ? 'border-b-2 border-blue-500 text-blue-600' 
+                ? 'border-b-2 border-red-500 text-red-600' 
                 : 'text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => {
@@ -143,7 +143,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
           <button
             className={`pb-2 px-1 ${
               activeTab === 'register'
-                ? 'border-b-2 border-blue-500 text-blue-600'
+                ? 'border-b-2 border-red-500 text-red-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => {
@@ -163,7 +163,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
                 placeholder="Name"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
             </div>
@@ -178,7 +178,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
                 setFormData({...formData, email: e.target.value});
                 if (fieldErrors.email) clearErrors();
               }}
-              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${
                 fieldErrors.email ? 'border-red-500' : ''
               }`}
               required
@@ -195,7 +195,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
                 placeholder="Mobile"
                 value={formData.mobile}
                 onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
             </div>
@@ -210,7 +210,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
                 setFormData({...formData, password: e.target.value});
                 if (fieldErrors.password) clearErrors();
               }}
-              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 ${
                 fieldErrors.password ? 'border-red-500' : ''
               }`}
               required
@@ -229,7 +229,7 @@ export const AuthModal = ({ onClose, onSuccess, error }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200"
+            className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 disabled:bg-gray-400 transition-colors duration-200"
           >
             {loading ? 'Processing...' : activeTab === 'login' ? 'Login' : 'Register'}
           </button>

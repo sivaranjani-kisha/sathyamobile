@@ -18,12 +18,12 @@ const ShippingPolicy = () => {
   return (
     <div>
       {/* Header Bar */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Shipping & Delivery Policy</h2>
         <div className="flex items-center space-x-2">
-          <Link href="/" className="text-gray-600 hover:text-blue-600">🏠 Home</Link>
+          <Link href="/" className="text-gray-600 hover:text-red-600">🏠 Home</Link>
           <span className="text-gray-500">›</span>
-          <span className="text-blue-600 font-semibold">Shipping Policy</span>
+          <span className="text-red-600 font-semibold">Shipping Policy</span>
         </div>
       </div>
 
@@ -31,10 +31,10 @@ const ShippingPolicy = () => {
         <div className="max-w-9xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-16">
-            <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FiTruck className="text-blue-600 text-3xl" />
+            <div className="bg-red-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <FiTruck className="text-red-600 text-3xl" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-customBlue mb-4">Shipping & Delivery Policy</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-customred mb-4">Shipping & Delivery Policy</h1>
             {currentDate && (
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
                 Last updated: {currentDate}
@@ -43,11 +43,11 @@ const ShippingPolicy = () => {
           </div>
 
           {/* Policy Content */}
-          <div className="rounded-xl shadow-md overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="rounded-xl shadow-md overflow-hidden bg-gradient-to-br from-red-50 to-indigo-50">
             {/* Shipping Methods */}
             <div className="p-8 border-b border-gray-100">
-              <h2 className="text-2xl font-bold text-customBlue mb-4 flex items-center gap-2">
-                <MdOutlineLocalShipping className="text-customBlue" /> Shipping Methods
+              <h2 className="text-2xl font-bold text-customred mb-4 flex items-center gap-2">
+                <MdOutlineLocalShipping className="text-customred" /> Shipping Methods
               </h2>
               <p className="text-gray-600 mb-4">
                 For International buyers, orders are shipped and delivered through registered international courier companies and/or International speed post only. For domestic buyers, orders are shipped through registered domestic courier companies and /or speed post only.
@@ -58,7 +58,7 @@ const ShippingPolicy = () => {
             </div>
 
             {/* Delivery Timeline */}
-            <div className="p-8 border-b border-gray-100 bg-blue-50/30">
+            <div className="p-8 border-b border-gray-100 bg-red-50/30">
               <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
                 <FiCalendar className="text-2xl" />
                 Delivery Timeline
@@ -70,8 +70,8 @@ const ShippingPolicy = () => {
 
             {/* Delivery Address */}
             <div className="p-8">
-              <h3 className="text-xl font-semibold text-customBlue mb-3 flex items-center gap-2">
-                <FiMail className="text-customBlue" />
+              <h3 className="text-xl font-semibold text-customred mb-3 flex items-center gap-2">
+                <FiMail className="text-customred" />
                 Delivery Information
               </h3>
               <p className="text-gray-600 mb-4">
@@ -83,13 +83,13 @@ const ShippingPolicy = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <a 
                   href="tel:9842344323" 
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
+                  className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
                 >
                   <FiPhone /> 9842344323
                 </a>
                 <a 
                   href="mailto:customercare@bharathelectronics.in" 
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
+                  className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
                 >
                   <FiMail /> customercare@bharathelectronics.in
                 </a>

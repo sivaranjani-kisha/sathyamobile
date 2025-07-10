@@ -347,7 +347,7 @@ useEffect(() => {
             <span className="separator mx-2 h-4 w-px bg-gray-600"></span>
 
             <div className="social-icons flex space-x-2">
-              <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-blue-600" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-red-600" target="_blank" rel="noopener noreferrer">
                 <FaFacebookF size={12} />
               </a>
               <a href="https://www.instagram.com/sathyamobiles.store/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-pink-600" target="_blank" rel="noopener noreferrer">
@@ -403,7 +403,7 @@ useEffect(() => {
               {/* Account Button */}
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="p-2 text-gray-700 hover:text-blue-600"
+                className="p-2 text-gray-700 hover:text-red-600"
                 aria-label="Account menu"
               >
                 <FiUser size={20} />
@@ -418,8 +418,8 @@ useEffect(() => {
                                               <>
                                                 <Link
                                                   href="/admin/dashboard"
-                                                  className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-blue-50 transition-colors">
-                                                  <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-customBlue text-white">
+                                                  className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors">
+                                                  <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-customred text-white">
                                                     <FaUserShield className="w-3 h-3 sm:w-4 sm:h-4" />
                                                   </span>
                                                   Admin Panel
@@ -428,9 +428,9 @@ useEffect(() => {
                                             )}
                         <Link
                           href="/order"
-                          className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                          className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors"
                         >
-                          <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-blue-600 text-white">
+                          <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-600 text-white">
                             <FaShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />
                           </span>
                           My Orders
@@ -440,7 +440,7 @@ useEffect(() => {
                           onClick={handleLogout}
                           className="flex items-center gap-2 sm:gap-3 w-full text-left px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors"
                         >
-                          <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-blue-600 text-white">
+                          <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-600 text-white">
                             <IoLogOut className="w-3 h-3 sm:w-4 sm:h-4" />
                           </span>
                           Logout
@@ -452,9 +452,9 @@ useEffect(() => {
                           setShowAuthModal(true);
                           setDropdownOpen(false);
                         }}
-                        className="flex items-center gap-2 sm:gap-3 w-full text-left px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                        className="flex items-center gap-2 sm:gap-3 w-full text-left px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors"
                       >
-                        <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-blue-600 text-white">
+                        <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-red-600 text-white">
                           <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
                         </span>
                         Sign In
@@ -497,7 +497,7 @@ useEffect(() => {
 
             {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden p-2 text-gray-700 hover:text-blue-600"
+              className="lg:hidden p-2 text-gray-700 hover:text-red-600"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle mobile menu"
             >
@@ -554,7 +554,7 @@ useEffect(() => {
                 />
                 <button
                   type="submit"
-                  className="px-3 text-blue-600"
+                  className="px-3 text-red-600"
                   aria-label="Search"
                 >
                   <FaSearch />
@@ -586,9 +586,9 @@ useEffect(() => {
                 
                 <li>
                   <Link href="/wishlist" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center">
-                    <FaHeart className="mr-2 text-blue-600" /> Wishlist
+                    <FaHeart className="mr-2 text-red-600" /> Wishlist
                     {wishlistCount > 0 && (
-                      <span className="ml-auto bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full">
                         {wishlistCount}
                       </span>
                     )}
@@ -596,9 +596,9 @@ useEffect(() => {
                 </li>
                 <li>
                   <Link href="/cart" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center">
-                    <FaShoppingCart className="mr-2 text-blue-600" /> Cart
+                    <FaShoppingCart className="mr-2 text-red-600" /> Cart
                     {cartCount > 0 && (
-                      <span className="ml-auto bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full">
                         {cartCount}
                       </span>
                     )}
@@ -608,7 +608,7 @@ useEffect(() => {
                   <>
                     <li>
                       <Link href="/user/orders" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center">
-                        <FaShoppingBag className="mr-2 text-blue-600" /> My Orders
+                        <FaShoppingBag className="mr-2 text-red-600" /> My Orders
                       </Link>
                     </li>
                     <li>
@@ -616,7 +616,7 @@ useEffect(() => {
                         onClick={handleLogout}
                         className="w-full block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center"
                       >
-                        <IoLogOut className="mr-2 text-blue-600" /> Logout
+                        <IoLogOut className="mr-2 text-red-600" /> Logout
                       </button>
                     </li>
                   </>
@@ -629,7 +629,7 @@ useEffect(() => {
                       }}
                       className="w-full block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center"
                     >
-                      <FiUser className="mr-2 text-blue-600" /> Sign In
+                      <FiUser className="mr-2 text-red-600" /> Sign In
                     </button>
                   </li>
                 )}
@@ -638,7 +638,7 @@ useEffect(() => {
 
             <div className="mt-6 pt-4 border-t">
               <div className="social-icons flex space-x-4 justify-center">
-                <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-blue-600 hover:text-white" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-600 hover:text-white" target="_blank" rel="noopener noreferrer">
                   <FaFacebookF size={16} />
                 </a>
                 <a href="https://www.instagram.com/sathyamobiles.store/" className="social-icon w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-pink-600 hover:text-white" target="_blank" rel="noopener noreferrer">
@@ -670,7 +670,7 @@ useEffect(() => {
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'login' 
-                    ? 'border-b-2 border-blue-500 text-blue-600' 
+                    ? 'border-b-2 border-red-500 text-red-600' 
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -680,7 +680,7 @@ useEffect(() => {
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'register'
-                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    ? 'border-b-2 border-red-500 text-red-600'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('register')}
@@ -696,7 +696,7 @@ useEffect(() => {
                   placeholder="Name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -705,7 +705,7 @@ useEffect(() => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
               {activeTab === 'register' && (
@@ -714,7 +714,7 @@ useEffect(() => {
                   placeholder="Mobile"
                   value={formData.mobile}
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -723,7 +723,7 @@ useEffect(() => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
                 minLength={6}
               />
@@ -737,7 +737,7 @@ useEffect(() => {
               <button
                 type="submit"
                 disabled={loadingAuth}
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200"
+                className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 disabled:bg-gray-400 transition-colors duration-200"
               >
                 {loadingAuth ? 'Processing...' : activeTab === 'login' ? 'Login' : 'Register'}
               </button>
@@ -757,7 +757,7 @@ useEffect(() => {
                       setForgotPasswordMessage('');
                       setForgotPasswordError('');
                     }}
-                    className="text-sm text-blue-500 hover:underline"
+                    className="text-sm text-red-500 hover:underline"
                   >
                     Forgot Password?
                   </button>
@@ -816,7 +816,7 @@ useEffect(() => {
                     value={forgotPasswordEmail}
                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   {forgotPasswordError && (
                     <p className="text-red-500 text-sm">{forgotPasswordError}</p>
@@ -827,7 +827,7 @@ useEffect(() => {
                   <button
                     type="submit"
                     disabled={forgotPasswordLoading}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 disabled:bg-gray-400"
                   >
                     {forgotPasswordLoading ? 'Sending...' : 'Send OTP'}
                   </button>
@@ -879,7 +879,7 @@ useEffect(() => {
                     value={forgotOTP}
                     onChange={(e) => setForgotOTP(e.target.value)}
                     required
-                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   {forgotPasswordError && (
                     <p className="text-red-500 text-sm">{forgotPasswordError}</p>
@@ -890,7 +890,7 @@ useEffect(() => {
                   <button
                     type="submit"
                     disabled={forgotPasswordLoading}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 disabled:bg-gray-400"
                   >
                     {forgotPasswordLoading ? 'Validating...' : 'Validate OTP'}
                   </button>
@@ -947,7 +947,7 @@ useEffect(() => {
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   <input
                     type="password"
@@ -956,7 +956,7 @@ useEffect(() => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   {forgotPasswordError && (
                     <p className="text-red-500 text-sm">{forgotPasswordError}</p>
@@ -967,7 +967,7 @@ useEffect(() => {
                   <button
                     type="submit"
                     disabled={forgotPasswordLoading}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 disabled:bg-gray-400"
                   >
                     {forgotPasswordLoading ? 'Resetting...' : 'Reset Password'}
                   </button>

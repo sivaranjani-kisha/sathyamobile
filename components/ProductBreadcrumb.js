@@ -70,7 +70,7 @@ export default function ProductBreadcrumb({ product }) {
       {/* Home Link */}
       <Link 
         href="/" 
-        className="text-gray-500 hover:text-blue-500 transition-colors flex items-center whitespace-nowrap"
+        className="text-gray-500 hover:text-red-500 transition-colors flex items-center whitespace-nowrap"
       >
         <HiHome className="h-4 w-4 mr-2" />
         Home
@@ -83,14 +83,14 @@ export default function ProductBreadcrumb({ product }) {
           {index < categories.length - 1 ? (
             <Link
               href={`/category/${category.category_slug || category._id}`}
-              className="text-gray-500 hover:text-blue-500 whitespace-nowrap"
+              className="text-gray-500 hover:text-red-500 whitespace-nowrap"
             >
               {category.category_name}
             </Link>
           ) : (
             <Link 
             href={`/category/${category.category_slug || category._id}`}
-            className="text-gray-500 whitespace-nowrap hover:text-blue-500">
+            className="text-gray-500 whitespace-nowrap hover:text-red-500">
               {category.category_name}
             </Link>
           )}

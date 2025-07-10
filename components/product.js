@@ -85,12 +85,12 @@ console.log(data)
   return (
     <div className="bg-white min-h-screen">
       {/* Product Header */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">{product.name}</h2>
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">🏠 Home</span>
           <span className="text-gray-500">›</span>
-          <span className="text-customBlue font-semibold">{product.name}</span>
+          <span className="text-customred font-semibold">{product.name}</span>
         </div>
       </div>
 
@@ -176,7 +176,7 @@ console.log(data)
                   <span className="text-gray-500 line-through text-xl">${product.price}</span>
                 )}
               </div>
-              <button className="ml-6 bg-customBlue text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 text-lg">
+              <button className="ml-6 bg-customred text-white px-5 py-2 rounded-lg shadow-md hover:bg-red-700 transition duration-300 text-lg">
                 Order on WhatsApp
               </button>
             </div>
@@ -221,7 +221,7 @@ console.log(data)
                   </button>
                 </div>
               </div>
-              <button className="ml-4 bg-customBlue text-white px-9 h-10 rounded-md shadow-md hover:bg-blue-700 transition duration-300 text-md flex items-center justify-center gap-x-3">
+              <button className="ml-4 bg-customred text-white px-9 h-10 rounded-md shadow-md hover:bg-red-700 transition duration-300 text-md flex items-center justify-center gap-x-3">
                 <FaShoppingCart /> Add To Cart
               </button>
               <div className="flex-grow"></div>
@@ -229,9 +229,9 @@ console.log(data)
                 {[FaHeart, FaShareAlt, FaBell].map((Icon, index) => (
                   <button 
                     key={index} 
-                    className="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out bg-[#cfd4e1] hover:bg-blue-700 text-white"
+                    className="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out bg-[#cfd4e1] hover:bg-red-700 text-white"
                   >
-                    <Icon className="text-customBlue hover:text-white" />
+                    <Icon className="text-customred hover:text-white" />
                   </button>
                 ))}
               </div>
@@ -256,17 +256,17 @@ console.log(data)
           <div className="md:col-span-1 border border-gray-300 rounded-lg shadow-md bg-white mb-14 w-full max-w-sm">
             {/* Seller Header */}
             <div className="mt-4 px-4">
-              <div className="flex items-center justify-between bg-customBlue text-white px-3 py-2 rounded-full">
+              <div className="flex items-center justify-between bg-customred text-white px-3 py-2 rounded-full">
                 <div className="flex items-center gap-2">
                   <div className="bg-white p-1.5 rounded-full flex items-center justify-center w-8 h-8">
-                    <IoStorefront className="text-customBlue text-lg" />
+                    <IoStorefront className="text-customred text-lg" />
                   </div>
                   <span className="text-sm font-medium whitespace-nowrap">
                     By {product.brand || "Marketpro"}
                   </span>
                 </div>
                 <div className="flex-shrink-0">
-                  <button className="bg-white text-customBlue text-xs font-medium px-3 py-1 rounded-full border border-white whitespace-nowrap">
+                  <button className="bg-white text-customred text-xs font-medium px-3 py-1 rounded-full border border-white whitespace-nowrap">
                     View Store
                   </button>
                 </div>
@@ -288,7 +288,7 @@ console.log(data)
                   {index !== 0 && <div className="border-b border-gray-400 w-full mt-4"></div>}
                   <div className="flex items-center gap-4 px-6 py-4 w-full">
                     <div className="bg-white p-3 rounded-full border border-gray-300 shadow-sm flex items-center justify-center">
-                      <Icon className="text-lg text-customBlue" />
+                      <Icon className="text-lg text-customred" />
                     </div>
                     <div className="flex-1 w-full min-w-0">
                       <h4 className="text-sm font-bold text-gray-900 break-words">{title}</h4>  

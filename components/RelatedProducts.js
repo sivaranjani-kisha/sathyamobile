@@ -66,7 +66,7 @@ const RelatedProducts = ({ currentProductId, categoryId }) => {
             <div key={product._id} className="border rounded-lg p-4 shadow-md w-56 flex-shrink-0 relative">
               {discountPercentage > 0 && (
                 <span className={`px-2 py-1 text-xs font-bold text-white rounded absolute top-2 left-2 ${
-                  discountPercentage > 30 ? "bg-blue-500" : "bg-red-500"
+                  discountPercentage > 30 ? "bg-red-500" : "bg-red-500"
                 }`}>
                   {discountPercentage}% OFF
                 </span>
@@ -88,7 +88,7 @@ const RelatedProducts = ({ currentProductId, categoryId }) => {
               </Link>
 
               <Link href={`/product/${product.slug || product._id}`}>
-                <h3 className="text-sm font-medium mt-2 hover:text-blue-600 line-clamp-2">{product.name}</h3>
+                <h3 className="text-sm font-medium mt-2 hover:text-red-600 line-clamp-2">{product.name}</h3>
               </Link>
               <p className="text-gray-600 text-xs">By {product.brand?.brand_name || "Our Store"}</p>
               <div className="flex items-center mt-1">

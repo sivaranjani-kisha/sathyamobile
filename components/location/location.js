@@ -236,19 +236,19 @@ export default function LocationPage() {
   return (
     <div className="min-h-screen bg-white py-12 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-customBlue mb-10">Our Branches</h1>
+        <h1 className="text-3xl font-bold text-customred mb-10">Our Branches</h1>
 
         {/* Branch Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {branches.map((branch, idx) => (
             <div
               key={idx}
-              className="border border-blue-300 rounded-lg shadow-sm p-4 hover:shadow-md transition"
+              className="border border-red-300 rounded-lg shadow-sm p-4 hover:shadow-md transition"
             >
               <h2 className="text-md font-semibold text-gray-800 mb-2">{branch.title}</h2>
               <p className="text-sm text-gray-700 mb-1">{branch.address}</p>
               <p className="text-sm text-gray-700 mb-1">Phone: {branch.phone}</p>
-              <p className="text-sm text-blue-600">{branch.email}</p>
+              <p className="text-sm text-red-600">{branch.email}</p>
             </div>
           ))}
         </div>

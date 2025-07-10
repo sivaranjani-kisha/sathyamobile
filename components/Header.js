@@ -242,7 +242,7 @@ export default function Header() {
             <Link href="/cart" className="relative p-2">
               <FiShoppingCart size={20} />
               {hasMounted && cartCount > 0 && (
-                <span className="absolute top-0 right-0 text-xs bg-customBlue text-white rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute top-0 right-0 text-xs bg-customred text-white rounded-full w-4 h-4 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -259,7 +259,7 @@ export default function Header() {
                 placeholder="Search for products..."
                 className="px-4 py-2 outline-none w-full text-black placeholder:text-gray-400"
               />
-              <button className="bg-customBlue text-white p-2 rounded-full">
+              <button className="bg-customred text-white p-2 rounded-full">
                 <FiSearch size={18} />
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function Header() {
                     </div>
                     <div>
                       <p className="font-medium">Hi, {userData?.username || userData?.name || 'User'}</p>
-                      <Link href="/account" className="text-sm text-blue-500">My Account</Link>
+                      <Link href="/account" className="text-sm text-red-500">My Account</Link>
                     </div>
                   </div>
                 ) : (
@@ -394,7 +394,7 @@ export default function Header() {
                   placeholder="Search for a product or brand"
                   className="px-4 py-2 outline-none w-full text-black placeholder:text-gray-400"
                 />
-                <button className="bg-customBlue text-white p-2 rounded-full">
+                <button className="bg-customred text-white p-2 rounded-full">
                   <FiSearch size={18} />
                 </button>
               </div>
@@ -422,7 +422,7 @@ export default function Header() {
               {/* Cart */}
               <Link href="/cart" className="flex items-center relative  px-4">
                 <FiShoppingCart size={22} className="text-black" />
-                <span className="absolute top-[-5px] right-[-8px] text-xs bg-customBlue text-white rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute top-[-5px] right-[-8px] text-xs bg-customred text-white rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
                 <span className="ml-1 font-bold text-sm">Cart</span>
@@ -450,9 +450,9 @@ export default function Header() {
                         <div className="py-2 px-2">
                           {/* <Link
                             href="/account"
-                            className="flex items-center gap-3 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-red-50 transition-colors"
                           >
-                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customBlue text-white">
+                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customred text-white">
                               <MdAccountCircle className="w-4 h-4" />
                             </span>
                             My Account
@@ -460,9 +460,9 @@ export default function Header() {
 
                           <Link
                             href="/order"
-                            className="flex items-center gap-3 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-red-50 transition-colors"
                           >
-                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customBlue text-white">
+                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customred text-white">
                               <FaShoppingBag className="w-5 h-5" />
                             </span>
                             My Orders
@@ -474,7 +474,7 @@ export default function Header() {
                             onClick={handleLogout}
                             className="flex items-center gap-3 w-full text-left px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-red-50 transition-colors"
                           >
-                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customBlue text-white">
+                            <span className="w-7 h-7 flex items-center justify-center rounded-full bg-customred text-white">
                               <IoLogOut className="w-5 h-5" />
                             </span>
                             Logout
@@ -502,7 +502,7 @@ export default function Header() {
       {/* Categories Bar (visible on all screens) */}
       {hasMounted && categories.length > 0 && (
   <div 
-    className={`overflow-hidden bg-customBlue text-white text-xs py-2 relative transition-opacity duration-300 ${
+    className={`overflow-hidden bg-customred text-white text-xs py-2 relative transition-opacity duration-300 ${
       categories.length > 0 ? 'opacity-100' : 'opacity-0 h-0 py-0'
     }`}
   >
@@ -584,7 +584,7 @@ export default function Header() {
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'login' 
-                    ? 'border-b-2 border-blue-500 text-blue-600' 
+                    ? 'border-b-2 border-red-500 text-red-600' 
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -594,7 +594,7 @@ export default function Header() {
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'register'
-                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    ? 'border-b-2 border-red-500 text-red-600'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('register')}
@@ -610,7 +610,7 @@ export default function Header() {
                   placeholder="Name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -619,7 +619,7 @@ export default function Header() {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
               {activeTab === 'register' && (
@@ -628,7 +628,7 @@ export default function Header() {
                   placeholder="Mobile"
                   value={formData.mobile}
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -637,7 +637,7 @@ export default function Header() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
                 minLength={6}
               />
@@ -651,7 +651,7 @@ export default function Header() {
               <button
                 type="submit"
                 disabled={loadingAuth}
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200"
+                className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 disabled:bg-gray-400 transition-colors duration-200"
               >
                 {loadingAuth ? 'Processing...' : activeTab === 'login' ? 'Login' : 'Register'}
               </button>

@@ -102,7 +102,7 @@ useEffect(() => {
     <>
       {navigating && (
         <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black bg-opacity-30">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600"></div>
         </div>
       )}
       
@@ -114,14 +114,14 @@ useEffect(() => {
         <button
           onClick={prev}
           disabled={startIndex === 0}
-          className="p-2 border border-gray-300 rounded-full hover:bg-blue-600 hover:text-white transition disabled:opacity-50"
+          className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition disabled:opacity-50"
         >
           <ChevronLeft size={20} />
         </button>
         <button
           onClick={next}
           disabled={startIndex + visibleCount >= recentProducts.length}
-          className="p-2 border border-gray-300 rounded-full hover:bg-blue-600 hover:text-white transition disabled:opacity-50"
+          className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition disabled:opacity-50"
         >
           <ChevronRight size={20} />
         </button>
@@ -134,7 +134,7 @@ useEffect(() => {
         <div key={product._id} className="w-full min-w-[220px]">
           <motion.div 
             whileHover={{ y: -5 }}
-            className="relative border rounded-xl shadow-lg p-4 transition-all duration-300 hover:border-blue-500 hover:shadow-xl bg-white h-full flex flex-col"
+            className="relative border rounded-xl shadow-lg p-4 transition-all duration-300 hover:border-red-500 hover:shadow-xl bg-white h-full flex flex-col"
           >
             {/* Discount badge */}
             {product.special_price && (
@@ -176,7 +176,7 @@ useEffect(() => {
                             Brand: <span className="font-medium text-gray-700">{product.brand}</span>
                           </p>
                         )} */}
-              <p className="text-sm sm:text-base font-bold text-blue-600">
+              <p className="text-sm sm:text-base font-bold text-red-600">
                 Rs. {product.special_price || product.price}
                 {product.special_price && (
                   <span className="line-through text-gray-400 text-xs ml-1">

@@ -254,7 +254,7 @@ const capitalizeFirstLetter = (str) =>
                 <h3 className="text-white font-semibold text-lg mb-2">Connect With Us</h3>
                 <div className="flex space-x-3"> 
                 <Link href="https://www.facebook.com/SathyaRetail.mobiles/">
-                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-blue-500 group">
+                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-red-500 group">
                     <FaFacebookF className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
                   </div>
                 </Link>
@@ -378,7 +378,7 @@ const capitalizeFirstLetter = (str) =>
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'login' 
-                    ? 'border-b-2 border-blue-500 text-blue-600' 
+                    ? 'border-b-2 border-red-500 text-red-600' 
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -388,7 +388,7 @@ const capitalizeFirstLetter = (str) =>
               <button
                 className={`pb-2 px-1 ${
                   activeTab === 'register'
-                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    ? 'border-b-2 border-red-500 text-red-600'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('register')}
@@ -404,7 +404,7 @@ const capitalizeFirstLetter = (str) =>
                   placeholder="Name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -413,7 +413,7 @@ const capitalizeFirstLetter = (str) =>
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
               />
               {activeTab === 'register' && (
@@ -422,7 +422,7 @@ const capitalizeFirstLetter = (str) =>
                   placeholder="Mobile"
                   value={formData.mobile}
                   onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                 />
               )}
@@ -431,7 +431,7 @@ const capitalizeFirstLetter = (str) =>
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500"
                 required
                 minLength={6}
               />
@@ -445,7 +445,7 @@ const capitalizeFirstLetter = (str) =>
               <button
                 type="submit"
                 disabled={loadingAuth}
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-400 transition-colors duration-200"
+                className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 disabled:bg-gray-400 transition-colors duration-200"
               >
                 {loadingAuth ? 'Processing...' : activeTab === 'login' ? 'Login' : 'Register'}
               </button>

@@ -272,7 +272,7 @@ export default function CartComponent() {
             />
 
             {/* Header */}
-            <div className="bg-blue-50 py-4 px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div className="bg-red-50 py-4 px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-2">
                 <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                     Cart ({cartData.totalItems} items)
                 </h2>

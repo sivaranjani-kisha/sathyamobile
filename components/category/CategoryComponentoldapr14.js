@@ -245,7 +245,7 @@ export default function CategoryPage() {
                 onClick={() => onFilterChange('categories', category._id)}
                 className={`flex-1 text-left p-2 rounded hover:bg-gray-100 ${
                   selectedFilters.includes(category._id) 
-                    ? 'bg-blue-100 font-medium' 
+                    ? 'bg-red-100 font-medium' 
                     : ''
                 }`}
               >
@@ -300,7 +300,7 @@ export default function CategoryPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
         </div>
       </div>
     );
@@ -332,7 +332,7 @@ export default function CategoryPage() {
                 <h3 className="font-semibold">Active Filters</h3>
                 <button 
                   onClick={clearAllFilters}
-                  className="text-blue-600 text-sm hover:underline"
+                  className="text-red-600 text-sm hover:underline"
                 >
                   Clear all
                 </button>
@@ -422,7 +422,7 @@ export default function CategoryPage() {
                     onClick={() => handleFilterChange('categories', subCategory._id)}
                     className={`block w-full text-left p-2 rounded ${
                       selectedFilters.categories.includes(subCategory._id)
-                        ? 'bg-blue-100 font-medium'
+                        ? 'bg-red-100 font-medium'
                         : 'hover:bg-gray-100'
                     }`}
                   >
@@ -475,7 +475,7 @@ export default function CategoryPage() {
                           onClick={() => handleFilterChange('categories', subCategory._id)}
                           className={`block w-full text-left p-2 rounded ${
                             selectedFilters.categories.includes(subCategory._id)
-                              ? 'bg-blue-100 font-medium'
+                              ? 'bg-red-100 font-medium'
                               : 'hover:bg-gray-100'
                           }`}
                         >
@@ -522,7 +522,7 @@ export default function CategoryPage() {
                     onClick={() => handleFilterChange('brands', brand._id)}
                     className={`flex items-center w-full text-left p-2 rounded ${
                       selectedFilters.brands.includes(brand._id) 
-                        ? 'bg-blue-100 font-medium' 
+                        ? 'bg-red-100 font-medium' 
                         : 'hover:bg-gray-100'
                     }`}
                   >
@@ -557,7 +557,7 @@ export default function CategoryPage() {
                   <li key={brand._id}>
                     <button
                       onClick={() => handleFilterChange('brands', brand._id)}
-                      className={`flex items-center w-full text-left p-2 rounded ${selectedFilters.brands.includes(brand._id) ? 'bg-blue-100 font-medium' : 'hover:bg-gray-100'}`}
+                      className={`flex items-center w-full text-left p-2 rounded ${selectedFilters.brands.includes(brand._id) ? 'bg-red-100 font-medium' : 'hover:bg-gray-100'}`}
                     >
                       {brand.image && (
                         <div className="w-8 h-8 mr-2 relative">
@@ -589,7 +589,7 @@ export default function CategoryPage() {
                       onClick={() => handleFilterChange('filters', filter._id)}
                       className={`block w-full text-left p-2 rounded ${
                         selectedFilters.filters.includes(filter._id)
-                          ? 'bg-blue-100 font-medium'
+                          ? 'bg-red-100 font-medium'
                           : 'hover:bg-gray-100'
                       }`}
                     >
@@ -629,7 +629,7 @@ export default function CategoryPage() {
                             <li key={filter._id}>
                               <button
                                 onClick={() => handleFilterChange('filters', filter._id)}
-                                className={`block w-full text-left p-2 rounded ${selectedFilters.filters.includes(filter._id) ? 'bg-blue-100 font-medium' : 'hover:bg-gray-100'}`}
+                                className={`block w-full text-left p-2 rounded ${selectedFilters.filters.includes(filter._id) ? 'bg-red-100 font-medium' : 'hover:bg-gray-100'}`}
                               >
                                 {filter.filter_name}
                               </button>
@@ -648,14 +648,14 @@ export default function CategoryPage() {
         <div className="lg:col-span-3">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium">No products found matching your filters</h3>
               <button 
                 onClick={clearAllFilters}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
               >
                 Clear all filters
               </button>
@@ -670,7 +670,7 @@ export default function CategoryPage() {
                     id="sort"
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg px-4 py-2 pr-8 text-sm text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer shadow-sm"
+                    className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg px-4 py-2 pr-8 text-sm text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 cursor-pointer shadow-sm"
                   >
                     <option value="">Default</option>
                     <option value="price-low-high">Price - Low to High</option>
@@ -683,7 +683,7 @@ export default function CategoryPage() {
               
               {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getSortedProducts().slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map(product => (
-                  <div key={product._id} className="bg-white p-4 rounded-lg shadow hover:border-blue-700 transition-shadow border cursor-pointer">
+                  <div key={product._id} className="bg-white p-4 rounded-lg shadow hover:border-red-700 transition-shadow border cursor-pointer">
                     <div className="relative h-48 mb-4">
                       {product.images?.[0] && (
                         <Image
@@ -710,11 +710,11 @@ export default function CategoryPage() {
                           ₹{product.price.toLocaleString()}
                         </span>
                       )}
-                      <span className="text-xl font-bold text-blue-600">
+                      <span className="text-xl font-bold text-red-600">
                         ₹{(product.special_price || product.price).toLocaleString()}
                       </span>
                     </div>
-                    <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">
+                    <button className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors">
                       Add to Cart
                     </button>
                   </div>
@@ -722,7 +722,7 @@ export default function CategoryPage() {
               </div> */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getSortedProducts().slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map(product => (
-                  <div key={product._id} className="group flex flex-col h-full bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-blue-200 relative">
+                  <div key={product._id} className="group flex flex-col h-full bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-red-200 relative">
                     
                     {/* Wishlist Button - Top Right Corner */}
                     <button 
@@ -767,7 +767,7 @@ export default function CategoryPage() {
                     <div className="flex flex-col flex-grow p-4">
                       {/* Product Name */}
                       <Link href={`/products/${product.slug}`}>
-                        <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
+                        <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-red-600 transition-colors line-clamp-2 min-h-[3rem]">
                           {product.name}
                         </h3>
                       </Link>
@@ -780,7 +780,7 @@ export default function CategoryPage() {
                               <span className="text-gray-500 line-through text-sm">
                                 ₹{product.price.toLocaleString()}
                               </span>
-                              <span className="text-xl font-bold text-blue-600">
+                              <span className="text-xl font-bold text-red-600">
                                 ₹{product.special_price.toLocaleString()}
                               </span>
                             </>
@@ -792,7 +792,7 @@ export default function CategoryPage() {
                         </div>
 
                         {/* Add to Cart Button */}
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
+                        <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                           </svg>
@@ -827,11 +827,11 @@ export default function CategoryPage() {
         pageLinkClassName={
           "block w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-300 " +
           "bg-gradient-to-b from-white to-gray-50 border border-gray-200 text-gray-600 shadow-sm hover:shadow-md " +
-          "hover:from-blue-50 hover:to-blue-100 hover:border-blue-200 hover:text-blue-600 mx-1"
+          "hover:from-red-50 hover:to-red-100 hover:border-red-200 hover:text-red-600 mx-1"
         }
         activeClassName={"transform active:scale-95"}
         activeLinkClassName={
-          "!bg-gradient-to-b !from-blue-600 !to-blue-700 !text-white !border-blue-700 !shadow-lg"
+          "!bg-gradient-to-b !from-red-600 !to-red-700 !text-white !border-red-700 !shadow-lg"
         }
 
         // Arrows
@@ -840,12 +840,12 @@ export default function CategoryPage() {
         previousLinkClassName={
           "w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 " +
           "bg-gradient-to-b from-white to-gray-50 border border-gray-200 text-gray-600 shadow-sm " +
-          "hover:shadow-md hover:from-blue-50 hover:to-blue-100 hover:border-blue-200 hover:text-blue-600"
+          "hover:shadow-md hover:from-red-50 hover:to-red-100 hover:border-red-200 hover:text-red-600"
         }
         nextLinkClassName={
           "w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 " +
           "bg-gradient-to-b from-white to-gray-50 border border-gray-200 text-gray-600 shadow-sm " +
-          "hover:shadow-md hover:from-blue-50 hover:to-blue-100 hover:border-blue-200 hover:text-blue-600"
+          "hover:shadow-md hover:from-red-50 hover:to-red-100 hover:border-red-200 hover:text-red-600"
         }
         
         // Break dots
@@ -857,7 +857,7 @@ export default function CategoryPage() {
           <div className="group flex items-center">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-5 w-5 text-gray-500 group-hover:text-blue-600 transition-colors"
+              className="h-5 w-5 text-gray-500 group-hover:text-red-600 transition-colors"
               viewBox="0 0 20 20" 
               fill="currentColor"
             >
@@ -873,7 +873,7 @@ export default function CategoryPage() {
           <div className="group flex items-center">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-5 w-5 text-gray-500 group-hover:text-blue-600 transition-colors"
+              className="h-5 w-5 text-gray-500 group-hover:text-red-600 transition-colors"
               viewBox="0 0 20 20" 
               fill="currentColor"
             >

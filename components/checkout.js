@@ -452,7 +452,7 @@ export default function CheckoutPage() {
       <ToastContainer position="top-right" autoClose={5000} />
       
       {/* 🟠 Checkout Header Bar */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Checkout</h2>
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">🏠 Home</span>

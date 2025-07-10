@@ -330,7 +330,7 @@ useEffect(() => {
                 onClick={() => onFilterChange('categories', category._id)}
                 className={`flex-1 text-left p-2 rounded hover:bg-gray-100 text-gray-700 ${
                   selectedFilters.includes(category._id) 
-                    ? 'bg-blue-100 font-medium' 
+                    ? 'bg-red-100 font-medium' 
                     : ''
                 }`}
               >
@@ -413,7 +413,7 @@ useEffect(() => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
         </div>
       </div>
     );
@@ -445,7 +445,7 @@ useEffect(() => {
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                className="px-4 py-2 border rounded-md text-sm bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-2 border rounded-md text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
               >
                 <option value="">Featured</option>
                 <option value="price-low-high">Price: Low to High</option>
@@ -473,7 +473,7 @@ useEffect(() => {
                 <h3 className="font-semibold">Active Filters</h3>
                 <button 
                   onClick={clearAllFilters}
-                  className="text-blue-600 text-sm hover:underline"
+                  className="text-red-600 text-sm hover:underline"
                 >
                   Clear all
                 </button>
@@ -578,7 +578,7 @@ useEffect(() => {
                   selectedFilters.price.min, 
                   parseInt(e.target.value)
                 ])}
-                className="w-full range accent-blue-600"
+                className="w-full range accent-red-600"
               />
               <div className="flex justify-between text-sm text-gray-600">
                 <span>₹{selectedFilters.price.min}</span>
@@ -603,7 +603,7 @@ useEffect(() => {
                       onClick={() => handleFilterChange('brands', brand._id)}
                       className={`flex items-center w-full text-left p-2 rounded-md text-sm ${
                         selectedFilters.brands.includes(brand._id) 
-                          ? 'bg-blue-50 text-blue-600' 
+                          ? 'bg-red-50 text-red-600' 
                           : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
@@ -638,7 +638,7 @@ useEffect(() => {
                   <div key={group._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                     {/* Filter Group Header */}
                     <button  onClick={() => toggleFilterGroup(group._id)} className="flex justify-between items-center w-full group">
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">{group.name}</span>
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span>
                       <ChevronDown 
                         size={18}
                         className={`text-gray-400 transition-transform duration-200 ${
@@ -657,7 +657,7 @@ useEffect(() => {
                                 type="checkbox"
                                 checked={selectedFilters.filters.includes(filter._id)}
                                 onChange={() => handleFilterChange('filters', filter._id)}
-                                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                               />
                               <span className="text-sm text-gray-600">{filter.filter_name}</span>
                               {filter.count && (
@@ -683,10 +683,10 @@ useEffect(() => {
               {getSortedProducts().map(product => (
                <div
                   key={product._id}
-                  className="group relative bg-white rounded-lg border hover:border-blue-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full"
+                  className="group relative bg-white rounded-lg border hover:border-red-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full"
                 >
                   {/* Product Image */}
-                  <div className="relative aspect-square bg-gray-50">
+                  <div className="relative aspect-square bg-red-50">
                     {product.images?.[0] && (
                       <Image
                         src={
@@ -727,7 +727,7 @@ useEffect(() => {
                       className="block mb-2"
                       onClick={() => handleProductClick(product)}
                     >
-                      <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-blue-600 line-clamp-2 min-h-[40px]">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                         {product.name}
                       </h3>
                     </Link>
@@ -735,7 +735,7 @@ useEffect(() => {
                     {/* Price Row (same level always) */}
                     <div className="flex items-center gap-2 mb-3">
                      
-                      <span className="text-base font-semibold text-blue-600">
+                      <span className="text-base font-semibold text-red-600">
                         ₹{(product.special_price || product.price).toLocaleString()}
                       </span>
                        {product.special_price && product.special_price !== product.price && (
@@ -785,7 +785,7 @@ useEffect(() => {
           {/* Loading Indicator */}
           {loading && (page==1) && (
             <div className="text-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mx-auto"></div>
             </div>
           )}
 

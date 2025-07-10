@@ -83,7 +83,7 @@ return (
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="px-4 py-2 border rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             <option value="">Sort by Featured</option>
             <option value="price-low-high">Price: Low to High</option>
@@ -95,7 +95,7 @@ return (
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <FaSpinner className="animate-spin text-4xl text-blue-500" />
+            <FaSpinner className="animate-spin text-4xl text-red-500" />
           </div>
         ) : products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -124,7 +124,7 @@ return (
 
                 <div className="p-2 md:p-4">
                                     <Link href={`/product/${product.slug}`} className="block mb-1 md:mb-2">
-                                      <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-blue-600 line-clamp-2">
+                                      <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-red-600 line-clamp-2">
                                         {product.name}
                                       </h3>
                                     </Link>
@@ -133,7 +133,7 @@ return (
                                       {product.special_price && product.special_price !== product.price && (
                                         <span className="text-xs text-gray-500 line-through">₹{product.price.toLocaleString()}</span>
                                       )}
-                                      <span className="text-base font-semibold text-blue-600">₹{(product.special_price || product.price).toLocaleString()}</span>
+                                      <span className="text-base font-semibold text-red-600">₹{(product.special_price || product.price).toLocaleString()}</span>
                                     </div>
                 
                                     <Addtocart productId={product._id} className="w-full text-xs sm:text-sm py-1.5"  />

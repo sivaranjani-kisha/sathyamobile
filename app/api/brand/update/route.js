@@ -50,7 +50,7 @@ export async function PUT(req) {
       const buffer = Buffer.from(bytes);
       const ext = path.extname(image.name);
       const fileName = `brand_${Date.now()}${ext}`;
-      const filePath = path.join(process.cwd(), "public/uploads/brands", fileName);
+      const filePath = path.join(process.cwd(), "public/uploads/Brands", fileName);
 
       await writeFile(filePath, buffer);
       imagePath = `${fileName}`;

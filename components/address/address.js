@@ -66,7 +66,7 @@ export default function Address() {
   return (
     <div className="bg-white min-h-screen">
       {/* Header with Breadcrumb */}
-      <div className="bg-blue-50 py-6 px-8 flex justify-between items-center border-b border-gray-200 shadow-sm">
+      <div className="bg-red-50 py-6 px-8 flex justify-between items-center border-b border-gray-200 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800">
           {isEditingAddress ? 'Edit Address' : isAddingAddress ? 'Add Address' : 'Addresses'}
         </h2>
@@ -75,7 +75,7 @@ export default function Address() {
           <FiChevronRight className="text-gray-400" />
           <span className="text-gray-500">Shop</span>
           <FiChevronRight className="text-gray-400" />
-          <span className="text-customBlue font-semibold">Addresses</span>
+          <span className="text-customred font-semibold">Addresses</span>
         </div>
       </div>
 
@@ -83,23 +83,23 @@ export default function Address() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Navigation */}
           <div className="w-full lg:w-72 flex-shrink-0">
-            <div className="bg-white p-6 rounded-xl border border-gray-200  hover:border-customBlue transition-all duration-300 shadow-sm">
-              <h3 className="text-lg font-semibold text-customBlue mb-6 pb-2 hover:border-customBlue transition-all duration-300 border-b border-gray-100">My Account</h3>
+            <div className="bg-white p-6 rounded-xl border border-gray-200  hover:border-customred transition-all duration-300 shadow-sm">
+              <h3 className="text-lg font-semibold text-customred mb-6 pb-2 hover:border-customred transition-all duration-300 border-b border-gray-100">My Account</h3>
               <nav className="space-y-2">
-              {/* <Link href="/profile" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-700 rounded-lg transition-all duration-200 hover:text-customBlue hover:bg-blue-100 hover:pl-6">
-                <RiAccountCircleFill className="text-customBlue text-2xl" />
+              {/* <Link href="/profile" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-700 rounded-lg transition-all duration-200 hover:text-customred hover:bg-red-100 hover:pl-6">
+                <RiAccountCircleFill className="text-customred text-2xl" />
                   <span>Profile</span>
               </Link>
-              <Link href="/address" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customBlue hover:bg-blue-100 hover:pl-6">
-                <FaAddressBook className="text-customBlue text-2xl"/>
+              <Link href="/address" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customred hover:bg-red-100 hover:pl-6">
+                <FaAddressBook className="text-customred text-2xl"/>
                   <span>Addresses</span>
               </Link> */}
-              <Link href="/orders" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customBlue hover:bg-blue-100 hover:pl-6">
-                <HiShoppingBag className="text-customBlue text-2xl"/>
+              <Link href="/orders" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customred hover:bg-red-100 hover:pl-6">
+                <HiShoppingBag className="text-customred text-2xl"/>
                   <span>Orders</span>
               </Link>
-              <Link href="/wishlist" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customBlue hover:bg-blue-100 hover:pl-6">
-                <FaHeart className="text-customBlue text-2xl"/>
+              <Link href="/wishlist" className="w-full flex items-center gap-2 px-5 py-3 text-lg text-base font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-customred hover:bg-red-100 hover:pl-6">
+                <FaHeart className="text-customred text-2xl"/>
                   <span>Wishlist</span>
               </Link>
               </nav>
@@ -109,14 +109,14 @@ export default function Address() {
           {/* Main Content */}
           <div className="flex-1 transition-all duration-300">
             {(isEditingAddress || isAddingAddress) ? (
-              <div className="bg-white p-8 rounded-xl border border-gray-200 hover:border-customBlue transition-all duration-300 shadow-sm">
+              <div className="bg-white p-8 rounded-xl border border-gray-200 hover:border-customred transition-all duration-300 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold text-customBlue ">
+                  <h2 className="text-xl font-semibold text-customred ">
                     {isEditingAddress ? 'Edit Address' : 'Add Address'}
                   </h2>
                   <button 
                     onClick={handleCancel}
-                    className="text-customBlue hover:underline"
+                    className="text-customred hover:underline"
                   >
                     ← Back
                   </button>
@@ -134,7 +134,7 @@ export default function Address() {
                         type="text"
                         value={addressData.name}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         required
                       />
                     </div>
@@ -150,7 +150,7 @@ export default function Address() {
                         value={addressData.mobile}
                         onChange={handleAddressChange}
                         pattern="[0-9]{10}"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         required
                       />
                     </div>
@@ -167,7 +167,7 @@ export default function Address() {
                         type="text"
                         value={addressData.pincode}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         required
                       />
                     </div>
@@ -182,7 +182,7 @@ export default function Address() {
                         type="text"
                         value={addressData.landmark}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
                   </div>
@@ -196,7 +196,7 @@ export default function Address() {
                       name="address"
                       value={addressData.address}
                       onChange={handleAddressChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       required
                       rows={3}
                     />
@@ -212,7 +212,7 @@ export default function Address() {
                         name="state"
                         value={addressData.state}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         required
                       >
                         <option value="">Select State</option>
@@ -232,7 +232,7 @@ export default function Address() {
                         type="text"
                         value={addressData.city}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         required
                       />
                     </div>
@@ -249,7 +249,7 @@ export default function Address() {
                         type="tel"
                         value={addressData.alternatePhone}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
                     
@@ -262,7 +262,7 @@ export default function Address() {
                         name="type"
                         value={addressData.type}
                         onChange={handleAddressChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                       >
                         <option value="">Select</option>
                         <option value="home">Home</option>
@@ -276,13 +276,13 @@ export default function Address() {
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+                      className="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-customBlue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 hover:scale-105"
+                      className="px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-customred hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 hover:scale-105"
                     >
                       {isEditingAddress ? 'Save Changes' : 'Save and Deliver Here'}
                     </button>
@@ -290,8 +290,8 @@ export default function Address() {
                 </form>
               </div>
             ) : (
-              <div className="bg-white p-8 rounded-xl border border-gray-200 hover:border-customBlue transition-all duration-300 shadow-sm">
-                <h2 className="text-xl font-semibold text-customBlue mb-8 pb-3 border-b border-gray-100 hover:border-customBlue transition-all duration-300">
+              <div className="bg-white p-8 rounded-xl border border-gray-200 hover:border-customred transition-all duration-300 shadow-sm">
+                <h2 className="text-xl font-semibold text-customred mb-8 pb-3 border-b border-gray-100 hover:border-customred transition-all duration-300">
                   Addresses
                 </h2>
                 
@@ -301,7 +301,7 @@ export default function Address() {
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center">
                     <div className={`p-2 rounded-lg mr-3 ${
-                        addressData.type === 'home' ? 'bg-blue-100 text-blue-600' : 
+                        addressData.type === 'home' ? 'bg-red-100 text-red-600' : 
                         addressData.type === 'office' ? 'bg-purple-100 text-purple-600' : 
                         'bg-gray-100 text-gray-600'
                     }`}>
@@ -315,7 +315,7 @@ export default function Address() {
                     </div>
                     {addressData.type && (
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        addressData.type === 'home' ? 'bg-blue-50 text-blue-700' : 
+                        addressData.type === 'home' ? 'bg-red-50 text-red-700' : 
                         addressData.type === 'office' ? 'bg-purple-50 text-purple-700' : 
                         'bg-gray-50 text-gray-700'
                     }`}>
@@ -326,7 +326,7 @@ export default function Address() {
 
                 <div className="space-y-3 text-gray-700">
                     <div className="flex items-start">
-                    <FiUser className="h-5 w-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <FiUser className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
                     <p className="font-medium">{addressData.name}</p>
                     </div>
                     
@@ -340,7 +340,7 @@ export default function Address() {
                     </div>
                     
                     <div className="flex items-center">
-                    <FiPhone className="h-5 w-5 text-blue-400 mr-3 flex-shrink-0" />
+                    <FiPhone className="h-5 w-5 text-red-400 mr-3 flex-shrink-0" />
                     <div>
                         <p>{addressData.mobile}</p>
                         {addressData.alternatePhone && (
@@ -369,9 +369,9 @@ export default function Address() {
                 {/* Add New Address Button */}
                 <button 
                   onClick={handleAddAddress}
-                  className="w-full py-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-customBlue hover:bg-blue-50 transition-all duration-200"
+                  className="w-full py-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-customred hover:bg-red-50 transition-all duration-200"
                 >
-                  <span className="text-customBlue text-lg font-medium">+ Add Address</span>
+                  <span className="text-customred text-lg font-medium">+ Add Address</span>
                   <span className="text-gray-500 text-sm mt-1">Add a new delivery address</span>
                 </button>
               </div>
