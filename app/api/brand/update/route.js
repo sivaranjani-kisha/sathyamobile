@@ -80,7 +80,7 @@ export async function PUT(req) {
   } catch (error) {
     console.error("Error updating brand:", error);
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      { success: false, error: error },
       { status: 500 }
     );
   }

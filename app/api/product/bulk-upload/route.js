@@ -148,7 +148,7 @@ console.log("Actual product count:", validProducts.length);
       }
 
       if (rawSpecialPrice !== '') {
-        if (isNaN(specialPrice) || specialPrice < 0 || specialPrice >= price) {
+        if (isNaN(specialPrice) || specialPrice < 0) {
           return NextResponse.json(
             { error: `Invalid special price at row ${i + 2}. It must be a positive number less than price.` },
             { status: 400 }
