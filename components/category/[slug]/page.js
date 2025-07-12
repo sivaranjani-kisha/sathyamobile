@@ -181,64 +181,60 @@ const handleProductClick = (product) => {
     }
   };
   
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      async (entries) => {
-        const firstEntry = entries[0];
-        if (firstEntry.isIntersecting && !loading && hasMore) {
-          // Save scroll position and container height
-          scrollPositionBeforeFetch.current = {
-            y: window.scrollY,
-            containerHeight: productsContainerRef.current?.scrollHeight || 0,
-            isRestoring: false
-          };
-          
-          await fetchMoreData();
-        }
-      },
-      { rootMargin: '250px' }
-    );
-  
-    if (sentinelRef.current) {
-      observer.observe(sentinelRef.current);
-    }
-  
-    return () => {
-      if (sentinelRef.current) {
-        observer.unobserve(sentinelRef.current);
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const firstEntry = entries[0];
+      if (firstEntry.isIntersecting && !loading && hasMore) {
+        fetchMoreData();
       }
-    };
-  }, [loading, hasMore]);
+    },
+    {
+      rootMargin: '100px', // Reduced from 250px to be less aggressive
+      threshold: 0.1
+    }
+  );
+ 
+  if (sentinelRef.current) {
+    observer.observe(sentinelRef.current);
+  }
+ 
+  return () => {
+    if (sentinelRef.current) {
+      observer.unobserve(sentinelRef.current);
+    }
+  };
+}, [loading, hasMore]);
   
   // Add this effect for scroll restoration
-  useEffect(() => {
-    if (!loading && scrollPositionBeforeFetch.current.y > 0 && !scrollPositionBeforeFetch.current.isRestoring) {
-      const container = productsContainerRef.current;
-      if (!container) return;
+  // useEffect(() => {
+  //   if (!loading && scrollPositionBeforeFetch.current.y > 0 && !scrollPositionBeforeFetch.current.isRestoring) {
+  //     const container = productsContainerRef.current;
+  //     if (!container) return;
   
-      // Calculate height difference after DOM update
-      const newContainerHeight = container.scrollHeight;
-      const heightDifference = newContainerHeight - scrollPositionBeforeFetch.current.containerHeight;
+  //     // Calculate height difference after DOM update
+  //     const newContainerHeight = container.scrollHeight;
+  //     const heightDifference = newContainerHeight - scrollPositionBeforeFetch.current.containerHeight;
       
-      // Prevent scroll jump if we're at the same position
-      if (heightDifference > 0) {
-        scrollPositionBeforeFetch.current.isRestoring = true;
-        window.scrollTo({
-          top: scrollPositionBeforeFetch.current.y + heightDifference,
-          behavior: 'smooth'
-        });
+  //     // Prevent scroll jump if we're at the same position
+  //     if (heightDifference > 0) {
+  //       scrollPositionBeforeFetch.current.isRestoring = true;
+  //       window.scrollTo({
+  //         top: scrollPositionBeforeFetch.current.y + heightDifference,
+  //         behavior: 'smooth'
+  //       });
         
-        // Reset after scroll
-        requestAnimationFrame(() => {
-          scrollPositionBeforeFetch.current = {
-            y: 0,
-            containerHeight: 0,
-            isRestoring: false
-          };
-        });
-      }
-    }
-  }, [products, loading]); // Trigger when products or loading state changes
+  //       // Reset after scroll
+  //       requestAnimationFrame(() => {
+  //         scrollPositionBeforeFetch.current = {
+  //           y: 0,
+  //           containerHeight: 0,
+  //           isRestoring: false
+  //         };
+  //       });
+  //     }
+  //   }
+  // }, [products, loading]); // Trigger when products or loading state changes
   
 
   // Sorting functionality
@@ -660,7 +656,8 @@ const handleProductClick = (product) => {
                   //       sizes="(max-width: 640px) 50vw, 33vw, 25vw"
                   //       unoptimized  />
                   //     )}
-                  //     <div >
+                  //     <div 
+                  // >
                   //       {product.special_price &&
                   //         product.special_price !== product.price && (100 - (product.special_price / product.price) * 100) > 0 && (
                   //           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">{Math.round(100 - (product.special_price / product.price) * 100)}% OFF</span>
