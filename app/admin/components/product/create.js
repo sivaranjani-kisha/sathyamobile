@@ -141,7 +141,7 @@ export default function AddProductPage({ mode = "add", productData = null, produ
 
     if (productData.filterDetails && productData.filterDetails.length > 0) {
       const filters = productData.filterDetails.map(item => ({
-        name: item.filter_name,
+        value: item._id,
         label: item.filter_name
       }));
 
@@ -877,6 +877,7 @@ setProduct(prev => ({
    }
 
   const handleFilterChange = (selectedOptions) => {
+    console.log(selectedOptions);
     setProduct((prev) => ({
       ...prev,
       filters: selectedOptions,
@@ -903,6 +904,8 @@ setProduct(prev => ({
     try {
       const formData = new FormData();
       // ✅ Clean the product object before sending
+      console.log(product.filters.map(f => f.value));
+      
     const cleanedProduct = {
       ...product,
       filters: product.filters.map(f => f.value), // ✅ FIXED here
@@ -1202,7 +1205,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                 <input
                   type="text"
                   name="name"
-                  value={product.name}
+                  value={product.name || ''}
                   onChange={handleChange}
                  className={`w-full border p-2 rounded ${
                 product.name.length < 20 && product.name.length > 0 ? "border-red-500" : ""
@@ -1375,7 +1378,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
         
               <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" value={product.description} onChange={handleChange} className="w-full border p-2 rounded" rows="4"></textarea>
+                <textarea name="description" value={product.description || ''} onChange={handleChange} className="w-full border p-2 rounded" rows="4"></textarea>
               </div>
             <div className="space-y-6">
               {/* Overview Image */}
@@ -1473,7 +1476,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                 <label className="block text-sm font-medium text-gray-700 mb-1 ">
                 Overview Description
                 </label>
-                  <textarea name="overviewdescription" value={product.overviewdescription} onChange={handleChange} className="w-full border p-2 pt-0 rounded" rows="4"></textarea>
+                  <textarea name="overviewdescription" value={product.overviewdescription || ''}onChange={handleChange} className="w-full border p-2 pt-0 rounded" rows="4"></textarea>
               </div>
             </div>
              
@@ -1540,7 +1543,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                                   <input
                                     type="text"
                                     placeholder="Attribute name"
-                                    value={varItem.variant_attribute_name}
+                                    value={varItem.variant_attribute_name || ''}
                                     onChange={(e) => handleVariantFieldChange1(index, 'variant_attribute_name', e.target.value)}
                                     className="border p-2 rounded flex-1"
                                   />
@@ -1549,14 +1552,14 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                                 <input
                                   type="text"
                                   placeholder="Option"
-                                  value={varItem.options}
+                                  value={varItem.options || ''}
                                   onChange={(e) => handleVariantFieldChange1(index, 'options', e.target.value)}
                                   className="w-full border p-2 rounded mb-2"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Item Code"
-                                  value={varItem.item_code}
+                                  value={varItem.item_code|| ''}
                                   onChange={(e) => handleVariantFieldChange1(index, 'item_code', e.target.value)}
                                   className="w-full border p-2 rounded mb-2"
                                 />
@@ -1564,14 +1567,14 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                                   <input
                                     type="number"
                                     placeholder="Price"
-                                    value={varItem.price}
+                                    value={varItem.price || ''}
                                     onChange={(e) => handleVariantFieldChange1(index, 'price', e.target.value)}
                                     className="w-full border p-2 rounded mb-2"
                                   />
                                   <input
                                     type="number"
                                     placeholder="Special Price"
-                                    value={varItem.special_price}
+                                    value={varItem.special_price || ''}
                                     onChange={(e) => handleVariantFieldChange1(index, 'special_price', e.target.value)}
                                     className="w-full border p-2 rounded mb-2"
                                   />
@@ -1579,7 +1582,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                                 <input
                                   type="number"
                                   placeholder="Quantity"
-                                  value={varItem.quantity}
+                                  value={varItem.quantity || ''}
                                   onChange={(e) => handleVariantFieldChange1(index, 'quantity', e.target.value)}
                                   className="w-full border p-2 rounded mb-2"
                                 />
@@ -1738,7 +1741,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Key Specifications</label>
-              <textarea name="key_specifications" value={product.key_specifications} onChange={handleChange} className="w-full border p-2 rounded" rows="3"></textarea>
+              <textarea name="key_specifications" value={product.key_specifications|| ''} onChange={handleChange} className="w-full border p-2 rounded" rows="3"></textarea>
             </div>
 
             <div>
@@ -1793,7 +1796,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                 type="number"
                 name= "warranty"
                 placeholder="Warranty"
-                value={product.warranty}
+                value={product.warranty || ''}
                 onChange={handleChange}
                 className="w-full border p-2 rounded mb-2"
               />
@@ -1805,7 +1808,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                 type="number"
                 name="extended_warranty"
                 placeholder="Extended Warranty"
-                value={product.extended_warranty}
+                value={product.extended_warranty || ''}
                 onChange={handleChange}
                 className="w-full border p-2 rounded mb-2"
               />
@@ -1814,7 +1817,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   name="status"
-                  value={product.status}
+                  value={product.status|| 'Active'}
                   onChange={handleChange}
                   className="w-full border p-2 rounded"
                 >

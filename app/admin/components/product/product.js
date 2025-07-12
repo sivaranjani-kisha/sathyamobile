@@ -598,7 +598,7 @@ const exportToExcel = () => {
                           className="w-12 h-12 object-contain mx-auto"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = '/path-to-fallback-image.jpg';
+                            e.target.src = '/no-image.jpg';
                           }}
                         />
                       ) : (
