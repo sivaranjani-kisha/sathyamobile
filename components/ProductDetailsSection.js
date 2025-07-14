@@ -6,14 +6,28 @@ import { FaShoppingCart, FaStar } from "react-icons/fa";
 import Link from "next/link";
 
 export default function ProductDetailsSection({ product }) {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [loadingRelated, setLoadingRelated] = useState(false);
-  const [recentlyViewed, setRecentlyViewed] = useState([]);
-  const [loadingRecentlyViewed, setLoadingRecentlyViewed] = useState(false);
+ 
+  
+  const getFirstAvailableTab = () => {
+  if (product.overviewdescription) return "overview";
+  if (product.description) return "description";
+  if (product.videos && product.videos.length > 0) return "videos";
+  if (product.reviewItems && product.reviewItems.length > 0) return "reviews";
+  if (product.key_specifications) return "keySpecs";
+  if (product.product_highlights?.length > 0) return "productHighlights";
+  return null;
+};
+
+ const [activeTab, setActiveTab] = useState(() => getFirstAvailableTab());
+
+useEffect(() => {
+  const availableTab = getFirstAvailableTab();
+  if (availableTab) setActiveTab(availableTab);
+}, [product]);
+
 
   const tabData = {
-    overview: product.overview || "No overview available.",
+    overview: product.overviewdescription || "No overview available.",
     description: product.description || "No description available.",
     videos: product.videos || [],
     reviews: {
@@ -23,16 +37,13 @@ export default function ProductDetailsSection({ product }) {
     }
   };
 
-  useEffect(() => {
-    if ((activeTab === "relatedProducts" || activeTab === "recentlyViewed") && product.category?._id) {
-      if (activeTab === "relatedProducts" && relatedProducts.length === 0) {
-        fetchRelatedProducts();
-      }
-      if (activeTab === "recentlyViewed" && recentlyViewed.length === 0) {
-        fetchRecentlyViewed();
-      }
-    }
-  }, [activeTab, product.category?._id]);
+
+
+ 
+
+  
+
+
 
   const fetchRelatedProducts = async () => {
     try {
@@ -75,7 +86,7 @@ export default function ProductDetailsSection({ product }) {
       <div key={product._id} className="border rounded-lg p-2 sm:p-3 hover:shadow-md transition-shadow relative">
         {discountPercentage > 0 && (
           <span className={`px-1 sm:px-2 py-1 text-xs font-bold text-white rounded absolute top-1 sm:top-2 left-1 sm:left-2 ${
-            discountPercentage > 30 ? "bg-red-500" : "bg-red-500"
+            discountPercentage > 30 ? "bg-blue-500" : "bg-red-500"
           }`}>
             {discountPercentage}% OFF
           </span>
@@ -97,7 +108,7 @@ export default function ProductDetailsSection({ product }) {
         </Link>
 
         <Link href={`/product/${product.slug || product._id}`}>
-          <h3 className="text-xs sm:text-sm font-medium mt-1 sm:mt-2 hover:text-red-600 line-clamp-2">{product.name}</h3>
+          <h3 className="text-xs sm:text-sm font-medium mt-1 sm:mt-2 hover:text-blue-600 line-clamp-2">{product.name}</h3>
         </Link>
         <p className="text-gray-600 text-xs">By {product.brand?.brand_name || "Our Store"}</p>
         <div className="flex items-center mt-1">
@@ -152,7 +163,7 @@ export default function ProductDetailsSection({ product }) {
         <div className="flex items-center gap-1 sm:gap-2 w-max min-w-full pb-2">
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "overview" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "overview" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("overview")}
           >
@@ -160,7 +171,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "description" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "description" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("description")}
           >
@@ -168,7 +179,7 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "videos" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "videos" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("videos")}
           >
@@ -176,57 +187,75 @@ export default function ProductDetailsSection({ product }) {
           </button>
           <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "reviews" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "reviews" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("reviews")}
           >
             Reviews
           </button>
-          <button
+
+             <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "recentlyViewed" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "keySpecs" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
-            onClick={() => setActiveTab("recentlyViewed")}
+            onClick={() => setActiveTab("keySpecs")}
           >
-            Recently Viewed
+             Features
           </button>
-          <button
+
+              <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
-              activeTab === "relatedProducts" ? "bg-customred text-white" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "productHighlights" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
-            onClick={() => setActiveTab("relatedProducts")}
+            onClick={() => setActiveTab("productHighlights")}
           >
-            Related
+              Highlights
           </button>
+  
+      
+
           
-          <div className="ml-2 sm:ml-auto px-2 sm:px-4 py-1 sm:py-2 text-red-600 font-medium flex items-center text-xs sm:text-sm whitespace-nowrap">
-            <SiTicktick className="text-customred mr-1 text-xs sm:text-sm" /> 100% Satisfaction
+          <div className="ml-2 sm:ml-auto px-2 sm:px-4 py-1 sm:py-2 text-red-800 font-medium flex items-center text-xs sm:text-sm whitespace-nowrap">
+            <SiTicktick className="text-red-800 mr-1 text-xs sm:text-sm" /> 100% Satisfaction
           </div>
         </div>
 
         {/* Move border lower */}
-        <div className="border-b border-gray-300 mt-1 sm:mt-2"></div>
+        <div className="border-b border-gray-300 mt-2 sm:mt-2"></div>
       </div>
 
       {/* Tab Content */}
       <div className="p-2 sm:p-4">
-        {activeTab === "overview" && (
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Product Overview</h2>
-            <p className="text-gray-700 mt-1 sm:mt-2 text-sm sm:text-base">{tabData.overview}</p>
-            
-            {product.features?.length > 0 && (
-              <>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-3 sm:mt-6">Highlights</h2>
-                <ul className="list-disc pl-4 sm:pl-5 mt-1 sm:mt-3 text-gray-700 text-sm sm:text-base">
-                  {product.features.slice(0, 3).map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
+      {activeTab === "overview" && (
+  <div>
+    <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Product Overview</h2>
+    {tabData.overview && (
+      <p className="text-gray-700 mt-1 sm:mt-2 text-sm sm:text-base">{tabData.overview}</p>
+    )}
+
+   {product.overviewdescription?.length > 0 && (
+  <>
+    <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-4 sm:mt-6">Highlights</h2>
+
+   {Array.isArray(product.product_highlights) && product.product_highlights.length > 0 && (
+  <ul className="list-disc pl-4 sm:pl-5 mt-1 sm:mt-3 text-gray-700 text-sm sm:text-base">
+    {product.product_highlights.flatMap((item) =>
+      item
+        .split(/[\n,]+/) // split by newline or comma
+        .map((subItem) => subItem.trim())
+        .filter((subItem) => subItem.length > 0)
+    ).map((feature, index) => (
+      <li key={index}>{feature}</li>
+    ))}
+  </ul>
+)}
+
+  </>
+)}
+
+  </div>
+)}
+
 
         {activeTab === "description" && (
           <div>
@@ -235,7 +264,7 @@ export default function ProductDetailsSection({ product }) {
 
             {product.features?.length > 0 && (
               <>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-3 sm:mt-6">Key Features</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-grya-900 mt-3 sm:mt-6">Key Features</h2>
                 <ul className="list-disc pl-4 sm:pl-5 mt-1 sm:mt-3 text-gray-700 text-sm sm:text-base">
                   {product.features.map((feature, index) => (
                     <li key={index}>{feature}</li>
@@ -265,7 +294,7 @@ export default function ProductDetailsSection({ product }) {
 
         {activeTab === "videos" && (
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Product Videos</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-grya-900">Product Videos</h2>
             {tabData.videos.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 sm:gap-4 mt-2 sm:mt-4">
                 {tabData.videos.map((video, index) => (
@@ -322,35 +351,49 @@ export default function ProductDetailsSection({ product }) {
           </div>
         )}
 
-        {activeTab === "recentlyViewed" && (
+       {activeTab === "keySpecs" && (
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Recently Viewed Products</h2>
-            {loadingRecentlyViewed ? (
-              renderLoadingSkeleton()
-            ) : recentlyViewed.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
-                {recentlyViewed.map(renderProductCard)}
-              </div>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Product Features</h2>
+            {product.key_specifications && typeof product.key_specifications === "string" && product.key_specifications.trim().length > 0 ? (
+              <p className="text-gray-700 mt-1 sm:mt-2 text-sm sm:text-base text-justify">
+                {(() => {
+                  const words = product.key_specifications.split(" ");
+                  const shortText = words.slice(0, 50).join(" ");
+                  return words.length > 50 ? shortText + "..." : shortText;
+                })()}
+              </p>
             ) : (
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">No recently viewed products to display.</p>
+              <p className="text-gray-500 mt-1 sm:mt-2 text-sm sm:text-base">No features available.</p>
             )}
           </div>
         )}
 
-        {activeTab === "relatedProducts" && (
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Related Products</h2>
-            {loadingRelated ? (
-              renderLoadingSkeleton()
-            ) : relatedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-2 sm:mt-4">
-                {relatedProducts.map(renderProductCard)}
-              </div>
-            ) : (
-              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">No related products found.</p>
-            )}
-          </div>
-        )}
+
+
+       {activeTab === "productHighlights" && (
+  <div>
+    <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Product Highlights</h2>
+
+    {Array.isArray(product.product_highlights) && product.product_highlights.length > 0 ? (
+      <ul className="list-disc pl-4 sm:pl-5 mt-1 sm:mt-3 text-gray-700 text-sm sm:text-base">
+        {product.product_highlights
+          .flatMap((item) =>
+            item
+              .split(/[\n,]+/)
+              .map((subItem) => subItem.trim())
+              .filter((subItem) => subItem.length > 0)
+          )
+          .map((feature, index) => (
+            <li key={index}>{feature}</li>
+          ))}
+      </ul>
+    ) : (
+      <p className="text-gray-500 mt-1 sm:mt-2 text-sm sm:text-base">No highlights available.</p>
+    )}
+  </div>
+)}
+
+
       </div>
     </div>
   );

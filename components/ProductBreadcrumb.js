@@ -99,7 +99,7 @@ export default function ProductBreadcrumb({ product }) {
 
       {/* Product Name */}
       <span className="mx-2 text-gray-300"><FaGreaterThan /></span>
-      <span className="text-gray-700 font-medium truncate max-w-[200px]">
+      <span className="text-gray-700 font-medium truncate max-w-[800px]">
         {product.name}
       </span>
     </div>

@@ -379,7 +379,7 @@ useEffect(() => {
          <HeaderNav />
 
           {/* Right: Icons */}
-          <div className="flex items-center gap-4 ma-15">
+          <div className="flex items-center gap-4 ma-8">
             {/* Search Bar */}
             <div className="hidden md:flex items-center bg-gray-100 rounded-full px-2 py-3 min-w-[220px]">
               <form onSubmit={handleSearch} className="flex items-center w-full">

@@ -1018,6 +1018,11 @@ const handleCategoryClick = useCallback((category) => (e) => {
                     {Math.round(((product.price - product.special_price) / product.price) * 100)}% OFF
                   </span>
                 )}
+				{/* Top-right Wishlist Icon */}
+<div className="absolute top-3 right-3 z-10">
+  <ProductCard productId={product._id} />
+</div>
+
                 <div className="h-40 flex items-center justify-center mb-4">
                   <img
                     src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
