@@ -320,7 +320,7 @@ useEffect(() => {
     <header className="sticky top-0 z-50">
       {/* Top Announcement Bar */}
       <div className="header-top text-white py-2 text-sm bg-gradient-to-r from-[#ed3237] to-[#c11116]">
-        <div className="container mx-auto px-4 flex justify-between items-center">
+        <div className="container mx-auto px-1 flex justify-between items-center">
           <div className="header-left">
             <p className="top-message hidden md:flex items-center">
               <FaPhoneAlt className="mr-2" />
@@ -362,7 +362,7 @@ useEffect(() => {
       <div className="header-middle bg-white py-3 shadow-sm">
         <div className="container mx-auto flex items-center">
           {/* Left: Logo + Mobile Menu */}
-          <div className="header-left flex items-center mr-5 pl-4">
+          <div className="header-left flex items-center mr-3 pl-1">
             <button
               className="mobile-menu-toggler md:hidden mr-3 text-gray-700"
               onClick={toggleMobileMenu}

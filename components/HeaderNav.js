@@ -32,7 +32,7 @@ export default function Header() {
   );
 
   return (
-    <div className="hidden lg:flex items-center space-x-8 ml-8">
+    <div className="hidden lg:flex items-center space-x-6 ml-4">
       {/* Home Link */}
       <Link
         href="/"
