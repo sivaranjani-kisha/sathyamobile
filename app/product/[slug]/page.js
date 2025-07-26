@@ -385,6 +385,7 @@ useEffect(() => {
                 <div className="flex-shrink-0">
                   <Addtocart
                     productId={product._id}
+                    stockQuantity={product.quantity}
                     quantity={quantity}
                     additionalProducts={selectedFrequentProducts.map(p => p._id)}
                     warranty={selectedWarranty}
@@ -667,132 +668,102 @@ useEffect(() => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
-    
-                {showFeatures && (
-  <div className="mt-3">
-    <div className="flex flex-row gap-4">
-      <p className="text-gray-700 text-sm text-justify">
-        {product.key_specifications &&
-        typeof product.key_specifications === "string" &&
-        product.key_specifications.trim().length > 0 ? (
-          (() => {
-            const words = product.key_specifications.split(" ");
-            const shortText = words.slice(0, 50).join(" ");
-            return words.length > 50 ? shortText + "..." : shortText;
-          })()
-        ) : (
-          <span className="text-gray-500">No features available.</span>
-        )}
-      </p>
-                      </div>
-                    </div>
-                )}
 
+              {showFeatures && (
+                <div className="mt-3">
+                  {
+                    (() => {
+                      let features = [];
+
+                      // If it's a JSON string (stringified array), parse it
+                      if (typeof product.key_specifications === 'string') {
+                        try {
+                          const parsed = JSON.parse(product.key_specifications);
+                          if (Array.isArray(parsed)) {
+                            features = parsed;
+                          } else {
+                            features = [product.key_specifications];
+                          }
+                        } catch (error) {
+                          features = [product.key_specifications];
+                        }
+                      } else if (Array.isArray(product.key_specifications)) {
+                        features = product.key_specifications;
+                      }
+
+                      return features.length > 0 ? (
+                      <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {features.map((feature, index) => (
+                            <li key={index}>
+                              {feature.charAt(0).toUpperCase() + feature.slice(1)}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-sm text-gray-500">No features available.</span>
+                      );
+                    })()
+                  }
+                </div>
+              )}
             </div>
+
 
             <div className="border-b border-gray-400 mt-2"></div>
 
-            {/* Product highlight section */}
-            {/* <div className="mt-4 bg-gray-50 p-4 rounded-md">
-                <div 
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => setShowHighlights(!showHighlights)}
-                >
-                  <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
-                  <svg 
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-
-                  {showHighlights && (
-                    <div className="mt-3">
-                      {product.highlights && product.highlights.trim() !== '' ? (
-                        <ol className="list-decimal pl-5 space-y-1 text-xs text-gray-600">
-                          {product.highlights
-                            .split('\n')
-                            .filter(item => item.trim() !== '')
-                            .map((item, index) => (
-                              <li key={index}>{item.trim()}</li>
-                            ))}
-                        </ol>
-                      ) : (
-                        <p className="text-xs text-gray-500">No highlights available.</p>
-                      )}
-                    </div>
-                  )}
-            </div> */}
              <div className="mt-4 bg-gray-50 p-4 rounded-md">
-              <div 
-                className="flex items-center justify-between cursor-pointer"
-                onClick={() => setShowHighlights(!showHighlights)}
-              >
-                <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
-                <svg 
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-
-              {showHighlights && (
-  <div className="mt-3">
-    {Array.isArray(product.product_highlights) &&
-    product.product_highlights
-      .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-      .filter(item => item.length > 0).length > 0 ? (
-      <ol className="list-decimal pl-5 space-y-1 text-xs text-gray-600">
-        {product.product_highlights
-          .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-          .filter(item => item.length > 0)
-          .map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-      </ol>
-    ) : (
-      <p className="text-gray-500 text-xs">No highlights available.</p>
-    )}
+  <div 
+    className="flex items-center justify-between cursor-pointer"
+    onClick={() => setShowHighlights(!showHighlights)}
+  >
+    <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
+    <svg 
+      className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
   </div>
-)}
 
-            </div>
-            {/* <div className="mt-4 bg-gray-50 p-4 rounded-md">
-              <div 
-                className="flex items-center justify-between cursor-pointer"
-                onClick={() => setShowHighlights(!showHighlights)}
-              >
-                <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
-                <svg 
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
+  {showHighlights && (
+    <div className="mt-3 overflow-auto">
+      {Array.isArray(product.product_highlights) &&
+      product.product_highlights
+        .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+        .filter(item => item.length > 0).length > 0 ? (
+        <table className="w-full text-xs text-left text-gray-700 border border-gray-200">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border px-3 py-2">Key</th>
+              <th className="border px-3 py-2">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {product.product_highlights
+              .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+              .filter(item => item.length > 0)
+              .map((item, index) => {
+                const [key, ...rest] = item.split(':');
+                const value = rest.join(':').trim(); // in case value has ":"
+                return (
+                  <tr key={index} className="bg-white even:bg-gray-50">
+                    <td className="border px-3 py-2 font-medium">{key?.trim()}</td>
+                    <td className="border px-3 py-2">{value || '-'}</td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      ) : (
+        <p className="text-gray-500 text-xs">No highlights available.</p>
+      )}
+    </div>
+  )}
+</div>
 
-           {showHighlights && (
-  <div className="mt-3 space-y-1">
-    {product.product_highlights && product.product_highlights.length > 0 ? (
-      product.product_highlights.map((item, index) => (
-        <p key={index} className="text-sm text-gray-700">{item.trim()}</p>
-      ))
-    ) : (
-      <p className="text-xs text-gray-500">No highlights available.</p>
-    )}
-  </div>
-)}
-
-
-            </div> */}
+          
 
           <div className="border-b border-gray-400 mt-2"></div>
 
