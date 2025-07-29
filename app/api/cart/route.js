@@ -84,7 +84,9 @@ console.log("Selected extended warranty:", selectedExtendedWarranty);
     // cart.items[existingItemIndex].upsells = upsellProducts;
   } else {
     // ✅ Add new item to cart
+    console.log("product:"+product.item_code);
     cart.items.push({
+      item_code:product.item_code,
       productId,
       quantity,
       price: product.special_price ?? product.price,
@@ -100,6 +102,7 @@ console.log("Selected extended warranty:", selectedExtendedWarranty);
   cart = new Cart({
     userId,
     items: [{
+      item_code:product.item_code,
       productId,
       quantity,
       price: product.special_price ?? product.price,
@@ -149,7 +152,7 @@ export async function GET(req) {
 
     const cart = await Cart.findOne({ userId }).populate(
       "items.productId",
-      "name price images"
+      "name price images item_code quantity"
     );
 
     if (!cart) {
@@ -160,6 +163,7 @@ export async function GET(req) {
     }
 
     const items = cart.items.map((item) => ({
+      item_code : item.productId.item_code,
       productId: item.productId._id,
       name: item.productId.name,
       price: item.price,

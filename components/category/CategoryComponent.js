@@ -46,6 +46,7 @@ export default function CategoryPage() {
   const [hasMore, setHasMore] = useState(true);
   const itemsPerPage = 5;
   const productsContainerRef = useRef(null);
+  const [totalproducts,setTotalproducts] =useState(0);
   const scrollPositionBeforeFetch = useRef({
     y: 0,
     containerHeight: 0,
@@ -148,6 +149,7 @@ useEffect(() => {
 
       if (pageNum === 1 || initialLoad) {
         setProducts(products);
+        setTotalproducts(pagination.totalProducts);
       } else {
         setProducts(prev => [...prev, ...products]);
       }
@@ -322,7 +324,7 @@ const CategoryTree = ({
       {categories.map((category) => (
         <div key={category._id}>
           <div className={`flex items-center gap-2 ${level > 0 ? `ml-${level * 4}` : ''}`}>
-            <Link
+            {/* <Link
               href={`/category/${slug}/${category.category_slug}`}
               onClick={() => {
                 setIsCategoryLoading(true); // Set loading state when clicked
@@ -341,7 +343,28 @@ const CategoryTree = ({
                 </div>
               )}
               {category.category_name}
-            </Link>
+            </Link> */}
+            <Link
+  href={`/category/${slug}/${category.category_slug}`}
+  onClick={() => {
+    setIsCategoryLoading(true); // Set loading state when clicked
+  }}
+  className="p-2 hover:bg-gray-100 rounded inline-flex items-center"
+>
+  {category.image && (
+    <div className="w-6 h-6 mr-2 relative">
+      <Image
+        src={category.image.startsWith('http') ? category.image : `${category.image}`}
+        alt={category.category_name}
+        fill
+        className="object-contain"
+        unoptimized
+      />
+    </div>
+  )}
+  {category.category_name.charAt(0).toUpperCase() + category.category_name.slice(1).toLowerCase()}
+</Link>
+
           </div>
           
           {category.subCategories?.length > 0 && 
@@ -493,12 +516,16 @@ const CategoryTree = ({
       <>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1 space-y-6">
-          <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">{categoryData.main_category.category_name}</h1>
+          {/* <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">{categoryData.main_category.category_name}</h1> */}
+        <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">
+  {categoryData.main_category.category_name.charAt(0).toUpperCase() + categoryData.main_category.category_name.slice(1).toLowerCase()}
+</h1>
+
         </div>
         <div className="lg:col-span-3">
           {/* Sorting and Count */}
           <div className="mb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <p className="text-sm text-gray-600">{products.length} products found</p>
+            <p className="text-sm text-gray-600">{products.length} out of {totalproducts} products found</p>
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600">Sort by:</span>
               <select
@@ -545,7 +572,9 @@ const CategoryTree = ({
                       key={categoryId}
                       className="bg-gray-100 px-2 py-1 rounded text-sm flex items-center"
                     >
-                      {category.category_name}
+                      {category.category_name.charAt(0).toUpperCase() + category.category_name.slice(1).toLowerCase()}
+
+                      {/* {category.category_name} */}
                       <button 
                         onClick={() => handleFilterChange('categories', categoryId)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -562,7 +591,8 @@ const CategoryTree = ({
                       key={brandId}
                       className="bg-gray-100 px-2 py-1 rounded text-sm flex items-center"
                     >
-                      {brand.brand_name}
+                      {brand.brand_name.charAt(0).toUpperCase() + brand.brand_name.slice(1).toLowerCase()}
+                      {/* {brand.brand_name} */}
                       <button 
                         onClick={() => handleFilterChange('brands', brandId)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -582,7 +612,8 @@ const CategoryTree = ({
                       key={filterId}
                       className="bg-gray-100 px-2 py-1 rounded text-sm flex items-center"
                     >
-                      {filter.filter_name}
+                      {filter.filter_name.charAt(0).toUpperCase() + filter.filter_name.slice(1).toLowerCase()}
+                      {/* {filter.filter_name} */}
                       <button 
                         onClick={() => handleFilterChange('filters', filterId)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -677,7 +708,11 @@ const CategoryTree = ({
                           />
                         </div>
                       )}
-                      <span>{brand.brand_name}</span>
+                      <span>
+  {brand.brand_name.charAt(0).toUpperCase() + brand.brand_name.slice(1).toLowerCase()}
+</span>
+
+                      {/* <span>{brand.brand_name}</span> */}
                     </button>
                   </li>
                 ))}
@@ -697,7 +732,11 @@ const CategoryTree = ({
                   <div key={group._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                     {/* Filter Group Header */}
                     <button  onClick={() => toggleFilterGroup(group._id)} className="flex justify-between items-center w-full group">
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span>
+                      {/* <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span> */}
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+  {group.name.charAt(0).toUpperCase() + group.name.slice(1).toLowerCase()}
+</span>
+
                       <ChevronDown 
                         size={18}
                         className={`text-gray-400 transition-transform duration-200 ${
@@ -718,7 +757,11 @@ const CategoryTree = ({
                                 onChange={() => handleFilterChange('filters', filter._id)}
                                 className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                               />
-                              <span className="text-sm text-gray-600">{filter.filter_name}</span>
+                              <span className="text-sm text-gray-600">
+  {filter.filter_name.charAt(0).toUpperCase() + filter.filter_name.slice(1).toLowerCase()}
+</span>
+
+                              {/* <span className="text-sm text-gray-600">{filter.filter_name}</span> */}
                               {filter.count && (
                                 <span className="text-xs text-gray-400 ml-auto">
                                   ({filter.count})
@@ -787,7 +830,9 @@ const CategoryTree = ({
                       onClick={() => handleProductClick(product)}
                     >
                       <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
-                        {product.name}
+                        {/* {product.name} */}
+                        {product.name.charAt(0).toUpperCase() + product.name.slice(1).toLowerCase()}
+
                       </h3>
                     </Link>
 

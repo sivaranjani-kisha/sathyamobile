@@ -1127,7 +1127,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
   const validateStep = (step) => {
     switch (step) {
       case 1:
-        if (!product.name || !product.item_code || !product.price || !product.special_price || !product.quantity || !selectedCategory || !brand) {
+        if (!product.name || !product.item_code || !product.price || !product.special_price || product.quantity === "" || product.quantity === null || product.quantity === undefined || !selectedCategory || !brand) {
           return "Please fill in all required fields: Product Name, Item Code, ,Category,Price,Special Price and brand.";
         }
         break;

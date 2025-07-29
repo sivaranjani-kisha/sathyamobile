@@ -44,6 +44,7 @@ export default function CategoryPage() {
   const [hasMore, setHasMore] = useState(true);
   const itemsPerPage = 5;
   const productsContainerRef = useRef(null);
+  const [totalproducts,setTotalproducts] =useState(0);
   const scrollPositionBeforeFetch = useRef({
     y: 0,
     containerHeight: 0,
@@ -159,6 +160,7 @@ const handleProductClick = (product) => {
 
       if (pageNum === 1 || initialLoad) {
         setProducts(products);
+        setTotalproducts(pagination.totalProducts);
       } else {
         setProducts(prev => [...prev, ...products]);
       }
@@ -342,12 +344,16 @@ useEffect(() => {
       <>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1 space-y-6">
-        <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">{categoryData.category.category_name}</h1>
+        {/* <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">{categoryData.category.category_name}</h1> */}
+        <h1 className="text-3xl font-bold mb-3 text-gray-600 pl-1">
+  {categoryData.category.category_name.charAt(0).toUpperCase() + categoryData.category.category_name.slice(1).toLowerCase()}
+</h1>
+
         </div>
         <div className="lg:col-span-3">
           {/* Sorting and Count */}
           <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <p className="text-sm text-gray-600">{products.length} products found</p>
+            <p className="text-sm text-gray-600">{products.length} out of {totalproducts} products found</p>
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600">Sort by:</span>
               <select
@@ -392,7 +398,9 @@ useEffect(() => {
                       key={brandId}
                       className="bg-gray-100 px-2 py-1 rounded text-sm flex items-center"
                     >
-                      {brand.brand_name}
+                      {brand.brand_name.charAt(0).toUpperCase() + brand.brand_name.slice(1).toLowerCase()}
+
+                      {/* {brand.brand_name} */}
                       <button 
                         onClick={() => handleFilterChange('brands', brandId)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -412,7 +420,8 @@ useEffect(() => {
                       key={filterId}
                       className="bg-gray-100 px-2 py-1 rounded text-sm flex items-center"
                     >
-                      {filter.filter_name}
+                      {filter.filter_name.charAt(0).toUpperCase() + filter.filter_name.slice(1).toLowerCase()}
+                      {/* {filter.filter_name} */}
                       <button 
                         onClick={() => handleFilterChange('filters', filterId)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -496,7 +505,11 @@ useEffect(() => {
                             />
                           </div>
                         )}
-                        <span>{brand.brand_name}</span>
+                        {/* <span>{brand.brand_name}</span> */}
+                        <span>
+  {brand.brand_name.charAt(0).toUpperCase() + brand.brand_name.slice(1).toLowerCase()}
+</span>
+
                       </button>
                     </li>
                   ))}
@@ -516,7 +529,11 @@ useEffect(() => {
                   <div key={group._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                     {/* Filter Group Header */}
                     <button  onClick={() => toggleFilterGroup(group._id)} className="flex justify-between items-center w-full group">
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span>
+                      {/* <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span> */}
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">
+                        {group.name.charAt(0).toUpperCase() + group.name.slice(1).toLowerCase()}
+                      </span>
+
                       <ChevronDown 
                         size={18}
                         className={`text-gray-400 transition-transform duration-200 ${
@@ -537,7 +554,11 @@ useEffect(() => {
                                 onChange={() => handleFilterChange('filters', filter._id)}
                                 className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                               />
-                              <span className="text-sm text-gray-600">{filter.filter_name}</span>
+                              <span className="text-sm text-gray-600">
+                                {filter.filter_name.charAt(0).toUpperCase() + filter.filter_name.slice(1).toLowerCase()}
+                              </span>
+
+                              {/* <span className="text-sm text-gray-600">{filter.filter_name}</span> */}
                               {filter.count && (
                                 <span className="text-xs text-gray-400 ml-auto">
                                   ({filter.count})
@@ -608,7 +629,8 @@ useEffect(() => {
                                         onClick={() => handleProductClick(product)}
                                       >
                                         <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
-                                          {product.name}
+                                          {/* {product.name} */}
+                                          {product.name.charAt(0).toUpperCase() + product.name.slice(1).toLowerCase()}
                                         </h3>
                                       </Link>
                   

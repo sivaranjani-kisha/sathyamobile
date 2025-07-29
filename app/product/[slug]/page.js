@@ -712,79 +712,62 @@ useEffect(() => {
             <div className="border-b border-gray-400 mt-2"></div>
 
              <div className="mt-4 bg-gray-50 p-4 rounded-md">
-  <div 
-    className="flex items-center justify-between cursor-pointer"
-    onClick={() => setShowHighlights(!showHighlights)}
-  >
-    <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
-    <svg 
-      className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-    </svg>
-  </div>
+              <div 
+                className="flex items-center justify-between cursor-pointer"
+                onClick={() => setShowHighlights(!showHighlights)}
+              >
+                <h3 className="text-sm font-semibold text-gray-900">PRODUCT HIGHLIGHTS</h3>
+                <svg 
+                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showHighlights ? 'transform rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
 
-  {showHighlights && (
-    <div className="mt-3 overflow-auto">
-      {Array.isArray(product.product_highlights) &&
-      product.product_highlights
-        .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-        .filter(item => item.length > 0).length > 0 ? (
-        <table className="w-full text-xs text-left text-gray-700 border border-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border px-3 py-2">Key</th>
-              <th className="border px-3 py-2">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {product.product_highlights
-              .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-              .filter(item => item.length > 0)
-              .map((item, index) => {
-                const [key, ...rest] = item.split(':');
-                const value = rest.join(':').trim(); // in case value has ":"
-                return (
-                  <tr key={index} className="bg-white even:bg-gray-50">
-                    <td className="border px-3 py-2 font-medium">{key?.trim()}</td>
-                    <td className="border px-3 py-2">{value || '-'}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-gray-500 text-xs">No highlights available.</p>
-      )}
-    </div>
-  )}
-</div>
+              {showHighlights && (
+                <div className="mt-3 overflow-auto">
+                  {Array.isArray(product.product_highlights) &&
+                  product.product_highlights
+                    .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+                    .filter(item => item.length > 0).length > 0 ? (
+                    <table className="w-full text-xs text-left text-gray-700 border border-gray-200">
+                      <thead className="bg-gray-100">
+                        <tr>
+                          <th className="border px-3 py-2">Key</th>
+                          <th className="border px-3 py-2">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {product.product_highlights
+                          .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+                          .filter(item => item.length > 0)
+                          .map((item, index) => {
+                            const [key, ...rest] = item.split(':');
+                            const value = rest.join(':').trim(); // in case value has ":"
+                            return (
+                              <tr key={index} className="bg-white even:bg-gray-50">
+                                <td className="border px-3 py-2 font-medium">{key?.trim()}</td>
+                                <td className="border px-3 py-2">{value || '-'}</td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="text-gray-500 text-xs">No highlights available.</p>
+                  )}
+                </div>
+              )}
+            </div>
 
           
 
           <div className="border-b border-gray-400 mt-2"></div>
 
-            {/* Coupons */}
-            {/* <div className="mt-4">
-              <div className="flex items-center justify-between border border-blue-400 rounded-md p-2 mb-3">
-                <div className="flex items-center gap-1">
-                  //  <span className="text-gray-600 text-sm">➕</span> 
-                  <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-gray-600 rounded-full text-lg">+</span>
-
-                  <span className="text-gray-700 text-xs">Mfr. coupon. $3.00 off 5</span>
-                </div>
-                <button className="text-blue-500 text-xs font-semibold hover:underline">
-                  View Details
-                </button>
-              </div>
-              <div className="mt-1 text-gray-900 text-xs font-medium">
-                <p>Buy 1, Get 1 FREE</p>
-                <p>Buy 1, Get 1 FREE</p>
-              </div>
-            </div> */}
+            
 
        <div className="mt-4">
   {/* Responsive 3 Boxes Section */}

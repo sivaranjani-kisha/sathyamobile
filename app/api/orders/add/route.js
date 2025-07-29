@@ -65,7 +65,7 @@ export async function POST(req) {
           }
         }
     }
-    return Response.json({ success: true, message: "Order added successfully", order: newOrder }, { status: 201 });
+    return Response.json({ success: true, message: "Order added successfully", order: newOrder }, { status: 200 });
 
   } catch (error) {
     return Response.json({ success: false, message: "Server error", error: error.message }, { status: 500 });
