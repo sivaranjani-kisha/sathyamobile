@@ -1,6 +1,6 @@
 'use client';
 import ProductDetailsSection from "@/components/ProductDetailsSection";
-import RelatedProducts from "@/components/RelatedProducts";
+// import RelatedProducts from "@/components/RelatedProducts";
 import { Icon } from '@iconify/react';
 import {  useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
@@ -952,7 +952,7 @@ useEffect(() => {
           </div>
 
           {/* Right Section - Seller Info */}
-          <div className="md:col-span-3 border border-gray-300 rounded-lg shadow-md bg-white mb-14 w-full max-w-sm max-h-[490px] overflow-y-scroll scrollbar-hide">
+          <div className="md:col-span-3 border border-gray-300 rounded-lg shadow-md bg-white mb-14 w-full" style={{ height: 'fit-content' }}>
       {/* Update the frequently bought together section to include AddToCart functionality: */}
 {featuredProducts?.length > 0 && (
   <div className="px-4 py-4"> 
@@ -1126,10 +1126,10 @@ useEffect(() => {
         </div>
 
      <ProductDetailsSection product={product} />
-            <RelatedProducts 
+            {/* <RelatedProducts 
               currentProductId={product._id} 
               categoryId={product.category?._id || product.category} 
-            />
+            /> */}
       </div>
       
       <RecentlyViewedProducts />
