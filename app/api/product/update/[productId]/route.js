@@ -6,6 +6,7 @@ import connectDB from "@/lib/db";
 import Product from "@/models/product";
 import Product_filter from "@/models/ecom_productfilter_info";
 import md5 from "md5";
+import Category from "@/models/ecom_category_info";
 
 export async function PUT(req, { params }) {
   try {
@@ -88,11 +89,21 @@ console.log(imageFiles);
     if(savedImages.length == 0){
       savedImages = productData.images;
     }
+  let main_Category = "";
+        if(category != ""){
+          const main_cat = await Category.findOne({ _id: category });
+          if(main_cat){
+            main_Category = main_cat.parentid;
+          }
+        }
+    
+        productData.category = main_Category;
+        productData.sub_category = category;
+
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
         ...productData,
-        category,
          images: savedImages,
     overview_image: savedOverviewImages,
       },

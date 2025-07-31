@@ -29,7 +29,12 @@ body {
 body::-webkit-scrollbar {
   display: none;
 }
-
+.filt_check{
+color: #000; 
+    font-family: Poppins, sans-serif;
+    /* font-size: 1.2rem; */
+    font-weight: 700;
+}
 .header-css {
   justify-content: space-between;
 }

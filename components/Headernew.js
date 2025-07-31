@@ -54,6 +54,8 @@ const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const { userData,isLoggedIn, setIsLoggedIn, setUserData,isAdmin,setIsAdmin } = useHeaderdetails();
+  const [showQuickMenu, setShowQuickMenu] = useState(false);
+
   
   // Auth related states
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -318,75 +320,125 @@ useEffect(() => {
 
   return (
     <header className="sticky top-0 z-50">
+  
       {/* Top Announcement Bar */}
-      <div className="header-top text-white py-2 text-sm bg-gradient-to-r from-[#ed3237] to-[#c11116]">
-        <div className="container mx-auto px-1 flex justify-between items-center">
-          <div className="header-left">
-            <p className="top-message hidden md:flex items-center">
-              <FaPhoneAlt className="mr-2" />
-              Call us now <a href="tel:+919047048777" className="ml-1 font-medium">+91 9047048777</a>
-            </p>
-            <p className="top-message flex md:hidden items-center">
-              <FaPhoneAlt className="mr-2" />
-              <a href="tel:+919047891777" className="font-medium">+91 90478 91777</a>
-            </p>
-          </div>
+      <div className="header-top text-white text-sm bg-gradient-to-r from-[#ed3237] to-[#c11116]">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-8">
+    <div className="flex justify-between items-center py-2 flex-wrap">
+      {/* Left: Phone Number */}
+      <div className="header-left flex-shrink-0">
+        <p className="top-message hidden md:flex items-center text-xs lg:text-sm whitespace-nowrap">
+          <FaPhoneAlt className="mr-2" />
+          Call us now <a href="tel:+919047048777" className="ml-1 font-medium">+91 9047048777</a>
+        </p>
+        <p className="top-message flex md:hidden items-center text-xs whitespace-nowrap">
+          <FaPhoneAlt className="mr-2" />
+          <a href="tel:+919047891777" className="font-medium">+91 90478 91777</a>
+        </p>
+      </div>
 
-          <div className="header-right flex items-center">
-            <div className="header-dropdown mx-2 px-1">
-              <div className="header-menu">
-                <ul className="flex space-x-4">
-                  <li><Link href="/pre-book" className="hover:text-gray-300">Pre Book</Link></li>
-                  <li><Link href="/all-stores" className="hover:text-gray-300">Our Stores</Link></li>
-                  <li><Link href="/view-compare" id="compare_id" className="hover:text-gray-300">Compare (0)</Link></li>
-                  <li><Link href="/contact" className="hover:text-gray-300">Contact</Link></li>
-                </ul>
-              </div>
-            </div>
+      {/* Right: Quick Menu Toggle + Social Icons */}
+      <div className="header-right flex items-center min-w-0 gap-3">
+        
+        {/* ✅ Quick Menu Toggle (Mobile Only) */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setShowQuickMenu(!showQuickMenu)}
+            className="flex items-center gap-1 text-white text-xs bg-gray-700 px-3 py-1 rounded-full"
+          >
+            <span>Menu</span>
+            <FiChevronRight className={`${showQuickMenu ? 'rotate-90' : ''} transition-transform`} />
+          </button>
+        </div>
 
-            <span className="separator mx-2 h-4 w-px bg-gray-600"></span>
+        {/* ✅ Quick Menu Icons (Mobile Only, Before Social Icons) */}
+        {showQuickMenu && (
+  <div className="fixed top-[56px] right-4 z-50 md:hidden bg-white rounded-lg shadow-lg py-3 px-4 flex flex-col gap-2 text-red-600 w-52">
+    <Link href="/prebook" className="flex items-center gap-2 text-sm hover:text-red-700">
+      <FaShoppingBag className="text-base" />
+      <span>Pre Book</span>
+    </Link>
+    <Link href="/all-stores" className="flex items-center gap-2 text-sm hover:text-red-700">
+      <FiMapPin className="text-base" />
+      <span>Stores</span>
+    </Link>
+    <Link href="/view-compare" className="flex items-center gap-2 text-sm hover:text-red-700">
+      <FiChevronRight className="text-base" />
+      <span>Compare</span>
+    </Link>
+    <Link href="/contact" className="flex items-center gap-2 text-sm hover:text-red-700">
+      <FiUser className="text-base" />
+      <span>Contact</span>
+    </Link>
+  </div>
+)}
 
-            <div className="social-icons flex space-x-2">
-              <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-red-600" target="_blank" rel="noopener noreferrer">
-                <FaFacebookF size={12} />
-              </a>
-              <a href="https://www.instagram.com/sathyamobiles.store/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-pink-600" target="_blank" rel="noopener noreferrer">
-                <FaInstagram size={12} />
-              </a>
-            </div>
+
+
+        {/* Desktop Top Links */}
+        <div className="header-dropdown mx-1 px-1 hidden md:block">
+          <div className="header-menu">
+            <ul className="flex space-x-2 text-xs lg:text-sm">
+              <li><Link href="/prebook" className="hover:text-gray-300">Pre Book</Link></li>
+              <li><Link href="/all-stores" className="hover:text-gray-300">Our Stores</Link></li>
+              {/* <li><Link href="/view-compare" id="compare_id" className="hover:text-gray-300">Compare (0)</Link></li> */}
+              <li><Link href="/contact" className="hover:text-gray-300">Contact</Link></li>
+            </ul>
           </div>
         </div>
+
+        {/* Social Icons */}
+        <span className="separator mx-2 h-4 w-px bg-gray-600 hidden md:block"></span>
+        <div className="social-icons flex space-x-2">
+          <a href="https://www.facebook.com/SathyaRetail.mobiles/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-red-600" target="_blank" rel="noopener noreferrer">
+            <FaFacebookF size={12} />
+          </a>
+          <a href="https://www.instagram.com/sathyamobiles.store/" className="social-icon w-6 h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-pink-600" target="_blank" rel="noopener noreferrer">
+            <FaInstagram size={12} />
+          </a>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+
+    
 
       {/* Main Header */}
       <div className="header-middle bg-white py-3 shadow-sm">
-        <div className="container mx-auto flex items-center">
-          {/* Left: Logo + Mobile Menu */}
-          <div className="header-left flex items-center mr-3 pl-1">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 xl:px-8 flex items-center justify-between h-16 ">
+          {/* Left: Logo + Mobile Menu (visible on mobile) */}
+          <div className="header-left flex items-center flex-shrink-0">
             <button
-              className="mobile-menu-toggler md:hidden mr-3 text-gray-700"
+              className="mobile-menu-toggler lg:hidden mr-3 text-gray-700"
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
             >
               <FiMenu size={22} />
             </button>
             <Link href="/" className="logo">
-               <img src="/user/sathya.png" alt="Logo" className="h-3 w-auto" />
+               <img src="/user/sathya.png" alt="Logo" className="w-auto object-contain flex-shrink-0 h-9 xl:h-12" />
             </Link>
           </div>
 
-          {/* Center: Navigation */}
-         <HeaderNav />
+          {/* Center: Navigation (hidden on mobile, shown on lg and up) */}
+          {/* HeaderNav now has flex-grow to push the right content */}
+          {/* Center: Navigation with spacing to the right */}
+      <div className="flex-grow md:pr-4 px-0 hidden lg:block xl:px-2 xl:pr-6 ">
+      <HeaderNav />
+      </div>
 
-          {/* Right: Icons */}
-          <div className="flex items-center gap-4 ma-8">
-            {/* Search Bar */}
-            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-2 py-3 min-w-[220px]">
-              <form onSubmit={handleSearch} className="flex items-center w-full">
+          {/* Right: Icons and Search Bar */}
+          {/* No changes needed here, HeaderNav's flex-grow will push this section */}
+          <div className="flex items-center gap-1 lg:gap-2 flex-shrink-0">
+            {/* Search Bar (hidden on mobile, shown on md and up) */}
+            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-2 py-3 w-auto max-w-[208px] lg:max-w-[202px] xl:max-w-[216px] overflow-hidden focus-within:ring-2 focus-within:ring-red-500">
+              <form onSubmit={handleSearch} className="flex w-full">
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="bg-transparent flex-1 outline-none text-sm"
+                  className="bg-transparent flex-1 outline-none text-sm pr-1" /* Added pr-1 to give space for the icon */
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -397,9 +449,8 @@ useEffect(() => {
               </form>
             </div>
 
-
             {/* User Actions */}
-            <div className="flex items-center gap-2 relative" ref={dropdownRef}>
+            <div className="flex items-center gap-1 relative flex-shrink-0"  ref={dropdownRef}>
               {/* Account Button */}
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -411,21 +462,20 @@ useEffect(() => {
               {dropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-xl z-50 transition-all">
                   <div className="py-2 px-2">
-                    
                     {isLoggedIn ? (
                       <>
-                      {isAdmin && (
-                                              <>
-                                                <Link
-                                                  href="/admin/dashboard"
-                                                  className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors">
-                                                  <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-customred text-white">
-                                                    <FaUserShield className="w-3 h-3 sm:w-4 sm:h-4" />
-                                                  </span>
-                                                  Admin Panel
-                                                </Link>
-                                              </>
-                                            )}
+                        {isAdmin && (
+                          <>
+                            <Link
+                              href="/admin/dashboard"
+                              className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors">
+                              <span className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-customred text-white">
+                                <FaUserShield className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </span>
+                              Admin Panel
+                            </Link>
+                          </>
+                        )}
                         <Link
                           href="/order"
                           className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm text-gray-700 hover:bg-red-50 transition-colors"
@@ -490,21 +540,8 @@ useEffect(() => {
                   </span>
                 )}
               </Link>
-
-
-
             </div>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className="lg:hidden p-2 text-gray-700 hover:text-red-600"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-            </button>
           </div>
-
         </div>
       </div>
 
@@ -514,15 +551,15 @@ useEffect(() => {
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-6">
               <Link href="/" className="logo">
-                <Image 
-                  src="/user/sathya.png" 
-                  alt="Sathya Mobiles" 
+                <Image
+                  src="/user/sathya.png"
+                  alt="Sathya Mobiles"
                   width={120}
                   height={40}
                 />
               </Link>
-              <button 
-                onClick={toggleMobileMenu} 
+              <button
+                onClick={toggleMobileMenu}
                 className="text-gray-700"
                 aria-label="Close menu"
               >
@@ -565,11 +602,11 @@ useEffect(() => {
             <nav className="main-nav-mobile">
               <ul className="space-y-2">
                 <li><Link href="/" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Home</Link></li>
-                
+
                 {mobileCategories.map((item) => (
                   <li key={item.name}>
-                    <Link 
-                      href={item.href} 
+                    <Link
+                      href={item.href}
                       className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex justify-between items-center"
                     >
                       {item.name}
@@ -577,13 +614,13 @@ useEffect(() => {
                     </Link>
                   </li>
                 ))}
-                
+
                 <li><Link href="/offer/weekend-offer" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Weekend Offer</Link></li>
                 <li><Link href="/pre-book" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Pre Book</Link></li>
                 <li><Link href="/all-stores" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Our Stores</Link></li>
                 <li><Link href="/view-compare" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Compare (0)</Link></li>
                 <li><Link href="/contact" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded">Contact</Link></li>
-                
+
                 <li>
                   <Link href="/wishlist" className="block py-2 px-3 text-gray-800 hover:bg-gray-100 rounded flex items-center">
                     <FaHeart className="mr-2 text-red-600" /> Wishlist
@@ -654,7 +691,7 @@ useEffect(() => {
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-96 max-w-full relative">
-            <button 
+            <button
               onClick={() => {
                 setShowAuthModal(false);
                 setFormError('');
@@ -669,8 +706,8 @@ useEffect(() => {
             <div className="flex gap-4 mb-6 border-b">
               <button
                 className={`pb-2 px-1 ${
-                  activeTab === 'login' 
-                    ? 'border-b-2 border-red-500 text-red-600' 
+                  activeTab === 'login'
+                    ? 'border-b-2 border-red-500 text-red-600'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
                 onClick={() => setActiveTab('login')}
@@ -727,7 +764,7 @@ useEffect(() => {
                 required
                 minLength={6}
               />
-              
+
               {(formError || error) && (
                 <div className="text-red-500 text-sm">
                   {formError || error}
@@ -977,6 +1014,7 @@ useEffect(() => {
           </div>
         </div>
       )}
+   
     </header>
   );
 };

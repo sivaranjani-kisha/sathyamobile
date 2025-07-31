@@ -32,11 +32,11 @@ export default function Header() {
   );
 
   return (
-    <div className="hidden lg:flex items-center space-x-4 ml-4">
+    <div className="hidden lg:flex items-center space-x-0 lg:space-x-3 xl:space-x-3 ml-4 whitespace-nowrap">
       {/* Home Link */}
       <Link
         href="/"
-        className="text-[#222529] hover:text-red-500 font-bold text-xs py-[21px] transition-colors uppercase"
+        className="text-[#222529] hover:text-red-500 font-bold  lg:text-[11px] xl:text-[13px] py-[21px] transition-colors  px-0 xl:px-1"
       >
         Home
       </Link>
@@ -51,10 +51,11 @@ export default function Header() {
               <Link
                 key={topCat._id}
                 href={`/category/${topCat.category_slug}`}
-                className="text-[#222529] hover:text-red-500 font-bold text-xs py-[21px] transition-colors uppercase"
+                className="text-[#222529] hover:text-red-500 font-bold text-xs lg:text-[11px] xl:text-[13px] py-[21px] transition-colors"
               >
-                {topCat.category_name}
+                {topCat.category_name.charAt(0).toUpperCase() + topCat.category_name.slice(1).toLowerCase()}
               </Link>
+
             );
           }
 
@@ -62,9 +63,9 @@ export default function Header() {
             <div key={topCat._id} className="relative group">
               <Link
                 href={`/category/${topCat.category_slug}`}
-                className="flex items-center text-[#222529] hover:text-red-500 font-bold text-xs py-[21px] transition-colors uppercase relative"
+                className="flex items-center text-[#222529] hover:text-red-500 font-bold text-xs lg:text-[11px] xl:text-[13px] py-[21px] transition-colors  relative"
               >
-                {topCat.category_name}
+                {topCat.category_name.charAt(0).toUpperCase() + topCat.category_name.slice(1).toLowerCase()}
                 <svg
                   className="ml-1 h-4 w-4"
                   fill="currentColor"

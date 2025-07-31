@@ -194,14 +194,14 @@ useEffect(() => {
             Reviews
           </button>
 
-             <button
+             {/* <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
               activeTab === "keySpecs" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("keySpecs")}
           >
              Features
-          </button>
+          </button> */}
 
               <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
