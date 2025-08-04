@@ -2,7 +2,10 @@
 import { useState, useEffect } from "react";
 import { SiTicktick } from "react-icons/si";
 import Image from "next/image";
+import { TbBrandAppgallery } from "react-icons/tb";
 import { FaShoppingCart, FaStar } from "react-icons/fa";
+import { AiOutlineBarcode } from "react-icons/ai"; // import at top
+import { FiBox, FiHash } from "react-icons/fi";
 import Link from "next/link";
 
 export default function ProductDetailsSection({ product }) {
@@ -19,6 +22,7 @@ export default function ProductDetailsSection({ product }) {
 };
 
  const [activeTab, setActiveTab] = useState(() => getFirstAvailableTab());
+ const [brand, setBrand] = useState([]);
 
 useEffect(() => {
   const availableTab = getFirstAvailableTab();
@@ -36,6 +40,40 @@ useEffect(() => {
       items: product.reviewItems || []
     }
   };
+
+  
+const fetchBrand = async () => {
+  try {
+    const response = await fetch("/api/brand");
+    const result = await response.json();
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      const data = result.data;
+
+      // Format for react-select
+      const brandOptions = data.map((b) => ({
+        value: b._id,
+        label: b.brand_name,
+      }));
+
+      setBrand(brandOptions);
+      // 👉 If you already have the ID and want to get the label (e.g., when editing)
+      if (product.brand) {
+        const matched = brandOptions.find((b) => b.value === product.brand);
+        if (matched) {
+          console.log("Selected Brand Name:", matched.label);
+        }
+      }
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+useEffect(() => {
+  fetchBrand();
+}, []);
 
 
 
@@ -194,14 +232,14 @@ useEffect(() => {
             Reviews
           </button>
 
-             {/* <button
+             <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
               activeTab === "keySpecs" ? "bg-red-600 text-white" : "text-red-800 hover:bg-red-100"
             }`}
             onClick={() => setActiveTab("keySpecs")}
           >
              Features
-          </button> */}
+          </button>
 
               <button
             className={`px-2 sm:px-4 py-1 sm:py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap ${
@@ -274,20 +312,33 @@ useEffect(() => {
             )}
 
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-3 sm:mt-6">Product Specifications</h2>
-            <ul className="mt-1 sm:mt-2 space-y-1 text-gray-700 text-sm sm:text-base">
-              <li>✅ <strong>Product Type:</strong> {product.category?.category_name || "N/A"}</li>
-              <li>✅ <strong>Brand:</strong> {product.brand?.brand_name || "N/A"}</li>
-              <li>✅ <strong>Size/Count:</strong> {product.quantity || "N/A"}</li>
-              <li>✅ <strong>Item Code:</strong> {product.item_code || "N/A"}</li>
-              {product.ingredients && (
-                <li>✅ <strong>Ingredients:</strong> {product.ingredients}</li>
-              )}
-              {product.weight && (
-                <li>✅ <strong>Weight:</strong> {product.weight}</li>
-              )}
-              {product.dimensions && (
-                <li>✅ <strong>Dimensions:</strong> {product.dimensions}</li>
-              )}
+            <ul className="mt-1 sm:mt-2 space-y-2 text-gray-700 text-sm sm:text-base">
+           <li className="flex items-center space-x-2 text-sm">
+              <div className="w-5 h-5 flex items-center justify-center bg-red-600 rounded-md">
+                <TbBrandAppgallery size={14} className="text-white" />
+              </div>
+              <strong>Brand:</strong>
+              <span>
+                {
+                  brand.find((b) => b.value === product.brand)?.label || "N/A"
+                }
+              </span>
+            </li>
+            <li className="flex items-center space-x-2 text-sm">
+                <div className="w-5 h-5 flex items-center justify-center bg-red-600 rounded-md">
+                <FiBox size={14} className="text-white" />
+                </div>
+                <strong>Quantity:</strong>
+                <span>{product.quantity || "N/A"}</span>
+              </li>
+             <li className="flex items-center space-x-2 text-sm">
+              <div className="w-5 h-5 flex items-center justify-center bg-red-600 rounded-md">
+              <FiHash size={16} className="text-white" />
+              </div>
+              <strong>Item Code:</strong>
+              <span>{product.item_code || "N/A"}</span>
+            </li>
+
             </ul>
           </div>
         )}
@@ -410,7 +461,9 @@ useEffect(() => {
         item
           .replace(/^\[|\]$/g, '')     // remove starting and ending brackets
           .replace(/^"|"$/g, '')       // remove wrapping quotes
-          .replace(/\\"/g, '')         // remove escaped quotes
+          .replace(/\\"/g, '') 
+          .replace(/[\[\]{}"]/g, '') // <-- removes curly braces, square brackets, quotes
+          .replace(/\s+/g, ' ')        // remove escaped quotes
           .trim()
       )
       .flatMap((cleanedItem) =>

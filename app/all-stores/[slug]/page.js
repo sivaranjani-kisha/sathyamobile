@@ -63,11 +63,11 @@ export default async function StoreDetailPage({ params }) {
 
       {/* Store Image (instead of Map) */}
       {store.images?.length > 0 && (
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <img
             src={store.images[0]}
             alt={store.organisation_name}
-            className="rounded-md shadow-md w-full"
+            className="rounded-md shadow-md "
           />
         </div>
       )}

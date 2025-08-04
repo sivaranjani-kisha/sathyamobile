@@ -419,114 +419,114 @@ export default function PendingOrders() {
 
       {/* Order Details Modal */}
       {showOrderDetailsModal && viewOrderDetails && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-    <div className="bg-white p-4 rounded-md w-full max-w-6xl shadow-lg">
-      
-      {/* Close Button */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Order ({viewOrderDetails.order_number})</h2>
-        <button
-          className="text-gray-500 hover:text-black"
-          onClick={() => {
-            setShowOrderDetailsModal(false);
-            setViewOrderDetails(null);
-          }}
-        >
-          <Icon icon="mdi:close" className="w-6 h-6" />
-        </button>
-      </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+          <div className="bg-white p-4 rounded-md w-full max-w-6xl shadow-lg">
+            
+            {/* Close Button */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Order ({viewOrderDetails.order_number})</h2>
+              <button
+                className="text-gray-500 hover:text-black"
+                onClick={() => {
+                  setShowOrderDetailsModal(false);
+                  setViewOrderDetails(null);
+                }}
+              >
+                <Icon icon="mdi:close" className="w-6 h-6" />
+              </button>
+            </div>
 
-      {/* Top Panels */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {/* Order Details */}
-        <div className="border rounded p-3">
-          <h3 className="font-semibold mb-2">Order Details</h3>
-          <ul className="text-sm space-y-1">
-            <li><b>Payment:</b> {viewOrderDetails.payment_method}</li>
-            <li><b>Date:</b> {new Date(viewOrderDetails.createdAt).toLocaleDateString()}</li>
-            <li><b>Delivery:</b> {viewOrderDetails.delivery_type} ({viewOrderDetails.delivery_status || 'Not Assigned'})</li>
-            <li><b>Shipping:</b> Free Shipping</li>
-          </ul>
+            {/* Top Panels */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {/* Order Details */}
+              <div className="border rounded p-3">
+                <h3 className="font-semibold mb-2">Order Details</h3>
+                <ul className="text-sm space-y-1">
+                  <li><b>Payment:</b> {viewOrderDetails.payment_method}</li>
+                  <li><b>Date:</b> {new Date(viewOrderDetails.createdAt).toLocaleDateString()}</li>
+                  <li><b>Delivery:</b> {viewOrderDetails.delivery_type} ({viewOrderDetails.delivery_status || 'Not Assigned'})</li>
+                  <li><b>Shipping:</b> Free Shipping</li>
+                </ul>
+              </div>
+
+              {/* Customer Details */}
+              <div className="border rounded p-3">
+                <h3 className="font-semibold mb-2">Customer Details</h3>
+                <ul className="text-sm space-y-1">
+                  <li><b>Name:</b> {viewOrderDetails.customer_name}</li>
+                  <li><b>Store:</b> Sathya Store</li>
+                  <li><b>Email:</b> {viewOrderDetails.email_address}</li>
+                  <li><b>Phone:</b> {viewOrderDetails.order_phonenumber}</li>
+                </ul>
+              </div>
+
+              {/* Options */}
+              <div className="border rounded p-3">
+                <h3 className="font-semibold mb-2">Options</h3>
+                <textarea
+                  rows="3"
+                  maxLength={160}
+                  className="w-full border rounded p-2 text-sm"
+                  placeholder="Invoice notes (Max 160 chars)"
+                />
+                <button className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">
+                  Send SMS
+                </button>
+                <p className="text-xs text-red-600 mt-1">Note: Maximum 160 Characters allowed</p>
+              </div>
+            </div>
+
+            {/* Delivery Address */}
+            <div className="border rounded p-3 mb-4">
+              <h3 className="font-semibold mb-2">Delivery Address</h3>
+              <div className="text-sm">
+                {viewOrderDetails.shipping_address || "N/A"}
+              </div>
+            </div>
+
+            {/* Product Table */}
+            <div className="border rounded p-3">
+              <h3 className="font-semibold mb-2">Items</h3>
+              <table className="w-full border text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 border">Product</th>
+                    <th className="p-2 border">Model</th>
+                    <th className="p-2 border">Quantity</th>
+                    <th className="p-2 border">Unit Price</th>
+                    <th className="p-2 border">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {viewOrderDetails.products?.map((product, idx) => (
+                    <tr key={idx}>
+                      <td className="p-2 border">{product.name}</td>
+                      <td className="p-2 border">{product.model || '-'}</td>
+                      <td className="p-2 border">{product.quantity}</td>
+                      <td className="p-2 border">₹{product.price}</td>
+                      <td className="p-2 border">₹{product.price * product.quantity}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="4" className="p-2 border text-right font-bold">Sub-Total</td>
+                    <td className="p-2 border">₹{viewOrderDetails.order_amount}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="4" className="p-2 border text-right font-bold">Shipping</td>
+                    <td className="p-2 border">₹0</td>
+                  </tr>
+                  <tr className="bg-gray-100">
+                    <td colSpan="4" className="p-2 border text-right font-bold">Total</td>
+                    <td className="p-2 border font-bold">₹{viewOrderDetails.order_amount}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
         </div>
-
-        {/* Customer Details */}
-        <div className="border rounded p-3">
-          <h3 className="font-semibold mb-2">Customer Details</h3>
-          <ul className="text-sm space-y-1">
-            <li><b>Name:</b> {viewOrderDetails.customer_name}</li>
-            <li><b>Store:</b> Sathya Store</li>
-            <li><b>Email:</b> {viewOrderDetails.email_address}</li>
-            <li><b>Phone:</b> {viewOrderDetails.order_phonenumber}</li>
-          </ul>
-        </div>
-
-        {/* Options */}
-        <div className="border rounded p-3">
-          <h3 className="font-semibold mb-2">Options</h3>
-          <textarea
-            rows="3"
-            maxLength={160}
-            className="w-full border rounded p-2 text-sm"
-            placeholder="Invoice notes (Max 160 chars)"
-          />
-          <button className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">
-            Send SMS
-          </button>
-          <p className="text-xs text-red-600 mt-1">Note: Maximum 160 Characters allowed</p>
-        </div>
-      </div>
-
-      {/* Delivery Address */}
-      <div className="border rounded p-3 mb-4">
-        <h3 className="font-semibold mb-2">Delivery Address</h3>
-        <div className="text-sm">
-          {viewOrderDetails.shipping_address || "N/A"}
-        </div>
-      </div>
-
-      {/* Product Table */}
-      <div className="border rounded p-3">
-        <h3 className="font-semibold mb-2">Items</h3>
-        <table className="w-full border text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border">Product</th>
-              <th className="p-2 border">Model</th>
-              <th className="p-2 border">Quantity</th>
-              <th className="p-2 border">Unit Price</th>
-              <th className="p-2 border">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {viewOrderDetails.products?.map((product, idx) => (
-              <tr key={idx}>
-                <td className="p-2 border">{product.name}</td>
-                <td className="p-2 border">{product.model || '-'}</td>
-                <td className="p-2 border">{product.quantity}</td>
-                <td className="p-2 border">₹{product.price}</td>
-                <td className="p-2 border">₹{product.price * product.quantity}</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan="4" className="p-2 border text-right font-bold">Sub-Total</td>
-              <td className="p-2 border">₹{viewOrderDetails.order_amount}</td>
-            </tr>
-            <tr>
-              <td colSpan="4" className="p-2 border text-right font-bold">Shipping</td>
-              <td className="p-2 border">₹0</td>
-            </tr>
-            <tr className="bg-gray-100">
-              <td colSpan="4" className="p-2 border text-right font-bold">Total</td>
-              <td className="p-2 border font-bold">₹{viewOrderDetails.order_amount}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );

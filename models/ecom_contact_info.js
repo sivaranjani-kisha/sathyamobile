@@ -2,25 +2,14 @@ import mongoose from "mongoose";
 
 const ContactSchema = new mongoose.Schema(
   {
-    name: { 
-      type: String, 
-      required: true, 
-      
-    },
-    email_address: { 
-      type: String, 
+    name: { type: String, required: true },
+    subject: { type: String, required: true },
+    mobile_number: {
+      type: String,
       required: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] // Basic email regex validation
+      match: [/^\d{10}$/, "Please fill a valid 10-digit mobile number"],
     },
-    mobile_number: { 
-      type: String, 
-      required: true,
-      match: [/^\d{10}$/, 'Please fill a valid 10-digit mobile number'] // Assuming a 10-digit mobile number
-    },
-    message: { 
-      type: String, 
-      required: true 
-    },
+    message: { type: String, required: true },
     status: {
       type: String,
       enum: ["active", "inactive"],
@@ -30,4 +19,5 @@ const ContactSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default  mongoose.models.ecom_contactx_infos || mongoose.model("ecom_contactx_infos", ContactSchema);
+export default mongoose.models.ecom_contact_infos ||
+  mongoose.model("ecom_contact_infos", ContactSchema);

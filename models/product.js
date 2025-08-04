@@ -38,8 +38,8 @@ const ProductSchema = new mongoose.Schema({
   id_store_price:{ type: Number },
   bajaj_ivc_amt:{ type: String },
   bajaj_max_amt:{ type: String },
-  product_highlight: { type: mongoose.Schema.Types.Mixed },
-  // product_highlights: {type: [String],default: [],},
+  // product_highlight: { type: mongoose.Schema.Types.Mixed },
+  product_highlights: {type: [String],default: [],},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

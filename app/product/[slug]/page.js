@@ -204,6 +204,11 @@ useEffect(() => {
   
     setZoomPosition({ x, y, visible: true });
   };
+const highlightsArray = product && typeof product.product_highlights === 'string'
+  ? JSON.parse(product.product_highlights)
+  : product?.product_highlights || [];
+
+
   
   const handleMouseLeave = () => {
     setZoomPosition((prev) => ({ ...prev, visible: false }));
@@ -346,7 +351,10 @@ useEffect(() => {
             {/* Top Row - Item Code and Quantity Label */}
             <div className="flex items-center space-x-2 text-sm mb-1">
               <span className="text-gray-500 text-xs">{product.item_code}</span>
+              <span className="text-black text-xs">| Quantity:</span>
+              <span className="text-gray-500 text-xs">{product.quantity}</span>
             </div>
+
 
             {/* Bottom Row - All elements in one line */}
             <div className="flex items-center gap-2">
@@ -364,22 +372,22 @@ useEffect(() => {
 
               {/* Quantity Selector */}
                <div className="flex items-center border border-gray-300 rounded-full h-8 w-max">
-    <button 
-      onClick={handleDecrease} 
-      className="px-2 py-1 border-r text-xs"
-    >
-      -
-    </button>
-    <span className="px-2 py-1 text-xs w-6 text-center">{quantity}</span>
-    <button 
-      onClick={handleIncrease} 
-      className="px-2 py-1 border-l text-xs"
-    >
-      +
-    </button>
-  </div>
+                  <button 
+                    onClick={handleDecrease} 
+                    className="px-2 py-1 border-r text-xs"
+                  >
+                    -
+                  </button>
+                  <span className="px-2 py-1 text-xs w-6 text-center">{quantity}</span>
+                  <button 
+                    onClick={handleIncrease} 
+                    className="px-2 py-1 border-l text-xs"
+                  >
+                    +
+                  </button>
+                </div>
 
-  
+                
               {/* Add to Cart Button */}
               <div className="flex gap-4 flex-wrap items-start">
                 <div className="flex-shrink-0">
@@ -415,9 +423,9 @@ useEffect(() => {
             </div>
             {quantityWarning && (
             <p className="text-red-600 text-xs font-medium"> 
-      ⚠ You can't order more than {product.quantity} item{product.quantity > 1 ? "s" : ""}.(Stock only {product.quantity} items)
-    </p>
-     )} 
+                ⚠ You can't order more than {product.quantity} item{product.quantity > 1 ? "s" : ""}.(Stock only {product.quantity} items)
+            </p>
+              )} 
           </div>
             {/* <p className="text-gray-700 text-sm mt-3 font-medium">
               {product.sku || "N/A"}
@@ -670,42 +678,49 @@ useEffect(() => {
               </div>
 
               {showFeatures && (
-                <div className="mt-3">
-                  {
-                    (() => {
-                      let features = [];
+  <div className="mt-3">
+    {
+      (() => {
+        let features = [];
 
-                      // If it's a JSON string (stringified array), parse it
-                      if (typeof product.key_specifications === 'string') {
-                        try {
-                          const parsed = JSON.parse(product.key_specifications);
-                          if (Array.isArray(parsed)) {
-                            features = parsed;
-                          } else {
-                            features = [product.key_specifications];
-                          }
-                        } catch (error) {
-                          features = [product.key_specifications];
-                        }
-                      } else if (Array.isArray(product.key_specifications)) {
-                        features = product.key_specifications;
-                      }
+        // Parse key_specifications based on its type
+        if (typeof product.key_specifications === 'string') {
+          try {
+            const parsed = JSON.parse(product.key_specifications);
+            if (Array.isArray(parsed)) {
+              features = parsed;
+            } else {
+              features = [product.key_specifications];
+            }
+          } catch (error) {
+            features = [product.key_specifications];
+          }
+        } else if (Array.isArray(product.key_specifications)) {
+          features = product.key_specifications;
+        }
 
-                      return features.length > 0 ? (
-                      <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                          {features.map((feature, index) => (
-                            <li key={index}>
-                              {feature.charAt(0).toUpperCase() + feature.slice(1)}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="text-sm text-gray-500">No features available.</span>
-                      );
-                    })()
-                  }
-                </div>
-              )}
+        return features.length > 0 ? (
+          <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+            {features.map((feature, index) => {
+              const cleanedFeature = feature
+                .replace(/[{}\[\]"]/g, '') // Remove {}, [], and " characters
+                .trim();
+
+              return (
+                <li key={index}>
+                  {cleanedFeature.charAt(0).toUpperCase() + cleanedFeature.slice(1)}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <span className="text-sm text-gray-500">No features available.</span>
+        );
+      })()
+    }
+  </div>
+)}
+
             </div>
 
 
@@ -727,40 +742,47 @@ useEffect(() => {
                 </svg>
               </div>
 
-              {showHighlights && (
-                <div className="mt-3 overflow-auto">
-                  {Array.isArray(product.product_highlights) &&
-                  product.product_highlights
-                    .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-                    .filter(item => item.length > 0).length > 0 ? (
-                    <table className="w-full text-xs text-left text-gray-700 border border-gray-200">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border px-3 py-2">Key</th>
-                          <th className="border px-3 py-2">Value</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {product.product_highlights
-                          .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
-                          .filter(item => item.length > 0)
-                          .map((item, index) => {
-                            const [key, ...rest] = item.split(':');
-                            const value = rest.join(':').trim(); // in case value has ":"
-                            return (
-                              <tr key={index} className="bg-white even:bg-gray-50">
-                                <td className="border px-3 py-2 font-medium">{key?.trim()}</td>
-                                <td className="border px-3 py-2">{value || '-'}</td>
-                              </tr>
-                            );
-                          })}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <p className="text-gray-500 text-xs">No highlights available.</p>
-                  )}
-                </div>
-              )}
+             {showHighlights && (
+  <div className="mt-3 overflow-auto">
+    {Array.isArray(product.product_highlights) &&
+    product.product_highlights
+      .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+      .filter(item => item.length > 0).length > 0 ? (
+      <table className="w-full text-xs text-left text-gray-700 border border-gray-200">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border px-3 py-2">Key</th>
+            <th className="border px-3 py-2">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {product.product_highlights
+            .flatMap(item => item.split(/[\n,]+/).map(i => i.trim()))
+            .filter(item => item.length > 0)
+            .map((item, index) => {
+              const cleanedItem = item
+                .replace(/[\[\]{}"]/g, '') // <-- removes curly braces, square brackets, quotes
+                .replace(/\s+/g, ' ')
+                .trim();
+              const [key, ...rest] = cleanedItem.split(':');
+              const value = rest.join(':').trim();
+              return (
+                <tr key={index} className="bg-white even:bg-gray-50">
+                  <td className="border px-3 py-2 font-medium">{key?.trim()}</td>
+                  <td className="border px-3 py-2">{value || '-'}</td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+    ) : (
+      <p className="text-gray-500 text-xs">No highlights available.</p>
+    )}
+  </div>
+)}
+
+
+
             </div>
 
           

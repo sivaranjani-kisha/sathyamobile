@@ -143,8 +143,19 @@ export default function CartComponent() {
         fetchCartData();
     }, [router]);
 
-    const updateQuantity = async (productId, newQuantity) => {
+    const updateQuantity = async (productId, newQuantity,original_quantity = null) => {
+      console.log(productId, newQuantity,original_quantity);
+      alert(productId, newQuantity,original_quantity);
         try {
+          if (original_quantity !== null) {
+            if (newQuantity > original_quantity) {
+              setSuccessMessage("Requested quantity exceeds available stock.");
+              setShowSuccessModal(true);
+              return;
+            }
+          }
+
+
             const token = localStorage.getItem('token');
             const response = await fetch('/api/cart', {
                 method: 'PUT',
@@ -166,6 +177,7 @@ export default function CartComponent() {
             // Show success message
             setSuccessMessage("Quantity updated successfully");
             setShowSuccessModal(true);
+          
         } catch (err) {
             console.error('Update quantity error:', err);
             setError(err.message);
@@ -341,18 +353,21 @@ export default function CartComponent() {
                                         <div className="flex justify-center items-center gap-2 mb-1">
                                             <button
                                             className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                                            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                                            onClick={() => updateQuantity(item.productId, item.quantity - 1,null)}
                                             disabled={item.quantity <= 1}
                                             >
                                             −
                                             </button>
                                             <span>{item.quantity}</span>
+                                           
                                             <button
-                                            className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                                            className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300  "
+                                            disabled={item.quantity >= item.original_quantity}
+                                            onClick={() => updateQuantity(item.productId, item.quantity + 1,item.original_quantity)}
                                             >
                                             +
                                             </button>
+                                           
                                         </div>
                                         </td>
                                         <td className="py-4 px-4 text-center font-semibold align-top">
@@ -440,7 +455,7 @@ export default function CartComponent() {
         <div className="flex items-center gap-2">
           <button
             className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+            onClick={() => updateQuantity(item.productId, item.quantity - 1,null)}
             disabled={item.quantity <= 1}
           >
             −
@@ -448,7 +463,8 @@ export default function CartComponent() {
           <span>{item.quantity}</span>
           <button
             className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+            onClick={() => updateQuantity(item.productId, item.quantity + 1,item.original_quantity)}
+             disabled={item.quantity >= item.original_quantity}
           >
             +
           </button>

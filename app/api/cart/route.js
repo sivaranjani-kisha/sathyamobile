@@ -12,7 +12,15 @@ const extractToken = (req) => {
 
 const verifyToken = (token) => {
   if (!token) throw new Error("Authorization token required");
-  return jwt.verify(token, process.env.JWT_SECRET);
+   try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      throw new Error("Token has expired");
+    } else {
+      throw new Error("Invalid token");
+    }
+  }
 };
 
 const calculateCartTotals = (items) => {
@@ -149,7 +157,7 @@ export async function GET(req) {
     const token = extractToken(req);
     const decoded = verifyToken(token);
     const userId = decoded.userId;
-
+    const productdata = [];
     const cart = await Cart.findOne({ userId }).populate(
       "items.productId",
       "name price images item_code quantity"
@@ -162,17 +170,25 @@ export async function GET(req) {
       );
     }
 
-    const items = cart.items.map((item) => ({
-      item_code : item.productId.item_code,
-      productId: item.productId._id,
-      name: item.productId.name,
-      price: item.price,
-      image: item.productId.images[0],
-      quantity: item.quantity,
-      warranty: item.warranty || 0,
-      extendedWarranty: item.extendedWarranty || 0,
-    }));
+      const items = await Promise.all(
+      cart.items.map(async (item) => {
+        const original_quantity = await getQuantity(item.productId.item_code);
+        return {
+          original_quantity,
+          item_code: item.productId.item_code,
+          productId: item.productId._id,
+          name: item.productId.name,
+          price: item.price,
+          image: item.productId.images[0],
+          quantity: item.quantity,
+          warranty: item.warranty || 0,
+          extendedWarranty: item.extendedWarranty || 0,
+        };
+      })
+    );
     console.log(items);
+
+
 
     return NextResponse.json(
       {
@@ -182,6 +198,7 @@ export async function GET(req) {
           totalPrice: cart.totalPrice,
           items,
         },
+        products:{productdata},
       },
       { status: 200 }
     );
@@ -189,6 +206,11 @@ export async function GET(req) {
     console.error("GET cart error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+async function getQuantity(item_code) {
+  const product = await Product.findOne({ item_code }).lean();
+  return product?.quantity ?? null;
 }
 
 /** PUT - Update Quantity **/
@@ -209,20 +231,43 @@ export async function PUT(req) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 });
     }
 
+    console.log(cart.items);
+
     const itemIndex = cart.items.findIndex(
       (item) => item.productId.toString() === productId
     );
 
+    console.log(itemIndex);
     if (itemIndex === -1) {
       return NextResponse.json({ error: "Product not in cart" }, { status: 404 });
     }
 
     cart.items[itemIndex].quantity = quantity;
+    const item_code = cart.items[itemIndex].item_code;
+    console.log(item_code);
+     const original_quantity = await getQuantity(item_code);
     const totals = calculateCartTotals(cart.items);
     cart.totalItems = totals.totalItems;
     cart.totalPrice = totals.totalPrice;
-
+    cart.items[itemIndex].original_quantity = original_quantity;
+console.log(cart.items);
+    
+    
     await cart.save();
+
+cart.items.forEach((item) => {
+  console.log(item);
+});
+    const items = cart.items.map((item) => ({
+      productId: item.productId._id,
+      name: item.name,
+      price: item.price,
+      image: item.productId.images,
+      quantity: item.quantity,
+      item_code: item.productId.item_code,
+      original_quantity: item.original_quantity ?? null, // dynamically attach
+    }));
+
 
     return NextResponse.json(
       {
@@ -230,7 +275,7 @@ export async function PUT(req) {
         cart: {
           id: cart._id,
           ...totals,
-          items: cart.items,
+          items: items,
         },
       },
       { status: 200 }

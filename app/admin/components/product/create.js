@@ -15,8 +15,9 @@ const steps = [
   { title: "Others" },
 ];
 
-export default function AddProductPage({ mode = "add", productData = null, productId = null,onSuccess }) {
+export default function AddProductPage({ mode = "add", productData = null, productId = null,onSuccess, initialProductData}) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [jsonHighlightsInput, setJsonHighlightsInput] = useState('');
   const [product, setProduct] = useState({
     name: "",
     slug: "",
@@ -49,7 +50,7 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     featured_products:[],
     warranty: "",
     extended_warranty: "",
-    product_highlights: [''],
+    product_highlights: [],
   });
 
     const [variant, setVariant] = useState([{
@@ -72,6 +73,24 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     { value: "Best Seller", label: "Best Seller" },
     { value: "Limited Edition", label: "Limited Edition" },
   ]);
+  const applyJsonHighlights = () => {
+  try {
+    const parsedHighlights = JSON.parse(jsonHighlightsInput);
+    
+    // Check if the parsed data is an object.
+    if (typeof parsedHighlights === 'object' && parsedHighlights !== null) {
+      setProduct({
+        ...product,
+        product_highlights: parsedHighlights, // Set the parsed object as the new highlights
+      });
+      alert('JSON highlights applied successfully!');
+    } else {
+      alert('Please enter a valid JSON object.');
+    }
+  } catch (error) {
+    alert(`Invalid JSON format: ${error.message}`);
+  }
+};
   const [selectedCategories, setSelectedCategories] = useState(new Set());
   const [categories, setCategories] = useState([]);
   const [brand, setBrand] = useState([]);
@@ -133,40 +152,55 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     }
   };
 
-    useEffect(() => {
-     if (mode === "edit" && productData) {
-      console.log(productData);
-    setProduct(productData);
+   useEffect(() => {
+    if (mode === "edit" && productData) {
+        console.log(productData);
 
+        // This code sets the state for the 'product' object
+        setProduct(prevProduct => ({
+            ...productData,
+            // Ensure product_highlights is an array when setting productData
+            product_highlights: Array.isArray(productData.product_highlights) 
+                ? productData.product_highlights 
+                : [],
+            // Ensure filters are in the correct format for react-select if they are just IDs
+            filters: productData.filterDetails && productData.filterDetails.length > 0
+                ? productData.filterDetails.map(item => ({ value: item._id, label: item.filter_name }))
+                : [],
+            hasVariants: productData.hasVariants || false, // Ensure hasVariants is a boolean
+            variants: productData.variants || [], // Ensure variants is an array
+            images: productData.images || ['', '', '', ''], // Ensure images is an array with placeholders
+            files: productData.files || [],
+            overviewImage: productData.overviewImage || [null],
+            overviewImageFile: productData.overviewImageFile || [null],
+            featured_products: productData.featured_products || [],
+        }));
 
-    if (productData.filterDetails && productData.filterDetails.length > 0) {
-      const filters = productData.filterDetails.map(item => ({
-        value: item._id,
-        label: item.filter_name
-      }));
-
-      setProduct(prevProduct => ({
-        ...prevProduct,
-        filters: filters
-      }));
+        // This code now correctly runs after the setProduct call, setting the JSON input field
+        if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
+            setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
+        }
     }
-    if (productData.hasVariants && Array.isArray(productData.variants)) {
-      setVariant(productData.variants);
-
-      // Initialize variantImages with placeholder for File objects
-      const images = productData.variants.map(v => ({
-        images: (v.images || []).map(img => img)  // keep original image names
-      }));
-      setVariantImages(images);
-    }
-  }
-  }, [mode, productData]);
-  useEffect(() => {
+}, [mode, productData, setJsonHighlightsInput]);
+useEffect(() => {
     fetchCategories();
     fetchFilter();
     fetchBrand();
     fetchallproducts();
   }, []);
+
+
+  useEffect(() => {
+    if (initialProductData) {
+      setProduct({
+        ...initialProductData,
+        // Ensure product_highlights is an array, even if it's null/undefined from backend
+        product_highlights: initialProductData.product_highlights || [],
+        // Ensure featured_products is an array or object, depending on your schema
+        featured_products: initialProductData.featured_products || [], // Adjust based on actual data type
+      });
+    }
+  }, [initialProductData]);
 
    const handleVariantFieldChange1 = (index, field, value) => {
   const updatedVariants = variant.map((v, i) =>
@@ -885,20 +919,31 @@ setProduct(prev => ({
   };
 
   const handleHighlightChange = (index, value) => {
-    const updatedHighlights = [...product.product_highlights];
+  setProduct((prevProduct) => {
+    const updatedHighlights = [...prevProduct.product_highlights];
     updatedHighlights[index] = value;
-    setProduct({ ...product, product_highlights: updatedHighlights });
-  };
+    return {
+      ...prevProduct,
+      product_highlights: updatedHighlights,
+    };
+  });
+};
   
   const addHighlight = () => {
-    setProduct({ ...product, product_highlights: [...product.product_highlights, ''] });
-  };
+  setProduct((prevProduct) => ({
+    ...prevProduct,
+    product_highlights: [...prevProduct.product_highlights, ""], // Add an empty string for a new highlight input
+  }));
+};
   
-  const removeHighlight = (index) => {
-    const updatedHighlights = product.product_highlights.filter((_, i) => i !== index);
-    setProduct({ ...product, product_highlights: updatedHighlights });
-  };
-
+  const removeHighlight = (indexToRemove) => {
+  setProduct((prevProduct) => ({
+    ...prevProduct,
+    product_highlights: prevProduct.product_highlights.filter(
+      (_, index) => index !== indexToRemove
+    ),
+  }));
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -1744,10 +1789,13 @@ formData.append("variant", JSON.stringify(variantsWithImages));
               <textarea name="key_specifications" value={product.key_specifications|| ''} onChange={handleChange} className="w-full border p-2 rounded" rows="3"></textarea>
             </div>
 
-            <div>
+            
+
+
+           <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Product Highlights</label>
 
-              {product.product_highlights.map((highlight, index) => (
+              {(product.product_highlights && product.product_highlights.length > 0 ? product.product_highlights : [""]).map((highlight, index) => (
                 <div key={index} className="flex space-x-2 mb-2">
                   <input
                     type="text"
@@ -1763,9 +1811,11 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                       </button>
                     </div>
                     <div>
-                      <button type="button" onClick={() => removeHighlight(index)} className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                      </button>
+                       {product.product_highlights && product.product_highlights.length > 0 && (
+         <button type="button" onClick={() => removeHighlight(index)} className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+           <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
+         </button>
+      )}
                     </div>
                   </div>
                 </div>

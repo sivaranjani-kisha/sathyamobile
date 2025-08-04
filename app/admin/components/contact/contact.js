@@ -257,8 +257,9 @@ export default function ContactComponent() {
               <table className="w-full border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200 text-center">
-                    <th className="p-2">Email Address</th>
+                   
                     <th className="p-2">Name</th>
+                     <th className="p-2">Subject</th>
                     <th className="p-2">Mobile Number</th>
                     <th className="p-2">Message</th>
                     <th className="p-2">Status</th>
@@ -269,8 +270,9 @@ export default function ContactComponent() {
                 <tbody>
                   {currentContacts.map((contact) => (
                     <tr key={contact._id} className="text-center border-b">
-                      <td className="p-2 font-bold">{contact.email_address || '-'}</td>
+                      {/* <td className="p-2 font-bold">{contact.email_address || '-'}</td> */}
                       <td className="p-2">{contact.name || '-'}</td>
+                      <td className="p-2">{contact.subject || '-'}</td>
                       <td className="p-2">{contact.mobile_number || '-'}</td>
                       <td className="p-2">{contact.message || '-'}</td>
                       <td className="p-2">

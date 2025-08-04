@@ -27,6 +27,9 @@ const cartItemSchema = new mongoose.Schema({
   image: {
     type: String
   },
+  quantity: {
+    type: Number,
+  },
    warranty: { type: Number, default: 0 }, // ✅ Add this
   extendedWarranty: { type: Number, default: 0 }, // ✅ Add this
   upsells: [
