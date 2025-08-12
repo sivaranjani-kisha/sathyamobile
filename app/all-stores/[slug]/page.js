@@ -61,14 +61,28 @@ export default async function StoreDetailPage({ params }) {
         </Link>
       </div>
 
-      {/* Store Image (instead of Map) */}
-      {store.images?.length > 0 && (
+      {/* Store Image */}
+      {/* {store.images?.length > 0 && (
         <div className="mb-6 flex justify-center">
           <img
             src={store.images[0]}
             alt={store.organisation_name}
-            className="rounded-md shadow-md "
+            className="rounded-md shadow-md"
           />
+        </div>
+      )} */}
+
+      {/* Embedded Google Map */}
+      {store.address && (
+        <div className="mb-6">
+          <iframe
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(store.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+            width="100%"
+            height="450"
+            style={{ border: 0 }}
+            loading="lazy"
+            allowFullScreen
+          ></iframe>
         </div>
       )}
 

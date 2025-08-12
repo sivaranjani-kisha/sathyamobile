@@ -527,7 +527,16 @@ const handleCategoryClick = useCallback((category) => (e) => {
     useEffect(() => {
       const fetchOfferProducts = async () => {
         try {
-          const res = await fetch("/api/offers/offer-products");
+          const token = localStorage.getItem('token');
+          if (!token) return;
+    
+          const res = await fetch('api/offers/offer-products', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            }
+          });
           const data = await res.json();
   
           if (data.success) {
@@ -657,145 +666,124 @@ const handleCategoryClick = useCallback((category) => (e) => {
 
 
              {/* Existing offer code start */}
-{offerProducts.length > 0 && (
-  <div className="px-2 py-4">
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl font-bold text-red-500">Exciting Offers</h2>
-      {offerProducts.length > 3 && (
-        <div className="flex gap-2">
-          {/* Navigation buttons if needed */}
-        </div>
-      )}
-    </div>
 
-    {/* Mobile Grid */}
-    <div className="grid grid-cols-2 gap-4 sm:hidden">
-      {offerProducts.slice(0, 4).map((product) => (
-        <div
-          key={product._id}
-          className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col"
-        >
-          <Link href={`/product/${product.slug}`} className="block">
-            <div className="w-full aspect-[1/1] relative overflow-hidden rounded-t-lg">
-              <img
-                src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
-                alt={product.item_code}
-                className="object-contain w-full h-full"
-              />
-            </div>
-            <div className="p-3">
-              <div
-                className="text-sm font-medium truncate"
-                title={product.name}
-              >
-                {product.name.length > 20
-                  ? `${product.name.slice(0, 20)}...`
-                  : product.name}
-              </div>
-              <div className="mt-1">
-                <span className="inline-block bg-green-100 text-green-700 text-xs font-medium rounded px-2 py-0.5">
-                  {product.special_price ? "Special Offer" : "Limited Time"}
-                </span>
-              </div>
-              <div className="flex items-baseline mt-1 space-x-2">
-                <span className="text-base font-semibold text-gray-800">
-                  Rs.{product.special_price || product.price}
-                </span>
-                <span className="text-xs text-gray-400 line-through">
-                  Rs.{product.mrp || product.price + 20}
-                </span>
-              </div>
-            </div>
-          </Link>
-          <div className="flex gap-2 mt-auto">
-                              <Addtocart productId={product._id} stockQuantity={product.quantity} className="flex-1" />
-                              <a
-                                href={`https://wa.me/?text=Check this out: ${product.name}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full flex items-center justify-center"
-                              >
-                                <svg className="w-5 h-5" viewBox="0 0 32 32" fill="currentColor">
-                                  <path d="M16.003 2.667C8.64 2.667 2.667 8.64 2.667 16c0 2.773.736 5.368 2.009 7.629L2 30l6.565-2.643A13.254 13.254 0 0016.003 29.333C23.36 29.333 29.333 23.36 29.333 16c0-7.36-5.973-13.333-13.33-13.333zm7.608 18.565c-.32.894-1.87 1.749-2.574 1.865-.657.104-1.479.148-2.385-.148-.55-.175-1.256-.412-2.162-.812-3.8-1.648-6.294-5.77-6.49-6.04-.192-.269-1.55-2.066-1.55-3.943 0-1.878.982-2.801 1.33-3.168.346-.364.75-.456 1.001-.456.25 0 .5.002.719.013.231.01.539-.088.845.643.32.768 1.085 2.669 1.18 2.863.096.192.16.423.03.683-.134.26-.2.423-.39.65-.192.231-.413.512-.589.689-.192.192-.391.401-.173.788.222.392.986 1.625 2.116 2.636 1.454 1.298 2.682 1.7 3.075 1.894.393.192.618.173.845-.096.23-.27.975-1.136 1.237-1.527.262-.392.524-.32.894-.192.375.13 2.35 1.107 2.75 1.308.393.205.656.308.75.48.096.173.096 1.003-.224 1.897z" />
-                                </svg>
-                              </a>
+             {/* Existing offer code start */}
+              {offerProducts.length > 0 && (
+                <div className="px-2 py-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">Exciting Offers</h2>
+                    {offerProducts.length > 3 && (
+                      <div className="flex gap-2">
+                        {/* Optional navigation buttons */}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile view: static grid */}
+                  {offerProducts.length >= 3 && (
+                    <div className="grid grid-cols-2 gap-4 sm:hidden">
+                      {offerProducts.slice(0, 4).map((product, index) => (
+                        <div
+                          key={product._id}
+                          className={`card rounded-lg shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
+                        >
+                          <div className="flex items-center">
+                            <div className="w-1/3 p-2">
+                              <Link href={`/product/${product.slug}`} className="block">
+                                <div className="h-[100px] sm:h-[120px] md:h-[130px] bg-white flex items-center justify-center overflow-hidden rounded-md">
+                                  <img
+                                    src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
+                                    alt={product.item_code}
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </Link>
                             </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Desktop Swiper */}
-    <div className="hidden sm:block">
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        navigation={{
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        }}
-        autoplay={{
-          delay: 5000,
-          disableOnInteraction: false,
-        }}
-        slidesPerView={4}
-        spaceBetween={16}
-        loop={true}
-      >
-        {offerProducts.map((product) => (
-          <SwiperSlide key={product._id}>
-            <div className="bg-white rounded-lg shadow hover:shadow-md transition flex flex-col h-full">
-              <Link href={`/product/${product.slug}`} className="block">
-                <div className="w-full aspect-[1/1] relative overflow-hidden rounded-t-lg">
-                  <img
-                    src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
-                    alt={product.item_code}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-                <div className="p-3">
-                  <div
-                    className="text-sm font-medium truncate"
-                    title={product.name}
-                  >
-                    {product.name.length > 20
-                      ? `${product.name.slice(0, 20)}...`
-                      : product.name}
-                  </div>
-                  <div className="mt-1">
-                    <span className="inline-block bg-green-100 text-green-700 text-xs font-medium rounded px-2 py-0.5">
-                      {product.special_price ? "Special Offer" : "Limited Time"}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline mt-1 space-x-2">
-                    <span className="text-base font-semibold text-gray-800">
-                      Rs.{product.special_price || product.price}
-                    </span>
-                    <span className="text-xs text-gray-400 line-through">
-                      Rs.{product.mrp || product.price + 20}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-               <div className="flex gap-2 mt-auto p-5">
-                              <Addtocart productId={product._id} stockQuantity={product.quantity} className="flex-1" />
-                              <a
-                                href={`https://wa.me/?text=Check this out: ${product.name}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full flex items-center justify-center"
-                              >
-                                <svg className="w-5 h-5" viewBox="0 0 32 32" fill="currentColor">
-                                  <path d="M16.003 2.667C8.64 2.667 2.667 8.64 2.667 16c0 2.773.736 5.368 2.009 7.629L2 30l6.565-2.643A13.254 13.254 0 0016.003 29.333C23.36 29.333 29.333 23.36 29.333 16c0-7.36-5.973-13.333-13.33-13.333zm7.608 18.565c-.32.894-1.87 1.749-2.574 1.865-.657.104-1.479.148-2.385-.148-.55-.175-1.256-.412-2.162-.812-3.8-1.648-6.294-5.77-6.49-6.04-.192-.269-1.55-2.066-1.55-3.943 0-1.878.982-2.801 1.33-3.168.346-.364.75-.456 1.001-.456.25 0 .5.002.719.013.231.01.539-.088.845.643.32.768 1.085 2.669 1.18 2.863.096.192.16.423.03.683-.134.26-.2.423-.39.65-.192.231-.413.512-.589.689-.192.192-.391.401-.173.788.222.392.986 1.625 2.116 2.636 1.454 1.298 2.682 1.7 3.075 1.894.393.192.618.173.845-.096.23-.27.975-1.136 1.237-1.527.262-.392.524-.32.894-.192.375.13 2.35 1.107 2.75 1.308.393.205.656.308.75.48.096.173.096 1.003-.224 1.897z" />
-                                </svg>
-                              </a>
+                            <div className="w-2/3 p-4">
+                              <Link href={`/product/${product.slug}`} className="block">
+                                <div className="text-sm line-clamp-2">{product.name}</div>
+                              </Link>
+                              <div className="mt-1">
+                                <span className="text-sm font-medium text-gray-700">Rs.</span>
+                                <span className="ml-1 font-semibold">{product.price}</span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                <div className="text-sm font-medium text-gray-400 line-through whitespace-nowrap">
+                                  <span className="text-sm font-medium text-gray-400">Rs.</span>
+                                  {product.special_price ? product.price : product.price + 20}
+                                </div>
+                                <div className="text-xs font-semibold text-green-600 bg-white rounded px-2 py-0.5 whitespace-nowrap">
+                                  {product.special_price ? "Special Offer" : "Limited Time"}
+                                </div>
+                              </div>
                             </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
-  </div>
-)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
+                  {/* Desktop view: Swiper */}
+                  <div className="hidden sm:block">
+                    {offerProducts.length && (
+                      <Swiper
+                        modules={[Navigation, Autoplay]}
+                        navigation={{
+                          nextEl: ".swiper-button-next",
+                          prevEl: ".swiper-button-prev",
+                        }}
+                        autoplay={{
+                          delay: 5000,
+                          disableOnInteraction: false,
+                        }}
+                        slidesPerView={4}
+                        spaceBetween={0}
+                        loop={true}
+                      >
+                        {offerProducts.map((product, index) => (
+                          <SwiperSlide key={product._id}>
+                            <div
+                              className={`card rounded-lg shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
+                            >
+                              <div className="flex items-center">
+                                <div className="w-1/3 p-2">
+                                  <Link href={`/product/${product.slug}`} className="block">
+                                    <div className="h-[100px] sm:h-[120px] md:h-[130px] flex items-center justify-center overflow-hidden rounded-md">
+                                      <img
+                                        src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
+                                        alt={product.item_code}
+                                        className="object-contain w-full h-full"
+                                      />
+                                    </div>
+                                  </Link>
+                                </div>
+                                <div className="w-2/3 p-4">
+                                  <Link href={`/product/${product.slug}`} className="block">
+                                    <div className="text-sm line-clamp-2">{product.name}</div>
+                                  </Link>
+                                  <div className="mt-1">
+                                    <span className="text-sm font-medium text-gray-700">Rs.</span>
+                                    <span className="ml-1 font-semibold">{product.price}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <div className="text-sm font-medium text-gray-400 line-through whitespace-nowrap">
+                                      <span className="text-sm font-medium text-gray-400">Rs.</span>
+                                      {product.special_price ? product.price : product.price + 20}
+                                    </div>
+                                    <div className="text-sm font-semibold text-green-600 bg-white rounded px-2 whitespace-nowrap">
+                                      {product.special_price ? "Special Offer" : "Limited Time"}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    )}
+                  </div>
+                </div>
+              )}
 
 
 

@@ -33,39 +33,40 @@ export default function Header() {
 
   return (
     <div className="hidden lg:flex items-center space-x-0 lg:space-x-3 xl:space-x-3 ml-4 whitespace-nowrap">
-      {/* Home Link */}
+      {/* HOME link */}
       <Link
         href="/"
-        className="text-[#222529] hover:text-red-500 font-bold  lg:text-[11px] xl:text-[13px] py-[21px] transition-colors  px-0 xl:px-1"
+        className="text-[#222529] hover:text-red-500 font-bold text-[12px] uppercase py-[21px] transition-colors px-0 xl:px-1 tracking-[0.5px]"
       >
-        Home
+        HOME
       </Link>
 
-      {/* Dynamic Categories */}
+      {/* Dynamic categories */}
       {!loading &&
         topCategories.map((topCat) => {
           const subcategories = getSubcategories(topCat._id);
 
+          /* ---------- Top-level category without subcategories ---------- */
           if (subcategories.length === 0) {
             return (
               <Link
                 key={topCat._id}
                 href={`/category/${topCat.category_slug}`}
-                className="text-[#222529] hover:text-red-500 font-bold text-xs lg:text-[11px] xl:text-[13px] py-[21px] transition-colors"
+                className="text-[#222529] hover:text-red-500 font-bold text-[12px] uppercase py-[21px] transition-colors px-0 xl:px-1 tracking-[0.5px]"
               >
-                {topCat.category_name.charAt(0).toUpperCase() + topCat.category_name.slice(1).toLowerCase()}
+                {topCat.category_name.toUpperCase()}
               </Link>
-
             );
           }
 
+          /* ---------- Top-level category with subcategories (mega-menu) ---------- */
           return (
             <div key={topCat._id} className="relative group">
               <Link
                 href={`/category/${topCat.category_slug}`}
-                className="flex items-center text-[#222529] hover:text-red-500 font-bold text-xs lg:text-[11px] xl:text-[13px] py-[21px] transition-colors  relative"
+                className="flex items-center text-[#222529] hover:text-red-500 font-bold text-[12px] uppercase py-[21px] transition-colors px-0 xl:px-1 tracking-[0.5px]"
               >
-                {topCat.category_name.charAt(0).toUpperCase() + topCat.category_name.slice(1).toLowerCase()}
+                {topCat.category_name.toUpperCase()}
                 <svg
                   className="ml-1 h-4 w-4"
                   fill="currentColor"
@@ -79,29 +80,28 @@ export default function Header() {
                 </svg>
               </Link>
 
-              {/* Invisible buffer zone */}
+              {/* Invisible buffer to keep menu open on hover */}
               <div className="absolute left-0 right-0 h-4 top-full"></div>
 
-              {/* Mega Menu */}
-              <div
-                className="absolute left-0 top-[calc(100%+1rem)] hidden group-hover:flex w-[600px] bg-white shadow-xl border z-50"
-              >
+              {/* Mega menu */}
+              <div className="absolute left-0 top-[calc(100%+1rem)] hidden group-hover:flex w-[600px] bg-white shadow-xl border z-50">
                 <div className="flex w-full">
-                  {/* Subcategories */}
+                  {/* Subcategories column */}
                   <div className="flex-1 py-3 px-4">
                     <div className="grid grid-cols-2 gap-2">
                       {subcategories.map((subcat) => (
                         <Link
                           key={subcat._id}
                           href={`/category/${topCat.category_slug}/${subcat.category_slug}`}
-                          className="block text-[#222529] hover:text-red-500 text-xs font-bold uppercase mb-1"
+                          className="block text-[#222529] hover:text-red-500 font-bold text-[12px] uppercase tracking-[0.5px] mb-1"
                         >
-                          {subcat.category_name}
+                          {subcat.category_name.toUpperCase()}
                         </Link>
                       ))}
                     </div>
                   </div>
-                  {/* Right Image */}
+
+                  {/* Right-side image */}
                   <div className="w-48 flex items-center justify-center p-2 border-l">
                     <img
                       src={topCat.image}
