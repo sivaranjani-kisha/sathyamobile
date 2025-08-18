@@ -25,7 +25,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
- 
+
+(function(dd, ss, idd) { var js, ajs = dd.getElementsByTagName(ss)[0];	if (dd.getElementById(idd)) {return;} js = dd.createElement(ss); js.id = idd; js.aun_id = "pIA3DS2EI2r7"; js.src = "https://pixel.adtarbo.com/pixelTrack1.js"; ajs.parentNode.insertBefore(js, ajs) } (document, 'script', 'adtarbo-js-v2'));
+
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   // const [showAuthModal, setShowAuthModal] = useState(false);
@@ -63,6 +65,8 @@ export default function RootLayout({ children }) {
             }
           `}
         </style>
+         
+ 
       </Head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div id="modal-root"></div>
@@ -83,6 +87,7 @@ export default function RootLayout({ children }) {
         </ModalProvider>
         </HeaderProvider>
       </body>
+      
     </html>
   );
 }
