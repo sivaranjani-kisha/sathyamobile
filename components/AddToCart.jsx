@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useModal } from '@/context/ModalContext';
 import { useHeaderdetails } from '@/context/HeaderContext';
 import { FaShoppingCart } from "react-icons/fa";
+import { trackAddToCart } from "@/utils/tracking";
 
 const AddToCartButton = ({
   productId,
@@ -13,7 +14,9 @@ const AddToCartButton = ({
   additionalProducts = [],
   extendedWarranty,
   selectedFrequentProducts = [],
-  stockQuantity = 1, // 👈 important
+  stockQuantity = 1, // ðŸ‘ˆ important
+  slug,
+  
 }) => {
   const { openAuthModal } = useModal();
   const { updateHeaderdetails, setIsLoggedIn, setUserData, setIsAdmin } = useHeaderdetails();
@@ -23,6 +26,8 @@ const AddToCartButton = ({
   const [cartSuccess, setCartSuccess] = useState(false);
 
   const isOutOfStock = stockQuantity <= 0;
+
+  const [cart, setCart] = useState([]);
 
   const handleAddToCart = async () => {
     if (isOutOfStock) return;
@@ -40,8 +45,19 @@ const AddToCartButton = ({
           Authorization: token ? `Bearer ${token}` : '',
         },
       });
+	  
+	  const response = await fetch(`/api/product/get/${productId}`);
+       
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const productData = await response.json();
+		console.log('product : ');
+        console.log(productData);
 
       const authData = await authResponse.json();
+	  //console.log(authData);
 
       if (!authData.loggedIn) {
         openAuthModal({
@@ -71,6 +87,9 @@ const AddToCartButton = ({
           selectedExtendedWarranty: extendedWarranty,
         }),
       });
+	  
+  
+      
 
       if (!cartResponse.ok) throw new Error('Failed to add main product');
 
@@ -93,8 +112,30 @@ const AddToCartButton = ({
           })
         );
       }
+	  
+	  
 
       const responseData = await cartResponse.json();
+	  console.log(responseData);
+	 
+	   // Event Tracking
+      trackAddToCart({
+        user: {
+          name: authData.user.name,
+          phone: authData.phone,
+          email: authData.user.email,
+        },
+        product: {
+          id: productId,
+          name: responseData.cart.items[0].name,
+          price: responseData.cart.items[0].price,
+          link: `https://sathyamobiles.divinfosys.com/product/${productData.data.slug}`,
+          image: 'https://sathyamobiles.divinfosys.com/uploads/products/'+responseData.cart.items[0].image,
+          qty: responseData.cart.items[0].quantity,
+          currency: "INR",
+        },
+      });
+	  
       updateCartCount(responseData.cart.totalItems + additionalProducts.length);
 
       // Save frequent product selection to localStorage
