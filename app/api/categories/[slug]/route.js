@@ -51,19 +51,14 @@ export async function GET(request, { params }) {
       sub_category: { $in: allCategoryIds },
       status: "Active"
     });
-    console.log(allCategoryIds);
+    
     if (!products || products.length === 0) {
       return Response.json({ category:categoryTree, products: [], brands: [], filters: [] });
     }
     
     // Extract unique brand IDs from products
-const brandIds = [...new Set(
-  products
-    .map(product => product.brand)
-    .filter(brandId => brandId) // removes undefined, null, and empty strings
-)];
-
-const brands = await Brand.find({ _id: { $in: brandIds } });
+    const brandIds = [...new Set(products.map(product => product.brand))];
+    const brands = await Brand.find({ _id: { $in: brandIds } });
     
     // Extract product IDs for filtering
     const productIds = products.map(product => product._id);

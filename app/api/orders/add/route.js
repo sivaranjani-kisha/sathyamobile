@@ -1,6 +1,9 @@
 import dbConnect from "@/lib/db";
 import EcomOrderInfo from "@/models/ecom_order_info";
 import Product from "@/models/product";
+import mongoose from 'mongoose';
+import Coupon from '@/models/ecom_offer_info';
+import Usedcoupon from '@/models/ecom_coupon_track_info';
 
 export async function POST(req) {
   await dbConnect();
@@ -57,15 +60,44 @@ export async function POST(req) {
           if(item.productId){
             const productId = item.productId;
               const product = await Product.findById(item.productId);
+              const coupon  = item.discount;
+              if(coupon > 0){
+                const userObjectId = new mongoose.Types.ObjectId(user_id);
+                const couponid = new mongoose.Types.ObjectId(item.coupondetails[0]._id);
+                const coupon_track = new Usedcoupon({coupon_id:couponid,user_id:userObjectId})
+                await coupon_track.save();
+                if(couponid){
+                  const updatecoupon = await Coupon.findOne({couponid});
+                  console.log(updatecoupon);
+                  if(updatecoupon){
+                    updatecoupon.used_by +=1;
+                    updatecoupon.save();
+                  }
+                }
+
+              }
               console.log(product);
-              if (product) {
+              if (product && product.quantity > 0) {
                 product.quantity = product.quantity - item.quantity;
                 await product.save();
               }
           }
         }
     }
-    return Response.json({ success: true, message: "Order added successfully", order: newOrder }, { status: 200 });
+    // Create notification after order is placed
+    try {
+      const Notification = require("@/models/Notification.js");
+      const notification = new Notification({
+        userId: user_id,
+        message: `Order #${newOrder.order_number || newOrder._id} placed successfully!`,
+        orderId: newOrder._id,
+      });
+      await notification.save();
+    } catch (notifErr) {
+      // Optionally log notification error, but don't block order creation
+      console.error("Notification creation failed:", notifErr);
+    }
+    return Response.json({ success: true, message: "Order added successfully", order: newOrder }, { status: 201 });
 
   } catch (error) {
     return Response.json({ success: false, message: "Server error", error: error.message }, { status: 500 });

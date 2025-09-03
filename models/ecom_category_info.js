@@ -8,6 +8,8 @@ const CategorySchema = new mongoose.Schema({
   status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   image: { type: String }, // Store the image URL
  // show_on_home: { type: String, enum: ["Yes", "No"], default: "No" },
+  navImage: { type: String }, // Store the nav image URL
+ position: { type: Number, default: 0, min: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

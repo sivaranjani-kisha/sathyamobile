@@ -7,10 +7,9 @@ import fs from 'fs';
 import { format } from 'date-fns';
 import { writeFile } from 'fs/promises';
 import Product from "@/models/product";
-import Brand from "@/models/ecom_brand_info";
 import Product_all from "@/models/Product_all";
 import Category from  "@/models/ecom_category_info";
-//import Brand  from "@/models/ecom_brand_info";
+import Brand  from "@/models/ecom_brand_info";
 import md5 from "md5";
 import mongoose from 'mongoose';
 import Filter from "@/models/ecom_filter_infos";
@@ -25,8 +24,7 @@ export const config = {
 export async function POST(req) {
   try {
     const body = await req.json();
-    // const stockItems = body.stock;
-     const stockItems = body.sku;
+    const stockItems = body.stock;
 
     if (!Array.isArray(stockItems)) {
       return NextResponse.json({ error: 'Invalid payload format' }, { status: 400 });
@@ -45,82 +43,47 @@ export async function POST(req) {
 
     for (const item of stockItems) {
         const existingProduct = await Product.findOne({
-            item_code: item.item_code,
+            item_code: item.name,
         });
-        const existingBrand = await Brand.findOne({
-        brand_name: item.brand,
-        });
-        const existingName=item.item_description || '';
-        let brand_id = null;
-        if(existingBrand){
-         brand_id = existingBrand._id.toString();
-        }
-        //  const normalizedStatus = (item.Status || '').trim().toLowerCase() === 'inactive' ? 'Inactive' : 'Active';
-        let Status = "Active";
-        if(item.Status !="" ){
-          if(item.Status === "InActive"){
-            Status  = 'Inactive';
-          }
-        }
         if (existingProduct) {
-          if(brand_id==null){
-            brand_id = existingProduct.brand;
-          }
             await Product.updateOne(
                 {
-                 item_code: item.item_code 
+                 item_code: item.name 
                 },
                 {
                     $set: {
-                        price: parseFloat(item.price),
-                        special_price: parseFloat(item.spl_price),
-                        quantity: parseFloat(item.quantity),
-                        status :Status,
-                        brand:brand_id,
-                        name:existingName,
+                        price: parseFloat(item.MRP),
+                        special_price: parseFloat(item.SellingPrice),
+                        quantity: parseFloat(item.stock),
                     },
                 }
                 
             );
         }else{
             const existingProductall = await Product_all.findOne({
-                item_code: item.item_code,
+                item_code: item.name,
             });
-            let existingProductall_brand_id = null;
-             
-            if(existingBrand){
-            existingProductall_brand_id = existingBrand._id.toString();
-            }
-           const existingName=item.item_description;
             if (existingProductall) {
-              const existingName=item.item_description;
-              if(existingProductall_brand_id==null){
-               existingProductall_brand_id = existingProductall.brand;
-              }
                 await Product_all.updateOne(
                     {
-                    item_code: item.item_code 
+                    item_code: item.name 
                     },
                     {
                         $set: {
-                            price: parseFloat(item.price),
-                            special_price: parseFloat(item.spl_price),
-                            quantity: parseFloat(item.quantity),
-                            brand:existingProductall_brand_id,
-                            name:existingName,
+                            price: parseFloat(item.MRP),
+                            special_price: parseFloat(item.SellingPrice),
+                            quantity: parseFloat(item.stock),
                         },
                     }
                     
                 );
             }else{
                 await Product_all.create({
-                    item_code: item.item_code,
-                    price: parseFloat(item.price),
-                    special_price: parseFloat(item.spl_price),
-                    quantity: parseFloat(item.quantity),
-                    //brand:existingProductall_brand_id,
-                    brand:item.brand,
-                    name:existingName,
+                    item_code: item.name,
+                    price: parseFloat(item.MRP),
+                    special_price: parseFloat(item.SellingPrice),
+                    quantity: parseFloat(item.stock),
+                    brand   : item.brand,
                 });
 
             }

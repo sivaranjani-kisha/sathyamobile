@@ -30,9 +30,7 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     stock_status: "In Stock",
     description: "",
     related_products: [],
-    images: [
-    '','','',''  
-    ],
+    images: ["","","",""],
     key_specifications: "",
     featured: false,
     tags: [],
@@ -43,7 +41,7 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     filters: [],
     hasVariants: false,
     variantAttributes: [],
-    files:[],
+    files: [],
     overviewdescription : "",
     overviewImage: [null],
     overviewImageFile: [null],
@@ -100,6 +98,14 @@ export default function AddProductPage({ mode = "add", productData = null, produ
   const [selectedCategory, setSelectedCategory] = useState(""); 
   const [allproducts, setAllProducts] = useState([]);
   const router = useRouter();
+
+  const handleRelatedProductsChange = (selectedOptions) => {
+  setProduct(prev => ({
+    ...prev,
+    related_products: selectedOptions.map(option => option.value),
+  }));
+};
+
   const fetchCategories = async () => {
     try {
       const response = await fetch("/api/categories/get");
@@ -180,8 +186,12 @@ export default function AddProductPage({ mode = "add", productData = null, produ
         if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
             setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
         }
+
+        if(productData.sub_category){
+          setSelectedCategory(productData.sub_category);
+        }
     }
-}, [mode, productData, setJsonHighlightsInput]);
+}, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
 useEffect(() => {
     fetchCategories();
     fetchFilter();
@@ -313,23 +323,50 @@ setProduct(prev => ({
     // };
   
 
-    const handleImageChange = (index, e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-    
-      const newImages = [...product.images];
-      const newFiles = [...product.files];
-    
-      // Create preview URL
-      newImages[index] = URL.createObjectURL(file);
-      newFiles[index] = file;
-    
-      setProduct(prev => ({
-        ...prev,
-        images: newImages,
-        files: newFiles
-      }));
+
+   const handleImageChange = (index, e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setProduct(prev => {
+    const newImages = [...prev.images];
+    const newFiles = [...prev.files];
+
+    // ✅ only use blob URL for preview, but keep real file in `files`
+    newImages[index] = URL.createObjectURL(file); 
+    newFiles[index] = file;
+
+    return {
+      ...prev,
+      images: newImages, // preview only
+      files: newFiles,   // actual files for upload
     };
+  });
+};
+
+//    const handleImageChange = (index, e) => {
+//   const file = e.target.files[0];
+//   if (!file) return;
+
+//   setProduct(prev => {
+//     const newImages = [...prev.images];
+//     const newFiles = [...prev.files];
+
+//     // Ensure the array is long enough
+//     while (newImages.length <= index) newImages.push(null);
+//     while (newFiles.length <= index) newFiles.push(null);
+
+//     newImages[index] = URL.createObjectURL(file);
+//     newFiles[index] = file;
+
+//     return {
+//       ...prev,
+//       images: newImages,
+//       files: newFiles
+//     };
+//   });
+// };
+
     
     const handleRemoveImage1 = (index) => {
       const newImages = [...product.images];
@@ -433,13 +470,16 @@ setProduct(prev => ({
       });
     };
 
-    const AddproductImage=()=>{
-      setProduct(prev => ({
-        ...prev,
-        images: [...prev.images, null],
-        files: [...prev.files, null]
-      }));
-    }
+  const AddproductImage = () => {
+  setProduct(prev => ({
+    ...prev,
+    images: [...(prev.images || []), ""],
+    files: [...(prev.files || []), null],
+  }));
+};
+
+
+
   
     const handleAddOverviewImage = () => {
       setProduct(prev => ({
@@ -674,16 +714,17 @@ setProduct(prev => ({
   setSelectedCategory(category._id);
   setProduct((prev) => ({
     ...prev,
-    category: category._id, // set subcategory here
+    sub_category: category._id, // set subcategory here
   }));
 };
 
 
-  useEffect(() => {
-  if (product) {
-    setSelectedCategory(product.category); // This is the subcategory ID
-  }
-}, [product]);
+//   useEffect(() => {
+//   if (product) {
+//     setSelectedCategory(product.category); // This is the subcategory ID
+//   }
+// }, [product]);
+
 
   
   
@@ -825,12 +866,43 @@ setProduct(prev => ({
     return `${timestamp}-${randomString}-${originalFileName}`;
   };
   
- const uploadImages = async (files) => {
+//  const uploadImages = async (files) => {
+//   const uploadedFilePaths = [];
+
+//   for (let i = 0; i < files.length; i++) {
+//     const file = files[i];
+//     if (!file) continue; // ✅ Skip null/undefined files
+
+//     const formData = new FormData();
+//     const uniqueFileName = generateUniqueFileName(file.name);
+//     formData.append("image", file);
+
+//     try {
+//       const response = await fetch("/api/product/upload", {
+//         method: "POST",
+//         body: formData,
+//       });
+
+//       if (response.ok) {
+//         const { savedImages } = await response.json();
+//         uploadedFilePaths.push(savedImages); // push string or array based on your API
+//       } else {
+//         toast.error(response.statusText);
+//       }
+//     } catch (error) {
+//       toast.error(error.message);
+//     }
+//   }
+
+//   return uploadedFilePaths;
+// };
+
+const uploadImages = async (files) => {
   const uploadedFilePaths = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    if (!file) continue; // ✅ Skip null/undefined files
+    if (!file) continue;
 
     const formData = new FormData();
     const uniqueFileName = generateUniqueFileName(file.name);
@@ -844,7 +916,10 @@ setProduct(prev => ({
 
       if (response.ok) {
         const { savedImages } = await response.json();
-        uploadedFilePaths.push(savedImages); // push string or array based on your API
+        // Extract the original filename from the generated unique name
+        const parts = savedImages.split('-');
+        const originalFileName = parts.pop();
+        uploadedFilePaths.push(originalFileName); // Push only the original filename
       } else {
         toast.error(response.statusText);
       }
@@ -855,8 +930,6 @@ setProduct(prev => ({
 
   return uploadedFilePaths;
 };
-
-
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -909,14 +982,35 @@ setProduct(prev => ({
      } finally {
      }
    }
-
-  const handleFilterChange = (selectedOptions) => {
-    console.log(selectedOptions);
-    setProduct((prev) => ({
-      ...prev,
-      filters: selectedOptions,
-    }));
-  };
+const handleFilterChange = (selectedOptions) => {
+  console.log(selectedOptions);
+  // Extract only the 'value' from each selected option object
+  const selectedValues = selectedOptions.map((option) => option.value);
+ 
+  setProduct((prev) => ({
+    ...prev,
+    // Store an array of strings, not objects
+    filters: selectedValues,
+  }));
+};
+ 
+const handleupdatefilterchange = (filters) => {
+  const selectedValues = filters.map((option) => option.value);
+ 
+  setProduct((prev) => ({
+    ...prev,
+    // Store an array of strings, not objects
+    filters: selectedValues,
+  }));
+}
+ 
+  // const handleFilterChange = (selectedOptions) => {
+  //   console.log(selectedOptions);
+  //   setProduct((prev) => ({
+  //     ...prev,
+  //     filters: selectedOptions,
+  //   }));
+  // };
 
   const handleHighlightChange = (index, value) => {
   setProduct((prevProduct) => {
@@ -945,73 +1039,74 @@ setProduct(prev => ({
   }));
 };
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      // ✅ Clean the product object before sending
-      console.log(product.filters.map(f => f.value));
-      
+  e.preventDefault();
+  try {
+    const formData = new FormData();
+  const existingImages = product.images.filter(
+    (img) => typeof img === "string" && !img.startsWith("blob:")
+  );
+    // clean product (⚠️ do NOT send images)
     const cleanedProduct = {
       ...product,
-      filters: product.filters.map(f => f.value), // ✅ FIXED here
+      filters: (product.filters || []).map(f => f.value),
+      related_products: product.related_products || [],
+      category: product.category || "",
+      product_highlights: product.product_highlights || [],
+      images: product.images.filter(img => typeof img === "string") // clear images so no blob goes to DB
     };
 
-    // Upload each variant's images and inject filenames
-const uploadedVariantImages = [];
+    console.log(product);
+    // return false;
+    // ✅ Upload product images
+    (product.files || []).forEach(file => {
+      if (file) formData.append("images", file);
+    });
 
-// Attach variant images to FormData dynamically
-for (let i = 0; i < variantImages.length; i++) {
-  const variantImgGroup = variantImages[i].images;
+    // ✅ Upload overview images
+    (product.overviewImageFile || []).forEach(file => {
+      if (file) formData.append("overviewImages", file);
+    });
 
-  for (let j = 0; j < variantImgGroup.length; j++) {
-    const imageFile = variantImgGroup[j];
-    if (imageFile) {
-      formData.append(`variant_${i}_image_${j}`, imageFile);
-    }
-  }
-}
+    // ✅ Variants with images
+    const variantsWithImages = (product.variants || []).map((variant, i) => {
+      const files = variantImages[i]?.images || [];
+      files.forEach((file, j) => {
+        if (file) {
+          formData.append(`variant_${i}_image_${j}`, file);
+        }
+      });
+      return { ...variant, images: [] }; // backend fills real filenames
+    });
 
+    formData.append("product", JSON.stringify({
+    ...product,
+    images: existingImages,   // keep old DB images
+  }));
 
-const variantsWithImages = product.variants.map((variant, i) => ({
-  ...variant,
-  images: uploadedVariantImages[i] || []
-}));
+    formData.append("product", JSON.stringify(cleanedProduct));
+    formData.append("variant", JSON.stringify(variantsWithImages));
+    formData.append("highlights", JSON.stringify(cleanedProduct.product_highlights));
 
-formData.append("variant", JSON.stringify(variantsWithImages));
+    const apiUrl = mode === "edit" ? `/api/product/update/${productId}` : "/api/product/add";
+    const method = mode === "edit" ? "PUT" : "POST";
 
+    const response = await fetch(apiUrl, { method, body: formData });
+    const responseData = await response.json();
 
-      formData.append("product", JSON.stringify(cleanedProduct));
-      formData.append("category", product.category);
-      if (product.files && product.files.length > 0) {
-        product.files.forEach(file => formData.append("images", file));
-      }
-      if (product.overviewImageFile && product.overviewImageFile.length > 0) {
-        product.overviewImageFile.forEach(file => formData.append("overviewImages", file));
-      }
-      formData.append("highlights", JSON.stringify(product.product_highlights));
-      // formData.append("variant", JSON.stringify(variantsWithImages));
-
-
-      const apiUrl = mode === "edit" ? `/api/product/update/${productId}` : "/api/product/add";
-      const method = mode === "edit" ? "PUT" : "POST";
-
-      const response = await fetch(apiUrl, { method, body: formData });
-      const responseData = await response.json();
-
-     if (response.ok) {
-      if (mode === "edit" && typeof onSuccess === "function") {
-        onSuccess(); // Let the modal handle toast and close
-      } else {
-        toast.success("Product added successfully");
-        router.push("/admin/product");
-      }
+    if (response.ok) {
+      toast.success(mode === "edit" ? "Product updated" : "Product added");
+      if (mode === "edit" && typeof onSuccess === "function") onSuccess();
+      else router.push("/admin/product");
     } else {
-        toast.error(responseData.error || "Something went wrong");
-      }
-    } catch (error) {
-      toast.error(error.message || "An unexpected error occurred");
+      toast.error(responseData.error || "Something went wrong");
     }
-  };
+  } catch (error) {
+    toast.error(error.message || "An unexpected error occurred");
+  }
+};
+
+
+
 
   const handleAddVariantAttribute = () => {
     setProduct(prev => ({
@@ -1177,8 +1272,8 @@ formData.append("variant", JSON.stringify(variantsWithImages));
         }
         break;
       case 2:
-        if (!product.images.some(img => img) || !product.description) {
-          return "Please fill in all required fields: Images and Description.";
+        if (!product.images.some(img => img) ) {
+          return "Please fill in all required fields: Images.";
         }
         break;
       case 3:
@@ -1347,7 +1442,7 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                         
                         <div className="divide-y divide-gray-200">
                          
-                          {product.images.map((_, index) => (
+                          {(product.images || []).map((img, index) => (
                             <div key={index} className="grid grid-cols-12 gap-4 items-center py-4 px-4">
                               <div className="col-span-5">
                                 <input
@@ -1383,10 +1478,21 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                               <div className="col-span-2">
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
-                                    <button type="button" onClick={AddproductImage} className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
-                                      </svg>
-                                    </button>
+                                    <button
+  type="button"
+  onClick={() => AddproductImage(index)}
+  className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+>
+  <svg
+    className="h-5 w-5"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
+  </svg>
+</button>
+
                                   </div>
                                   <div>
                                     <button
@@ -1770,6 +1876,9 @@ formData.append("variant", JSON.stringify(variantsWithImages));
           </div>
         )}
 
+   
+
+
 
         {/* Step 3: status */}
         {currentStep === 4 && (
@@ -1837,6 +1946,23 @@ formData.append("variant", JSON.stringify(variantsWithImages));
                 closeMenuOnSelect={false}
               />
             </div>
+
+
+
+            <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Related Products</label>
+  <Select
+    isMulti
+    options={allproducts.filter(p => p.value !== product._id)} // exclude current product if editing
+    onChange={handleRelatedProductsChange}
+    value={allproducts.filter(option =>
+      Array.isArray(product.related_products) && product.related_products.includes(option.value)
+    )}
+    placeholder="Select related products..."
+    closeMenuOnSelect={false}
+  />
+</div>
+
 
 
 

@@ -4,7 +4,15 @@ import { NextResponse } from "next/server";
 import md5 from "md5";
 import { writeFile, unlink } from "fs/promises";
 import path from "path";
- 
+ function convertSlug(slug) {
+  let result = slug.replace(/ /g, "-"); // replace spaces with hyphens
+  result = result.replace(/[^A-Za-z0-9\-]/g, ""); // remove special chars
+  result = result.replace(/-+/g, "-"); // collapse multiple hyphens
+  result = result.toLowerCase();
+
+  return result;
+
+}
 export async function PUT(req) {
   try {
     await dbConnect();
@@ -29,7 +37,8 @@ export async function PUT(req) {
     }
  
     // Check if new category name already exists (excluding current category)
-    const category_slug = category_name.toLowerCase().replace(/\s+/g, "-");
+    // const category_slug = category_name.toLowerCase().replace(/\s+/g, "-");
+    let category_slug = convertSlug(category_name); 
     const md5_cat_name = md5(category_slug);
    
     const duplicateCategory = await Category.findOne({
@@ -58,17 +67,42 @@ export async function PUT(req) {
           console.error("Error deleting old image:", err);
         }
       }
- 
+
       // Save new image
       const buffer = Buffer.from(await file.arrayBuffer());
       const uploadDir = path.join(process.cwd(), "public/uploads/categories");
       const fileName = `category_${Date.now()}${path.extname(file.name)}`;
-     
       await writeFile(path.join(uploadDir, fileName), buffer);
-      image_url = `/uploads/categories/${fileName}`;
+      image_url = `http://localhost:3000/uploads/categories/${fileName}`;
     }
  
-    // Update category
+    // Handle navImage upload/update BEFORE updating category
+    const existingNavImage = formData.get("existingNavImage");
+    let nav_image_url = existingNavImage;
+    const navFile = formData.get("navImage");
+    if (navFile) {
+      console.log('navFile:', navFile);
+      if (nav_image_url) {
+        try {
+          const oldNavImagePath = path.join(
+            process.cwd(),
+            "public",
+            nav_image_url.replace("http://localhost:3000", "")
+          );
+          await unlink(oldNavImagePath);
+        } catch (err) {
+          console.error("Error deleting old navImage:", err);
+        }
+      }
+      const buffer = Buffer.from(await navFile.arrayBuffer());
+      const uploadDir = path.join(process.cwd(), "public/uploads/categories");
+      const fileName = `category_nav_${Date.now()}${path.extname(navFile.name)}`;
+      await writeFile(path.join(uploadDir, fileName), buffer);
+      nav_image_url = `http://localhost:3000/uploads/categories/${fileName}`;
+      console.log('nav_image_url:', nav_image_url);
+    }
+
+    // Update category with navImage
     const updatedCategory = await Category.findByIdAndUpdate(
       _id,
       {
@@ -78,15 +112,16 @@ export async function PUT(req) {
         parentid,
         status,
         image: image_url,
+        navImage: nav_image_url,
         updatedAt: new Date(),
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
- 
+
     if (!updatedCategory) {
       return NextResponse.json({ error: "Failed to update category" }, { status: 400 });
     }
- 
+
     return NextResponse.json(
       {
         message: "Category updated successfully",

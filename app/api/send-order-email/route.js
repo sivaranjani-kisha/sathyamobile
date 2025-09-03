@@ -33,12 +33,13 @@ export async function POST(req) {
     const customerMailOptions = {
       from: process.env.EMAIL_USER,
       to: customerEmail,
+       cc: "ecom@bharathelectronics.in",
       subject: 'Your Order Confirmation',
       html: `
        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.1); overflow: hidden;box-shadow: -1px 45px 17px -12px;">
     <!-- Top Bar -->
-    <div style="background-color:#ffeb3b; padding: 20px; text-align: center;">
+    <div style="background-color:#e5e2c9; padding: 20px; text-align: center;">
       <img src="cid:logo_cid" alt="Logo" style="width: 90px; height:90px" />
     </div>
 
@@ -76,7 +77,7 @@ export async function POST(req) {
 
       <div style="text-align: center; margin-top: 30px;">
         <a href="https://yourwebsite.com/orders/${orderDetails.order_number}" 
-          style="background-color:#ffeb3b; color:#f71c1c; padding: 12px 20px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
+          style="background-color:#e5e2c9; color:#f71c1c; padding: 12px 20px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
           View Your Order
         </a>
       </div>
@@ -98,11 +99,12 @@ export async function POST(req) {
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: adminEmail,
+       cc: "ecom@bharathelectronics.in",
       subject: 'New Order Received',
       html: `
       <div style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 30px;">
   <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 6px; box-shadow: 0 0 10px rgba(0,0,0,0.1); overflow: hidden;">
-    <div style="background-color: #ffeb3b; padding: 20px; text-align: center;">
+    <div style="background-color: #e5e2c9; padding: 20px; text-align: center;">
       <img src="cid:logo_cid" alt="Logo" style="width: 90px; height: 90px;" />
     </div>
 
@@ -138,12 +140,7 @@ export async function POST(req) {
         We'll process your order shortly. Thank you for shopping with us!
       </p>
 
-      <div style="text-align: center; margin-top: 30px;">
-        <a href="/order" 
-          style="background-color:#ffeb3b; color: #f71c1c; padding: 12px 20px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
-          View Your Order
-        </a>
-      </div>
+      
     </div>
   </div>
 </div>

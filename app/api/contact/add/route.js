@@ -4,42 +4,42 @@ import ContactModel from "@/models/ecom_contact_info";
 
 export async function POST(request) {
   try {
-    await dbConnect();
+    await dbConnect(); // Ensure DB connection
 
     const body = await request.json();
-    const { name, subject, mobile_number, message, status } = body;
+    const { name, email_address, mobile_number, message, city, status } = body;
 
-    if (!name || !subject || !mobile_number || !message) {
+    // Validate fields
+    if (!name || !email_address || !mobile_number || !message || !city) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
       );
     }
 
-    const existingContact = await ContactModel.findOne({ mobile_number });
+    // Check for existing contact (optional — usually check email instead of name)
+    const existingContact = await ContactModel.findOne({ email_address });
     if (existingContact) {
       return NextResponse.json(
-        { success: false, message: "This mobile number is already registered" },
-        { status: 409 }
+        { success: false, message: "Contact already exists" },
+        { status: 400 }
       );
     }
 
+    // Create new contact
     const newContact = new ContactModel({
       name,
-      subject,
+      email_address,
       mobile_number,
       message,
-      status: status || "active",
+      city,
+      status,
     });
 
     await newContact.save();
 
     return NextResponse.json(
-      {
-        success: true,
-        message: "Contact added successfully",
-        data: newContact,
-      },
+      { success: true, message: "Contact added successfully", data: newContact },
       { status: 201 }
     );
   } catch (error) {

@@ -4,13 +4,14 @@ import React, { useEffect, useState, useMemo } from "react";
 import { FaPlus, FaMinus, FaEdit } from "react-icons/fa";
 import { Icon } from '@iconify/react';
 import DateRangePicker from '@/components/DateRangePicker';
-
+import Link from "next/link";
 export default function CategoryComponent() {
   const [categories, setCategories] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState({});
   const [showUpdateAlert, setShowUpdateAlert] = useState(false);
 const [updateAlertMessage, setUpdateAlertMessage] = useState('');
-
+const [updateErrorMessage, setUpdateErrorMessage] = useState("");
+const [updateImageError, setUpdateImageError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -22,6 +23,7 @@ const [updateAlertMessage, setUpdateAlertMessage] = useState('');
     parentid: "none",
     status: "Active",
     image: null,
+    navImage: null,
   });
   const [categoryToUpdate, setCategoryToUpdate] = useState({
     _id: "",
@@ -30,8 +32,10 @@ const [updateAlertMessage, setUpdateAlertMessage] = useState('');
     status: "Active",
     image: null,
     existingImage: null,
+    navImage: null,
+    existingNavImage: null,
   });
-
+const [errorMessage, setErrorMessage] = useState("");
   const [dateFilter, setDateFilter] = useState({
     startDate: null,
     endDate: null
@@ -51,7 +55,7 @@ const [updateAlertMessage, setUpdateAlertMessage] = useState('');
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   // Fetch categories from API
   const fetchCategories = async () => {
@@ -127,63 +131,74 @@ const handleImageChange = async (e) => {
   };
 
   // Handle category submission
-  const handleAddCategory = async (e) => {
-    e.preventDefault();
-      // Check if image is provided
-      if (!newCategory.image) {
-        setAlertMessage("Image is required and must be 260px width and 240px height");
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-        return;
-      }
+ const handleAddCategory = async (e) => {
+  e.preventDefault();
+  
+  // Reset error messages
+  setImageError("");
+  setErrorMessage("");
 
-    // Check if category name already exists
-    if (isCategoryNameExists(newCategory.category_name)) {
-      setAlertMessage("Category name already exists!");
+  // Check if image is provided
+  if (!newCategory.image) {
+    setImageError("Image is required and must be 260px width and 240px height");
+    return;
+  }
+
+  // Trim and check if category name is empty
+  const trimmedCategoryName = newCategory.category_name.trim();
+  if (!trimmedCategoryName) {
+    setErrorMessage("Category name cannot be empty!");
+    return;
+  }
+
+  // Check if category name already exists
+  if (isCategoryNameExists(trimmedCategoryName)) {
+    setErrorMessage("Category name already exists!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("category_name", trimmedCategoryName);
+  formData.append("parentid", newCategory.parentid);
+  formData.append("status", newCategory.status);
+  formData.append("image", newCategory.image);
+  if (newCategory.navImage) {
+    formData.append("navImage", newCategory.navImage);
+  }
+
+  try {
+    const response = await fetch("/api/categories/add", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      setIsModalOpen(false);
+      fetchCategories();
+
+      // Reset form
+      setNewCategory({
+        category_name: "",
+        parentid: "none",
+        status: "Active",
+        image: null,
+      });
+      setImagePreview(null);
+
+      // Show success alert (if you still want this as an alert)
+      setAlertMessage("Category added successfully!");
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
-      return;
+    } else {
+      setErrorMessage(result.error || "Failed to add category");
+      console.error("Error adding category:", result.error);
     }
-
-    const formData = new FormData();
-    formData.append("category_name", newCategory.category_name);
-    formData.append("parentid", newCategory.parentid);
-    formData.append("status", newCategory.status);
-    if (newCategory.image) {
-      formData.append("image", newCategory.image);
-    }
-
-    try {
-      const response = await fetch("/api/categories/add", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        setIsModalOpen(false);
-        fetchCategories();
-
-        // Reset form
-        setNewCategory({
-          category_name: "",
-          parentid: "none",
-          status: "Active",
-          image: null,
-        });
-        setImagePreview(null);
-
-        // Show success alert
-        setAlertMessage("Category added successfully!");
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      } else {
-        console.error("Error adding category:", result.error);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  } catch (error) {
+    setErrorMessage("Failed to add category. Please try again.");
+    console.error("Error:", error);
+  }
+};
 
   // Handle category update
   // const handleUpdateCategory = async (e) => {
@@ -253,13 +268,29 @@ const handleImageChange = async (e) => {
 const handleUpdateCategory = async (e) => {
   e.preventDefault();
 
+  // Reset error messages
+  setUpdateImageError("");
+  setUpdateErrorMessage("");
+
+  // Trim and check if category name is empty
+  const trimmedCategoryName = categoryToUpdate.category_name.trim();
+  if (!trimmedCategoryName) {
+    setErrorMessage("Category name cannot be empty!");
+    return;
+  }
+
+    // Check if category name already exists
+  // if (isCategoryNameExists(trimmedCategoryName)) {
+  //   setErrorMessage("Category name already exists!");
+  //   return;
+  // }
   const formData = new FormData();
   formData.append("_id", categoryToUpdate._id);
-  formData.append("category_name", categoryToUpdate.category_name);
+  formData.append("category_name", trimmedCategoryName);
   formData.append("parentid", categoryToUpdate.parentid);
   formData.append("status", categoryToUpdate.status);
 
-  // Check image dimension if a new image is uploaded
+  // Check if a new image is being uploaded
   if (categoryToUpdate.image instanceof File) {
     const img = new Image();
     img.src = URL.createObjectURL(categoryToUpdate.image);
@@ -267,9 +298,7 @@ const handleUpdateCategory = async (e) => {
     const isValid = await new Promise((resolve) => {
       img.onload = function () {
         if (this.width !== 260 || this.height !== 240) {
-          setAlertMessage("Image must be exactly 260px width and 240px height");
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
+          setUpdateImageError("Image must be exactly 260px width and 240px height");
           resolve(false);
         } else {
           resolve(true);
@@ -277,19 +306,23 @@ const handleUpdateCategory = async (e) => {
       };
 
       img.onerror = function () {
-        setAlertMessage("Invalid image file");
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        setUpdateImageError("Invalid image file");
         resolve(false);
       };
     });
 
-    if (!isValid) return; // ❌ Block submission if image is invalid
+    if (!isValid) return; // Block submission if image is invalid
 
-    formData.append("image", categoryToUpdate.image); // ✅ Add only after validation
+    formData.append("image", categoryToUpdate.image);
   }
 
   formData.append("existingImage", categoryToUpdate.existingImage || "");
+
+  // Check if a new nav image is being uploaded
+  if (categoryToUpdate.navImage instanceof File) {
+    formData.append("navImage", categoryToUpdate.navImage);
+  }
+  formData.append("existingNavImage", categoryToUpdate.existingNavImage || "");
 
   try {
     const response = await fetch("/api/categories/update", {
@@ -298,26 +331,69 @@ const handleUpdateCategory = async (e) => {
     });
 
     const result = await response.json();
-    if (response.ok) {
-      setIsUpdateModalOpen(false);
-      fetchCategories();
-      setAlertMessage("Category updated successfully!");
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    } else {
-      console.error("Error updating category:", result.error);
-      setAlertMessage(result.error || "Failed to update category");
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+    // if (response.ok) {
+    //   setIsUpdateModalOpen(false);
+    //   fetchCategories();
+    //   setAlertMessage("Category updated successfully!");
+    //   setShowAlert(true);
+    //   setTimeout(() => setShowAlert(false), 3000);
+    // } else {
+    //   setUpdateErrorMessage(result.error || "Failed to update category");
+    //   console.error("Error updating category:", result.error);
+    // }
+     if (!response.ok) {
+      // Handle API errors (including duplicate category)
+      setUpdateErrorMessage(result.error || "Failed to update category");
+      return;
     }
-  } catch (error) {
-    console.error("Error:", error);
-    setAlertMessage("Failed to update category");
+
+    // Success case
+    setIsUpdateModalOpen(false);
+    fetchCategories();
+    setAlertMessage("Category updated successfully!");
     setShowAlert(true);
     setTimeout(() => setShowAlert(false), 3000);
+
+  } catch (error) {
+    setUpdateErrorMessage("Failed to update category. Please try again.");
   }
 };
+const handleUpdateImageChange = (e) => {
+  const file = e.target.files[0];
+  setUpdateImageError("");
+  
+  if (!file) {
+    // If no file is selected, keep the existing image
+    setCategoryToUpdate(prev => ({ ...prev, image: null }));
+    return;
+  }
 
+  // Check image dimensions
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  
+  img.onload = function() {
+    if (this.width !== 260 || this.height !== 240) {
+      setUpdateImageError("Image must be exactly 260px width and 240px height");
+      setCategoryToUpdate(prev => ({ ...prev, image: null }));
+    } else {
+      setCategoryToUpdate(prev => ({ ...prev, image: file }));
+    }
+  };
+  
+  img.onerror = function() {
+    setUpdateImageError("Invalid image file");
+  };
+};
+const handleNavImageChange = async (e) => {
+  const file = e.target.files[0];
+  // You can add dimension checks here if needed
+  setNewCategory(prev => ({ ...prev, navImage: file }));
+};
+const handleUpdateNavImageChange = async (e) => {
+  const file = e.target.files[0];
+  setCategoryToUpdate(prev => ({ ...prev, navImage: file }));
+};
   // Handle category deletion
   const handleDeleteCategory = async (categoryId) => {
     try {
@@ -528,7 +604,8 @@ const handleUpdateCategory = async (e) => {
               onClick={() => {
                 setCategoryToUpdate({
                   ...category,
-                  existingImage: category.image || null
+                  existingImage: category.image || null,
+                  existingNavImage: category.navImage || null,
                 });
                 setIsUpdateModalOpen(true);
               }}
@@ -556,11 +633,11 @@ const handleUpdateCategory = async (e) => {
   return (
     <div className="container mx-auto">
       {/* Alert Message */}
-      {/* {showAlert && (
+      {showAlert && (
         <div className="bg-green-500 text-white px-4 py-2 rounded-md mb-4 mt-5">
           {alertMessage}
         </div>
-      )} */}
+      )}
 
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-bold">Category List</h2>
@@ -570,8 +647,13 @@ const handleUpdateCategory = async (e) => {
       {isLoading ? (
         <p>Loading categories...</p>
       ) : (
-        <div className="bg-white shadow-md rounded-lg p-5 h-[500px] overflow-x-auto">
-          {/* Search and Filter Section */}
+        <div className="bg-white shadow-md rounded-lg p-5 mb-5 overflow-x-auto">
+        <Link
+      href="/admin/category/navcat"
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition duration-150 inline-block"
+    >
+      NavMenu
+    </Link>
         {/* Search and Filter Section */}
 {/* Search and Filter Section */}
 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end mb-4">
@@ -727,7 +809,15 @@ const handleUpdateCategory = async (e) => {
           <div className="flex justify-between items-center border-b-2 border-gray-300 px-6 py-4">
             <h2 className="text-xl font-semibold text-gray-900">Add Category</h2>
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() =>{
+                 setIsModalOpen(false)
+                setNewCategory({
+        category_name: "",
+        parentid: "none",
+        status: "Active",
+        image: null,
+      })}
+              }
               className="text-gray-400 hover:text-gray-700 focus:outline-none"
               aria-label="Close modal"
             >
@@ -746,25 +836,28 @@ const handleUpdateCategory = async (e) => {
           <div className="px-6 py-6 overflow-y-auto flex-grow">
             <form onSubmit={handleAddCategory} className="space-y-5">
               {/* ALERT MESSAGE – moved here */}
-              {showAlert && (
+              {/* {showAlert && (
                 <div className="bg-green-500 text-white px-4 py-2 rounded-md">
                   {alertMessage}
                 </div>
-              )}
+              )} */}
 
               <div>
-                <label htmlFor="category_name" className="block mb-1 text-sm font-semibold text-gray-700">
-                  Category Name
-                </label>
-                <input
-                  name="category_name"
-                  value={newCategory.category_name}
-                  onChange={handleInputChange}
-                  id="category_name"
-                  className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
-                  placeholder="Enter Category Name"
-                  required
-                />
+                 <label htmlFor="category_name" className="block mb-1 text-sm font-semibold text-gray-700">
+    Category Name
+  </label>
+  <input
+    name="category_name"
+    value={newCategory.category_name}
+    onChange={handleInputChange}
+    id="category_name"
+    className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
+    placeholder="Enter Category Name"
+    required
+  />
+  {errorMessage && (
+    <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+  )}
               </div>
 
               <div>
@@ -788,16 +881,19 @@ const handleUpdateCategory = async (e) => {
 
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Upload Image (260px X 240px)</label>
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                  className="block w-full text-sm text-gray-600
-                    file:mr-3 file:py-1 file:px-3
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-red-50 file:text-red-700
-                    hover:file:bg-red-100"
-                />
+              <input
+    type="file"
+    onChange={handleImageChange}
+    className="block w-full text-sm text-gray-600
+      file:mr-3 file:py-1 file:px-3
+      file:rounded-md file:border-0
+      file:text-sm file:font-semibold
+      file:bg-red-50 file:text-red-700
+      hover:file:bg-red-100"
+  />
+  {imageError && (
+    <p className="text-red-500 text-sm mt-1">{imageError}</p>
+  )}
                 {imagePreview && (
                   <img
                     src={imagePreview}
@@ -805,6 +901,22 @@ const handleUpdateCategory = async (e) => {
                     className="mt-3 h-16 rounded-md object-contain mx-auto"
                   />
                 )}
+              </div>
+
+              <div>
+                <label className="block mb-1 text-sm font-semibold text-gray-700">
+                  Upload Navigation Image (260px X 240px)
+                </label>
+                <input
+                  type="file"
+                  onChange={handleNavImageChange}
+                  className="block w-full text-sm text-gray-600
+                    file:mr-3 file:py-1 file:px-3
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-red-50 file:text-red-700
+                    hover:file:bg-red-100"
+                />
               </div>
 
               <div>
@@ -838,125 +950,182 @@ const handleUpdateCategory = async (e) => {
 
       {/* Update Category Modal */}
      {isUpdateModalOpen && categoryToUpdate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center border-b-2 border-gray-300 px-6 py-4">
-              <h2 className="text-xl font-semibold text-gray-900">Update Category</h2>
-              <button
-                onClick={() => setIsUpdateModalOpen(false)}
-                className="text-gray-400 hover:text-gray-700 focus:outline-none"
-                aria-label="Close modal"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+    <div className="bg-white rounded-2xl shadow-lg w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
+      <div className="flex justify-between items-center border-b-2 border-gray-300 px-6 py-4">
+        <h2 className="text-xl font-semibold text-gray-900">Update Category</h2>
+        <button
+          onClick={() => {
+            setIsUpdateModalOpen(false);
+            setUpdateErrorMessage("");
+            setUpdateImageError("");
+             setErrorMessage("");
+          }}
+          className="text-gray-400 hover:text-gray-700 focus:outline-none"
+          aria-label="Close modal"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-6 py-6 overflow-y-auto flex-grow">
+        <form onSubmit={handleUpdateCategory} className="space-y-5">
+          {/* Error Messages */}
+          {/* {updateErrorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md">
+              {updateErrorMessage}
             </div>
+          )} */}
 
-            <div className="px-6 py-6 overflow-y-auto flex-grow">
-              <form onSubmit={handleUpdateCategory} className="space-y-5">
+          {/* Success Message */}
+          {showUpdateAlert && (
+            <div className="bg-green-500 text-white px-4 py-2 rounded-md">
+              {updateAlertMessage}
+            </div>
+          )}
 
-                {/* ✅ Alert Message Above Category Name */}
-                {showUpdateAlert && (
-                  <div className="bg-green-500 text-white px-4 py-2 rounded-md -mt-2">
-                    {updateAlertMessage}
-                  </div>
-                )}
+          {/* Category Name */}
+          <div>
+            <label htmlFor="update_category_name" className="block mb-1 text-sm font-semibold text-gray-700">
+              Category Name
+            </label>
+            <input
+              name="category_name"
+              value={categoryToUpdate.category_name}
+              onChange={(e) => setCategoryToUpdate({ ...categoryToUpdate, category_name: e.target.value })}
+              id="update_category_name"
+              className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
+              placeholder="Enter Category Name"
+              required
+            />
+            {errorMessage && (
+              <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+            )}
+          </div>
 
-                <div>
-                  <label htmlFor="update_category_name" className="block mb-1 text-sm font-semibold text-gray-700">
-                    Category Name
-                  </label>
-                  <input
-                    name="category_name"
-                    value={categoryToUpdate.category_name}
-                    onChange={(e) => setCategoryToUpdate({ ...categoryToUpdate, category_name: e.target.value })}
-                    id="update_category_name"
-                    className="w-full rounded-md border p-2 focus:ring-2 focus:ring-red-400"
-                    placeholder="Enter Category Name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-1 text-sm font-semibold text-gray-700">Parent Category</label>
-                  <div className="border border-gray-300 rounded-md max-h-40 overflow-y-auto p-2">
-                    <div>
-                      <div
-                        className={`p-2 cursor-pointer rounded-md font-semibold ${
-                          categoryToUpdate.parentid === "none"
-                            ? "bg-red-100 text-red-600"
-                            : "text-gray-800 hover:bg-gray-100"
-                        }`}
-                        onClick={() => setCategoryToUpdate({ ...categoryToUpdate, parentid: "none" })}
-                      >
-                        Category
-                      </div>
-                      {renderCategoryTree(buildCategoryTree(categories))}
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block mb-1 text-sm font-semibold text-gray-700">Upload Image (260px X 240px)</label>
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setCategoryToUpdate((prev) => ({ ...prev, image: file }));
-                        setImagePreview(URL.createObjectURL(file));
-                      }
-                    }}
-                    className="block w-full text-sm text-gray-600
-                      file:mr-3 file:py-1 file:px-3
-                      file:rounded-md file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-red-50 file:text-red-700
-                      hover:file:bg-red-100"
-                  />
-                  {categoryToUpdate.image && (
-                    <img
-                      src={
-                        categoryToUpdate.image instanceof File
-                          ? URL.createObjectURL(categoryToUpdate.image)
-                          : categoryToUpdate.image
-                      }
-                      alt="Preview"
-                      className="mt-3 h-16 rounded-md object-contain mx-auto"
-                    />
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="update_status" className="block mb-1 text-sm font-semibold text-gray-700">
-                    Status
-                  </label>
-                  <select
-                    name="status"
-                    id="update_status"
-                    value={categoryToUpdate.status}
-                    onChange={(e) => setCategoryToUpdate({ ...categoryToUpdate, status: e.target.value })}
-                    className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-red-400"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="inline-block bg-red-600 text-white px-5 py-2 rounded-md text-sm font-semibold hover:bg-red-700 transition"
+          {/* Parent Category */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-700">Parent Category</label>
+            <div className="border border-gray-300 rounded-md max-h-40 overflow-y-auto p-2">
+              <div>
+                <div
+                  className={`p-2 cursor-pointer rounded-md font-semibold ${
+                    categoryToUpdate.parentid === "none"
+                      ? "bg-red-100 text-red-600"
+                      : "text-gray-800 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setCategoryToUpdate({ ...categoryToUpdate, parentid: "none" })}
                 >
-                  Update Category
-                </button>
-              </form>
+                  Category
+                </div>
+                {renderCategoryTree(buildCategoryTree(categories))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+
+          {/* Image Upload */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-700">
+              Upload Image (260px X 240px)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleUpdateImageChange}
+              className="block w-full text-sm text-gray-600
+                file:mr-3 file:py-1 file:px-3
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-red-50 file:text-red-700
+                hover:file:bg-red-100"
+            />
+            {updateImageError && (
+              <p className="text-red-500 text-sm mt-1">{updateImageError}</p>
+            )}
+            {(categoryToUpdate.existingImage || categoryToUpdate.image) && (
+              <div className="mt-3 flex flex-col items-center">
+                <img
+                  src={
+                    categoryToUpdate.image instanceof File
+                      ? URL.createObjectURL(categoryToUpdate.image)
+                      : categoryToUpdate.existingImage
+                  }
+                  alt="Preview"
+                  className="h-16 rounded-md object-contain"
+                />
+                <p className="text-xs text-gray-500 mt-1">Current Image Preview</p>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Image Upload */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-700">
+              Upload Navigation Image (260px X 240px)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleUpdateNavImageChange}
+              className="block w-full text-sm text-gray-600
+                file:mr-3 file:py-1 file:px-3
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-red-50 file:text-red-700
+                hover:file:bg-red-100"
+            />
+            {updateImageError && (
+              <p className="text-red-500 text-sm mt-1">{updateImageError}</p>
+            )}
+            {(categoryToUpdate.existingNavImage || categoryToUpdate.navImage) && (
+              <div className="mt-3 flex flex-col items-center">
+                <img
+                  src={
+                    categoryToUpdate.navImage instanceof File
+                      ? URL.createObjectURL(categoryToUpdate.navImage)
+                      : categoryToUpdate.existingNavImage
+                  }
+                  alt="Preview"
+                  className="h-16 rounded-md object-contain"
+                />
+                <p className="text-xs text-gray-500 mt-1">Current Navigation Image Preview</p>
+              </div>
+            )}
+          </div>
+
+          {/* Status */}
+          <div>
+            <label htmlFor="update_status" className="block mb-1 text-sm font-semibold text-gray-700">
+              Status
+            </label>
+            <select
+              name="status"
+              id="update_status"
+              value={categoryToUpdate.status}
+              onChange={(e) => setCategoryToUpdate({ ...categoryToUpdate, status: e.target.value })}
+              className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-red-400"
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="inline-block bg-red-600 text-white px-5 py-2 rounded-md text-sm font-semibold hover:bg-red-700 transition w-full"
+          >
+            Update Category
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
 
 
       {/* Confirmation Modal */}

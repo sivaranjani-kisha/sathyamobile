@@ -104,7 +104,7 @@ export default function Header() {
                   {/* Right-side image */}
                   <div className="w-48 flex items-center justify-center p-2 border-l">
                     <img
-                      src={topCat.image}
+                      src={topCat.navImage}
                       alt={topCat.category_name}
                       className="max-w-full max-h-32 object-contain"
                     />

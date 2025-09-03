@@ -50,7 +50,7 @@ export async function PUT(req) {
       const buffer = Buffer.from(bytes);
       const ext = path.extname(image.name);
       const fileName = `brand_${Date.now()}${ext}`;
-      const filePath = path.join(process.cwd(), "public/uploads/Brands", fileName);
+      const filePath = path.join(process.cwd(), "public/uploads/brands", fileName);
 
       await writeFile(filePath, buffer);
       imagePath = `${fileName}`;
@@ -80,7 +80,7 @@ export async function PUT(req) {
   } catch (error) {
     console.error("Error updating brand:", error);
     return NextResponse.json(
-      { success: false, error: error },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }
