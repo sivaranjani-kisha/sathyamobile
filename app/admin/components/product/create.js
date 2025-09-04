@@ -186,12 +186,8 @@ export default function AddProductPage({ mode = "add", productData = null, produ
         if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
             setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
         }
-
-        if(productData.sub_category){
-          setSelectedCategory(productData.sub_category);
-        }
     }
-}, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
+}, [mode, productData, setJsonHighlightsInput]);
 useEffect(() => {
     fetchCategories();
     fetchFilter();
@@ -710,27 +706,54 @@ setProduct(prev => ({
   //   }
   // }, [product.variantAttributes, product.hasVariants]);
  
-  const handleCategoryChange = (category) => {
+//   const handleCategoryChange = (category) => {
+//   setSelectedCategory(category._id);
+//   setProduct((prev) => ({
+//     ...prev,
+//     category: category._id, // set subcategory here
+//   }));
+// };
+
+
+const handleCategoryChange = (category) => {
+  if (category.parentid !== "none") {
+    // This is a subcategory
+    setProduct((prev) => ({
+      ...prev,
+      category: category.parentid,   // parent category ID
+      sub_category: category._id,    // subcategory ID
+    }));
+  } else {
+    // This is a main category
+    setProduct((prev) => ({
+      ...prev,
+      category: category._id,
+      sub_category: null,
+    }));
+  }
   setSelectedCategory(category._id);
-  setProduct((prev) => ({
-    ...prev,
-    sub_category: category._id, // set subcategory here
-  }));
 };
 
 
-//   useEffect(() => {
-//   if (product) {
-//     setSelectedCategory(product.category); // This is the subcategory ID
-//   }
-// }, [product]);
+
+ useEffect(() => {
+  if (product) {
+    if (product.sub_category) {
+      setSelectedCategory(product.sub_category); // ✅ highlight subcategory
+    } else {
+      setSelectedCategory(product.category);     // fallback to main
+    }
+  }
+}, [product]);
 
 
   
   
   const renderCategoryTree = (categories, level = 0) => {
     return categories.map((category) => (
-      <div key={category._id} style={{ paddingLeft: `${level * 20}px` }}>
+      // <div key={category._id} style={{ paddingLeft: `${level * 20}px` }}>
+      <div key={`${category._id}-${category.parentid || "root"}`} style={{ paddingLeft: `${level * 20}px` }}>
+
         <div className="flex items-center cursor-pointer p-2 text-sm font-medium text-gray-700">
           {category.children.length > 0 && (
             <button
@@ -766,7 +789,7 @@ setProduct(prev => ({
           renderCategoryTree(category.children, level + 1)}
       </div>
     ));
-  };
+ ; }
 
   useEffect(() => {
   if (
@@ -982,28 +1005,18 @@ const uploadImages = async (files) => {
      } finally {
      }
    }
-const handleFilterChange = (selectedOptions) => {
-  console.log(selectedOptions);
+
+   const handleFilterChange = (selectedOptions) => {
   // Extract only the 'value' from each selected option object
   const selectedValues = selectedOptions.map((option) => option.value);
- 
+
   setProduct((prev) => ({
     ...prev,
     // Store an array of strings, not objects
     filters: selectedValues,
   }));
 };
- 
-const handleupdatefilterchange = (filters) => {
-  const selectedValues = filters.map((option) => option.value);
- 
-  setProduct((prev) => ({
-    ...prev,
-    // Store an array of strings, not objects
-    filters: selectedValues,
-  }));
-}
- 
+
   // const handleFilterChange = (selectedOptions) => {
   //   console.log(selectedOptions);
   //   setProduct((prev) => ({
@@ -1055,8 +1068,6 @@ const handleupdatefilterchange = (filters) => {
       images: product.images.filter(img => typeof img === "string") // clear images so no blob goes to DB
     };
 
-    console.log(product);
-    // return false;
     // ✅ Upload product images
     (product.files || []).forEach(file => {
       if (file) formData.append("images", file);
@@ -1080,6 +1091,7 @@ const handleupdatefilterchange = (filters) => {
 
     formData.append("product", JSON.stringify({
     ...product,
+    category: selectedCategory,
     images: existingImages,   // keep old DB images
   }));
 
@@ -1479,19 +1491,19 @@ const handleupdatefilterchange = (filters) => {
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
                                     <button
-  type="button"
-  onClick={() => AddproductImage(index)}
-  className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
->
-  <svg
-    className="h-5 w-5"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
-    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
-  </svg>
-</button>
+                                          type="button"
+                                          onClick={() => AddproductImage(index)}
+                                          className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                        >
+                                          <svg
+                                            className="h-5 w-5"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                          >
+                                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
+                                          </svg>
+                                        </button>
 
                                   </div>
                                   <div>
@@ -1807,14 +1819,14 @@ const handleupdatefilterchange = (filters) => {
                                                 </div>
                                                 <div className="col-span-5">
                                                  <img
-  className="w-20 h-20 object-cover rounded border border-gray-200"
-  alt={`Variant Preview ${imgIndex + 1}`}
-  src={
-    varItem.images[imgIndex]?.startsWith('blob:') || varItem.images[imgIndex]?.startsWith('data:')
-      ? varItem.images[imgIndex]
-      : `/uploads/products/${varItem.images[imgIndex] || 'no-image.jpg'}`
-  }
-/>
+                                                    className="w-20 h-20 object-cover rounded border border-gray-200"
+                                                    alt={`Variant Preview ${imgIndex + 1}`}
+                                                    src={
+                                                      varItem.images[imgIndex]?.startsWith('blob:') || varItem.images[imgIndex]?.startsWith('data:')
+                                                        ? varItem.images[imgIndex]
+                                                        : `/uploads/products/${varItem.images[imgIndex] || 'no-image.jpg'}`
+                                                    }
+                                                  />
 
                                                 </div>
                                                 <div className="col-span-2">
