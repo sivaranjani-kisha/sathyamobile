@@ -45,7 +45,7 @@ console.log(show_on_home)
       const buffer = Buffer.from(await file.arrayBuffer());
       const uploadDir = path.join(process.cwd(), "public/uploads/categories");
       await writeFile(path.join(uploadDir, file.name), buffer);
-      image_url = `http://localhost:3000/uploads/categories/${file.name}`;
+      image_url = `/uploads/categories/${file.name}`;
     }
     // Handle navImage upload
     let nav_image_url = "";
@@ -55,7 +55,7 @@ console.log(show_on_home)
       const buffer = Buffer.from(await navFile.arrayBuffer());
       const uploadDir = path.join(process.cwd(), "public/uploads/categories");
       await writeFile(path.join(uploadDir, navFile.name), buffer);
-      nav_image_url = `http://localhost:3000/uploads/categories/${navFile.name}`;
+      nav_image_url = `/uploads/categories/${navFile.name}`;
       console.log('nav_image_url:', nav_image_url);
     }
 
