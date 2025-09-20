@@ -4,8 +4,8 @@ import ProductClient from "./ProductClient";
 //import { useParams } from "next/navigation";
 
 export async function generateMetadata({ params  }) {
-  const slug = params.slug;
-
+  const slug = await params.slug;
+console.log(slug);
   // Always use absolute URL
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
