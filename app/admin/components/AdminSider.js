@@ -26,7 +26,7 @@ export default function AdminSider({ collapsed }) {
         { icon: 'mdi:filter-outline', label: 'Filter', link: 'filter', dotColor: 'bg-yellow-500' }
       ]
     },
-    // { icon: 'mdi:image-outline', label: 'Banner', link: 'design' },
+    { icon: 'mdi:image-outline', label: 'Banner', link: 'design' },
     {
       icon: 'material-symbols:receipt-long',
           label: 'Sales',
@@ -36,20 +36,31 @@ export default function AdminSider({ collapsed }) {
       // { icon: 'mdi:clock-outline', label: 'Home Delivery', link: 'order/home-delivery', dotColor: 'bg-yellow-500' },
       // { icon: 'mdi:clock-outline', label: 'Pending Order', link: 'order/pending-order', dotColor: 'bg-yellow-500' },
       { icon: 'mdi:cancel', label: 'Cancel Order', link: 'order/cancel-order', dotColor: 'bg-red-500' },
-      // { icon: 'mdi:truck-delivery-outline', label: 'Shipped Order', link: 'order/shipping-order', dotColor: 'bg-green-500' }
+      { icon: 'mdi:truck-delivery-outline', label: 'Shipped Order', link: 'shippedorder', dotColor: 'bg-green-500' }
     ]
   },
     { icon: 'mdi:tag-outline', label: 'Offer', link: 'offer' },
     { icon: 'mdi:note-text-outline', label: 'Blog', link: 'blog' },
     { icon: 'mdi:account-outline', label: 'User', link: 'user' },
     { icon: 'mdi:phone-outline', label: 'Contact', link: 'contact' },
+//     {
+//   icon: 'mdi:file-chart-outline', // changed to reports icon
+//   label: 'Reports',
+//   submenu: [
+//     { icon: 'mdi:plus-box-outline', label: 'New Product', link: 'newproduct', dotColor: 'bg-green-500' },
+
+//   ]
+// },
+
     // ✅ Updated Settings with new icon + submenu
   {
     icon: 'mdi:cog-outline',  // changed from phone to settings cog
     label: 'Settings',
     submenu: [
-      { icon: 'mdi:home-outline', label: 'Home Settings', link: 'homesettings', dotColor: 'bg-green-500' },
-       { icon: 'mdi:store-outline', label: 'Store Settings', link: 'store', dotColor: 'bg-yellow-500' },
+      // { icon: 'mdi:home-outline', label: 'Home Settings', link: 'homesettings', dotColor: 'bg-green-500' },
+      { icon: 'mdi:category-outline', label: 'Category Settings', link: 'categorysettings', dotColor: 'bg-green-500' },
+      { icon: 'mdi:category-outline', label: 'Brand Settings', link: 'brandsettings', dotColor: 'bg-green-500' },
+      { icon: 'mdi:store-outline', label: 'Store Settings', link: 'store', dotColor: 'bg-yellow-500' },
     ]
   },
     //     {
@@ -264,7 +275,7 @@ function SidebarItemWithDropdown({
 
       {/* Expanded mode submenu only if open */}
       {!collapsed && isOpen && (
-        <ul className="ml-8 mt-1 space-y-1">
+        <ul className="ml-2 mt-1 space-y-1">
           {item.submenu.map((sub) => (
             <li key={sub.label}>
               <button
