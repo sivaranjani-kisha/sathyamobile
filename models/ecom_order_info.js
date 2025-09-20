@@ -1,17 +1,44 @@
 import mongoose from "mongoose";
 
+
+const OrderHistorySchema = new mongoose.Schema(
+  {
+    date: { type: Date, default: Date.now },   // When the status was updated
+    status: { 
+      type: String, 
+      enum: ["Pending", "Accepted", "Cancelled", "Shipped"], 
+      required: true 
+    },
+    comment: { type: String, maxlength: 150 }, // Optional comment
+    customer_notified: { type: Boolean, default: false } // whether customer got notified
+  },
+  { _id: false } // prevent automatic _id for subdocs
+);
+
 const OrderSchema = new mongoose.Schema(
   {
   user_id:{ type: String, required: true},
   order_username : { type: String, required: true },
   order_phonenumber: { type: String, required: true },
   email_address: { type: String, required: true },
-  order_item: [{
-    id: Number,
-    name: String,
-    price: Number,
-    item_code : String,
-  }],
+   order_item: [{
+      id: { type: Number },
+      name: { type: String },
+      price: { type: Number },
+      item_code: { type: String },
+      model:{ type: String },
+      coupondiscount:{ type: Number},
+      coupondetails : { type: [String], default: [] },
+      quantity: { type: Number },
+      store_id: { type:String },
+      warranty: { type:Number },
+      extendedWarranty:{ type: Number },
+      image: { type:String },
+      original_quantity:{ type: Number },
+      discount: { type:Number },
+      created_at: { type: Date, default: Date.now },
+      updated_at: { type: Date, default: Date.now }
+    }],
   order_details: [{
     item_code: String,
     product_id: Number,
@@ -57,6 +84,9 @@ const OrderSchema = new mongoose.Schema(
   api_reason: {
     type: String,
   },
+
+  // NEW: Order History
+    order_history: [OrderHistorySchema]
 },
 
   { timestamps: true }

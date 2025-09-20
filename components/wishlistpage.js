@@ -223,7 +223,7 @@ const WishlistPage = () => {
                   {item.stockStatus}
                 </td>
                 <td className="py-4 px-4 text-center">
-                  <Addtocart productId={item.productId} />
+                  <Addtocart productId={item.productId} stockQuantity={item.quantity} />
                 </td>
               </motion.tr>
             ))}
@@ -266,7 +266,7 @@ const WishlistPage = () => {
               </button>
               <div className="text-green-600 text-sm font-medium">{item.stockStatus}</div>
                   <div className="text-xs">
-                    <Addtocart productId={item.productId} />
+                    <Addtocart productId={item.productId} stockQuantity={item.quantity} />
                   </div>
                     
             </div>

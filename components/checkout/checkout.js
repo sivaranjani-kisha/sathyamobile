@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ToastContainer, toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { AuthModal } from '@/components/AuthModal';
-import { trackCheckout } from "@/utils/tracking";
+import { trackCheckout } from "@/utils/nextjs-event-tracking.js";
 
 // Dynamically load Razorpay script
 const loadRazorpay = () => {
@@ -17,6 +17,9 @@ const loadRazorpay = () => {
     document.body.appendChild(script);
   });
 };
+
+
+
 
 const DeliveryOptions = ({ formData, handleChange, isDeliverySaved, setIsDeliverySaved, stores }) => {
   const [fetchedStores, setFetchedStores] = useState(stores || []);
@@ -38,6 +41,9 @@ const DeliveryOptions = ({ formData, handleChange, isDeliverySaved, setIsDeliver
       fetchStores();
     }
   }, [stores]);
+
+
+
 
   return (
     <div className="mt-6 border rounded-md shadow-sm">
@@ -121,7 +127,7 @@ const DeliveryOptions = ({ formData, handleChange, isDeliverySaved, setIsDeliver
       ) : (
         // Collapsed Summary View
         <div className="p-4 flex items-start gap-4">
-          <div className="text-2xl">ðŸšš</div>
+          <div className="text-2xl">🚚</div>
           <div>
             <div className="text-sm font-semibold text-gray-700 uppercase">
               {formData.deliveryType === 'store' ? 'STORE PICKUP' : 'HOME DELIVERY'}
@@ -162,12 +168,13 @@ export default function CheckoutPage() {
   const [useraddress, setUseraddress] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [useSavedAddress, setUseSavedAddress] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authError, setAuthError] = useState('');
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log(cartItems);
 const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchStores = async () => {
@@ -186,122 +193,81 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     fetchStores();
   }, []);
 
-  const fetchData = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setShowAuthModal(true);
-      setLoading(false);
-      return;
-    }
+  useEffect(() => {
+  const buyNowData = localStorage.getItem("buyNowData");
+  const checkoutData = localStorage.getItem("checkoutData");
 
-    try {
-      const decoded = jwtDecode(token);
-      const userId = decoded.userId;
-       const checkoutData = localStorage.getItem('checkoutData');
-       // console.log(checkoutData);
-        if (checkoutData) {
-          const parsedData = JSON.parse(checkoutData);
-          setCartItems(parsedData.cart.items);
-		  
-			 // const token = localStorage.getItem('token');
-			  const authResponse = await fetch('/api/auth/check', {
-				method: 'GET',
-				headers: {
-				  'Content-Type': 'application/json',
-				  Authorization: token ? `Bearer ${token}` : '',
-				},
-			  });
-			  const authData = await authResponse.json();
-			  //console.log(authData);
-			
-			const response = await fetch(`/api/product/get/${parsedData.cart.items[0].productId}`);
-			if (!response.ok) {
-			  throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			const productData = await response.json();
-			//console.log('product : ');
-			//console.log(productData);
-			// Event Tracking 
-			
-			trackCheckout({
-			  user: {
-					name: authData.user.name,
-				  phone: authData.phone,
-				  email: authData.user.email,
-			  },
-			  product: {
-				  id: parsedData.cart.items[0].productId,
-				  name: productData.data.name,
-				  price: parsedData.cart.items[0].price,
-				  link: `https://sathyamobiles.divinfosys.com/product/${productData.data.slug}`,
-				  image: 'https://sathyamobiles.divinfosys.com/uploads/products/'+parsedData.cart.items[0].image,
-				  qty: parsedData.cart.items[0].quantity,
-				  currency: "INR",
-			  },
-			});
-			
-		  console.log(parsedData.cart.items);
-        }else{
-      // Fetch cart data
-      const cartResponse = await fetch('/api/cart', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+  if (buyNowData) {
+    const parsedData = JSON.parse(buyNowData);
+    setCartItems(parsedData.cart.items);
+    localStorage.removeItem("buyNowData"); // ✅ clear after use
+  } else if (checkoutData) {
+    const parsedData = JSON.parse(checkoutData);
+    setCartItems(parsedData.cart.items);
+  }
+
+  // Then run fetchData for user address & fallback cart
+  fetchData();
+}, []);
+
+
+  const fetchData = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setShowAuthModal(true);
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+    const userId = decoded.userId;
+
+    // ✅ Only fetch cart if no items already set
+    if (cartItems.length === 0) {
+      const cartResponse = await fetch("/api/cart", {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!cartResponse.ok) {
-        throw new Error('Failed to fetch cart data');
-      }
+      if (!cartResponse.ok) throw new Error("Failed to fetch cart data");
 
       const cartData = await cartResponse.json();
       setCartItems(cartData.cart.items);
     }
-	
-	
-      // Fetch user address
-      const addressResponse = await fetch(`/api/useraddress?user_id=${userId}`);
-      if (!addressResponse.ok) {
-        throw new Error('Failed to fetch address data');
-      }
 
-      const addressData = await addressResponse.json();
-      setUseraddress(addressData.userAddress);
+    // Fetch user address
+    const addressResponse = await fetch(`/api/useraddress?user_id=${userId}`);
+    if (!addressResponse.ok) throw new Error("Failed to fetch address data");
 
-      // Pre-fill form with first address if available
-      if (addressData.userAddress.length > 0) {
-        const addr = addressData.userAddress[0];
-        setFormData(prev => ({
-          ...prev,
-          firstName: addr.firstName || "",
-          lastName: addr.lastName || "",
-          country: addr.country || "",
-          address: addr.address || "",
-          city: addr.city || "",
-          state: addr.state || "",
-          postCode: addr.postCode || "",
-          phonenumber: addr.phonenumber || "",
-          landmark: addr.landmark || "",
-          email: addr.email || "",
-          businessName: addr.businessName || "",
-          additionalInfo: addr.additionalInfo || ""
-        }));
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to load checkout data");
-    } finally {
-      setLoading(false);
+    const addressData = await addressResponse.json();
+    setUseraddress(addressData.userAddress);
+
+    if (addressData.userAddress.length > 0) {
+      const addr = addressData.userAddress[0];
+      setFormData(prev => ({
+        ...prev,
+        firstName: addr.firstName || "",
+        lastName: addr.lastName || "",
+        country: addr.country || "",
+        address: addr.address || "",
+        city: addr.city || "",
+        state: addr.state || "",
+        postCode: addr.postCode || "",
+        phonenumber: addr.phonenumber || "",
+        landmark: addr.landmark || "",
+        email: addr.email || "",
+        businessName: addr.businessName || "",
+        additionalInfo: addr.additionalInfo || ""
+      }));
     }
-  };
-  
-  
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    toast.error("Failed to load checkout data");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  useEffect(() => {
-    fetchData();
-	
-  }, []);
-  
-  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -483,7 +449,7 @@ const grandTotal = subtotal - totalDiscount;
     e.preventDefault();
     if (isSubmitting) return;
   
-  setIsSubmitting(true);
+
   setError("");
     try {
       const token = localStorage.getItem("token");
@@ -524,7 +490,7 @@ const grandTotal = subtotal - totalDiscount;
           return;
         }
       }
-  
+    setIsSubmitting(true);
       setError("");
   
            const totalAmount = cartItems.reduce(
@@ -535,10 +501,10 @@ const grandTotal = subtotal - totalDiscount;
       let paymentStatus = "";
       let paymentMode = "";
   
-      if (paymentMethod === 'cash') {
+      if (paymentMethod === 'Cash on Delivery') {
         paymentId = "COD_" + Date.now();
         paymentStatus = "pending";
-        paymentMode = "cash";
+        paymentMode = "Cash on Delivery";
       } else if (paymentMethod === 'online') {
         try {
           const result = await handleOnlinePayment(totalAmount);
@@ -714,7 +680,7 @@ const grandTotal = subtotal - totalDiscount;
           orderDetails: {
             order_number: orderData.order_number || "ORD" + Date.now(),
             order_amount: totalAmount,
-            payment_method: paymentMethod === 'cash' ? 'Cash on Delivery' : 'Online Payment',
+            payment_method: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
             order_item: cartItems,
             order_username: `${addressData.firstName} ${addressData.lastName}`,
             order_phonenumber: addressData.phonenumber,
@@ -723,6 +689,44 @@ const grandTotal = subtotal - totalDiscount;
           customerEmail: addressData.email,
           adminEmail: 'msivaranjani2036@gmail.com'
         };
+
+       // console.log(cartItems);
+
+        const proresponse = await fetch(`/api/product/get/${cartItems[0].productId}`);
+       
+        if (!proresponse.ok) {
+          throw new Error(`HTTP error! status: ${proresponse.status}`);
+        }
+        
+        const productData = await proresponse.json();
+
+        const authResponse = await fetch('/api/auth/check', {
+				method: 'GET',
+				headers: {
+				  'Content-Type': 'application/json',
+				  Authorization: token ? `Bearer ${token}` : '',
+				},
+			  });
+			  const authData = await authResponse.json();
+			  //console.log(cartItems);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        trackCheckout({
+          user: {
+            name: authData.user.name,
+            phone: authData.phone,
+            email: authData.user.email,
+          },
+          product: {
+            id: cartItems[0].productId,
+            name: productData.data.name,
+            price: cartItems[0].price,
+            link: `${apiUrl}/product/${productData.data.slug}`,
+            image: `${apiUrl}/uploads/products/`+cartItems[0].image,
+            qty: cartItems[0].quantity,
+            currency: "INR",
+          },
+        });
+        
         
         // Send confirmation emails
         const emailResponse = await fetch('/api/send-order-email', {
@@ -766,8 +770,8 @@ const grandTotal = subtotal - totalDiscount;
       <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Checkout</h2>
         <div className="flex items-center space-x-2">
-          <span className="text-gray-600">ðŸ  Home</span>
-          <span className="text-gray-500">â€º</span>
+          <span className="text-gray-600">🏠 Home</span>
+          <span className="text-gray-500">›</span>
           <span className="text-orange-500 font-semibold">Checkout</span>
         </div>
       </div>
@@ -792,7 +796,7 @@ const grandTotal = subtotal - totalDiscount;
                       <p className="text-sm text-gray-600">Phone: {item.phonenumber}</p>
                     </div>
                     {selectedAddress === index && (
-                      <span className="text-orange-500">âœ“ Selected</span>
+                      <span className="text-orange-500">✓ Selected</span>
                     )}
                   </div>
                 </div>
@@ -869,27 +873,92 @@ const grandTotal = subtotal - totalDiscount;
           <div className="w-full lg:w-1/3 bg-gray-50 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Orders</h3>
 
-            <div className="border-b pb-3 mb-3">
+            {/* <div className="border-b pb-3 mb-3">
               {cartItems.map((item) => (
                 <div key={`order-item-${item.productId}`} className="flex justify-between text-gray-600 mb-2">
                   <div>
                     <span>{item.name}</span>
                     <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
                   </div>
-                  <span>â‚¹{(item.price * item.quantity).toFixed(2)}</span>
+                  <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
+            </div> */}
+
+
+            <div className="relative border-b pb-3 mb-3">
+              {/* Scrollable List */}
+              <div
+                className="max-h-64 overflow-y-auto pr-2 scroll-smooth"
+              >
+                {cartItems.map((item) => (
+                  <div
+                    key={`order-item-${item.productId}`}
+                    className="flex items-start justify-between gap-3 text-gray-700 mb-4"
+                  >
+
+                    {/* Product Image */}
+                    <div className="relative w-16 h-16 flex-shrink-0 border rounded overflow-hidden p-2">
+                      <img
+                        src={`/uploads/products/${item.image}`}
+                        alt={item.name}
+                        className="w-full h-full object-contain"
+                      />
+
+                      {/* Quantity Badge */}
+                      <div className="absolute top-0 right-0 bg-gray-700 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                        {item.quantity}
+                      </div>
+                    </div>
+
+
+                    {/* Product Details */}
+                    <div className="flex-1">
+                      <div title={item.name} className="leading-snug text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-3 min-h-[40px]">
+                        {item.name}
+                      </div>
+
+                      {/* <div className="text-xs mt-1 text-gray-600">
+                        Qty: <span className="text-red-600">{item.quantity}</span>
+                      </div> */}
+                      
+                    </div>
+
+                    {/* Price */}
+                    <div className="text-sm whitespace-nowrap text-base font-semibold text-red-600">
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Scroll for More Items Overlay */}
+
+              {/* {cartItems.length > 2 && (
+                <div className="flex justify-center mt-2">
+                  <div className="bg-gray-800 text-white text-xs px-3 py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
+                    <span>Scroll for more items</span>
+                    <span className="text-lg">↓</span>
+                  </div>
+                </div>
+              )} */}
+
             </div>
- {/* Add Discount row if there's any discount */}
-  {totalDiscount > 0 && (
-    <div className="flex justify-between text-green-600 mb-2">
-      <span>Discount:</span>
-      <span>-â‚¹{totalDiscount.toFixed(2)}</span>
-    </div>
-  )}
+
+
+
+            {/* Add Discount row if there's any discount */}
+            {totalDiscount > 0 && (
+              <div className="flex justify-between text-green-600 mb-2">
+                <span>Discount:</span>
+                <span>-₹{totalDiscount.toFixed(2)}</span>
+              </div>
+            )}
+
+
             <div className="flex justify-between text-gray-800 font-semibold">
               <span>Subtotal:</span>
-              <span>â‚¹{cartItems.reduce(
+              <span>₹{cartItems.reduce(
         (sum, item) => sum + (item.price * item.quantity) - (item.discount || 0),
         0
       ).toFixed(2)}</span>
@@ -897,7 +966,7 @@ const grandTotal = subtotal - totalDiscount;
 
             <div className="flex justify-between text-gray-800 font-semibold border-t pt-2 mt-2">
               <span>Total:</span>
-              <span>â‚¹{cartItems.reduce(
+              <span>₹{cartItems.reduce(
         (sum, item) => sum + (item.price * item.quantity) - (item.discount || 0),
         0
       ).toFixed(2)}</span>
@@ -921,8 +990,8 @@ const grandTotal = subtotal - totalDiscount;
                   <input 
                     type="radio" 
                     name="payment" 
-                    value="cash" 
-                    checked={paymentMethod === "cash"} 
+                    value="Cash on Delivery" 
+                    checked={paymentMethod === "Cash on Delivery"} 
                     onChange={handlePaymentChange} 
                     className="w-4 h-4 text-orange-500"
                   />

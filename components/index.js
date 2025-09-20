@@ -20,12 +20,21 @@ import RecentlyViewedProducts from '@/components/RecentlyViewedProducts';
 import 'swiper/css';
 import 'swiper/css/navigation';
 export default function HomeComponent() {
-    const features = [
-        { icon: "🚗", title: "Free Shipping", description: "Free shipping all over the US" },
-        { icon: "🔒", title: "100% Satisfaction", description: "Guaranteed satisfaction with every order" },
-        { icon: "💼", title: "Secure Payments", description: "We ensure secure transactions" },
-        { icon: "💬", title: "24/7 Support", description: "We're here to help anytime" },
-    ];
+  function slugify(text) {
+    return text
+      ?.toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")        // replace spaces with -
+      .replace(/[^\w\-]+/g, "")    // remove special chars
+      .replace(/\-\-+/g, "-");     // collapse multiple -
+  }
+     const features = [
+    { image: "/images/delivery-truck.png", title: "Free Shipping", description: "Free shipping all over the US" },
+    { image: "/images/reputation.png", title: "100% Satisfaction", description: "Guaranteed satisfaction with every order" },
+    { image: "/images/payment-protection.png", title: "Secure Payments", description: "We ensure secure transactions" },
+    { image: "/images/support.png", title: "24/7 Support", description: "We're here to help anytime" },
+  ];
     const scrollContainerRef = useRef(null);
     const containerRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -576,95 +585,160 @@ const handleCategoryClick = useCallback((category) => (e) => {
               
                    
                  {/* Banner Section start */}
-       <motion.section ref={refs.banner} initial="hidden" animate={isInView.banner ? "visible" : "hidden"} variants={containerVariants} className="overflow-hidden pt-0 m-0 ">
-          <div className="relative">
-              {isBannerLoading ? (
+        <motion.section id="topbanner"
+                                          ref={refs.banner}
+                                          initial="hidden"
+                                          animate="visible"
+                                          variants={containerVariants}
+                                          className="overflow-hidden pt-0 m-0 "
+                                        >
+              <div className="relative">
+                {isBannerLoading ? (
                   <div className="p-6 flex justify-center items-center h-64">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
                   </div>
-              ) : bannerData.banner.items.length > 0 ? (
+                ) : bannerData.banner.items.length > 0 ? (
                   bannerData.banner.items.length > 1 ? (
-                  <Slider {...settings} className="relative">
+                    <Slider {...settings} className="relative">
                       {bannerData.banner.items.map((item) => (
-                        <motion.div key={item.id}
-                          className="relative w-full 
-                                    aspect-[16/9]  // Base aspect ratio (width/height)
-                                    max-h-[110px] // Constrains mobile height
-                                    sm:aspect-[16/6] sm:max-h-[180px]
-                                    md:aspect-[16/8] md:max-h-[200px]
-                                    lg:aspect-[16/9] lg:max-h-[300px]
-                                    xl:aspect-[16/10] xl:max-h-[400px]
-                                    2xl:aspect-[16/12] 2xl:max-h-[700px]"
+                        <motion.div
+                          key={item.id}
+                          className="relative w-full aspect-[2000/667] max-h-auto"
                           variants={itemVariants}
                         >
                           <div className="absolute inset-0 overflow-hidden">
                             <Image
                               src={item.bgImageUrl}
-                              alt="Background"
+                              alt="Banner"
                               fill
                               quality={100}
-                              className="object-cover w-full h-full"
-                              style={{
-                                objectPosition: "center 30%" // Focuses on the upper portion
-                              }}
+                              className="object-fill w-full h-full"
+                              style={{ objectPosition: "center 30%" }}
                               priority
                             />
                           </div>
                         </motion.div>
                       ))}
-                  </Slider>
+                    </Slider>
                   ) : (
-                      <motion.div className="p-4 md:p-6 relative h-[250px] md:h-[500px]" variants={itemVariants} >
-                          <div className="absolute inset-0  overflow-hidden">
-                              <Image src={bannerData.banner.items[0].bgImageUrl} alt="Background" layout="fill" objectFit="cover" className="" priority/>
-                              <div className="absolute inset-0 bg-opacity-20 "></div>
-                          </div>
-                      </motion.div>
+                    <motion.div
+                      className="p-4 md:p-6 relative aspect-[2000/667] max-h-auto"
+                      variants={itemVariants}
+                    >
+                      <div className="absolute inset-0 flex justify-center items-center bg-white">
+                        <Image
+                          src={bannerData.banner.items[0].bgImageUrl}
+                          alt="Banner"
+                          fill
+                          className=" object-fill w-full h-full"
+                          priority
+                        />
+                      </div>
+                    </motion.div>
                   )
-              ) : (
-                  <div className="p-6 text-center">
-                      <p className="text-lg">No active banners available</p>
-                  </div>
-              )}
-              {/* Scroll Button */}
-
-          </div>
-        </motion.section>
+                ) : (
+                  <div>
+                    </div>
+                  // <div className="p-6 text-center">
+                  //   <p className="text-lg">No active banners available</p>
+                  // </div>
+                )}
+              </div>
+            </motion.section>
               {/* features code start */}
              {/* features code start */}
-  <section className="p-2">
+          <section className="pt-7 px-4 sm:px-6 md:px-6" id="features">
+<div className="max-w-7xl mx-auto px-4">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+{features.map((feature, index) => (
   <div
-    className="grid grid-cols-2 gap-4 
-              md:flex md:flex-nowrap md:justify-center md:gap-6 
-              w-full"
+    key={index}
+    className="flex flex-col items-center cursor-pointer group"
+    onMouseEnter={(e) => {
+      const img = e.currentTarget.querySelector(".img-flip");
+      if (img) img.style.transform = "rotateY(360deg)";
+    }}
+    onMouseLeave={(e) => {
+      const img = e.currentTarget.querySelector(".img-flip");
+      if (img) img.style.transform = "rotateY(0deg)";
+    }}
   >
-    {features.map((feature, index) => (
-      <div
-        key={index}
-        className="flex flex-col md:flex-row 
-                  items-center md:items-start 
-                  p-6 rounded-xl shadow-md 
-                  bg-red-500 text-white
-                  flex-1 min-w-0"
-      >
-        <div className="bg-white text-red-500 p-3 rounded-full text-2xl flex items-center justify-center shrink-0">
-          {feature.icon}
-        </div>
-        <div className="mt-4 md:mt-0 md:ml-4 text-center md:text-left min-w-0">
-          <h3 className="text-base font-semibold mb-1 truncate">
-            {feature.title}
-          </h3>
-          <p className="text-sm break-words">
-            {feature.description}
-          </p>
-        </div>
-      </div>
-    ))}
+    {/* Image instead of Icon */}
+    <div
+      className="mb-4 img-flip"
+      style={{
+        transition: "transform 0.5s",
+        transformStyle: "preserve-3d",
+      }}
+    >
+      <img
+        src={feature.image}
+        alt={feature.title}
+        className="w-16 h-16 object-contain"
+      />
+    </div>
+
+    {/* Title */}
+    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:transition-colors duration-300">
+      {feature.title}
+    </h3>
+
+    {/* Description */}
+    <p className="text-gray-600 text-sm leading-relaxed max-w-[250px] group-hover:transition-colors duration-300">
+      {feature.description}
+    </p>
   </div>
+))}
+</div>
+</div>
 </section>
 
+<motion.section id="brands"
+                      ref={refs.delivery} 
+                      initial={scrollDirection === 'down' ? 'hiddenDown' : 'hiddenUp'} 
+                      animate= 'visible' 
+                      variants={sectionVariants} 
+                      className="px-4 sm:px-6 md:px-6 pt-7"
+                  >
+                      <div>
+                          <motion.div variants={containerVariants} className="  rounded-[23px] mx-2">
+                              <motion.div variants={itemVariants} className="flex justify-between items-center mb-4">
+                                  <h5 className= "text-lg font-semibold">Shop by Brands</h5>
+                              </motion.div>
 
-
+                              {isBrandsLoading ? (
+                                  <div className="flex justify-center items-center h-32">
+                                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                                  </div>
+                              ) : (
+                                  <motion.div variants={itemVariants}>
+                                      <Slider {...brandSettings} className="brand-slider px-2 sm:px-[50px] relative">
+                                          {brands.map((brand) => (
+                                              <motion.div
+                                                  key={brand.id}
+                                                  className="p-4 flex justify-center items-center"
+                                                  whileHover={{ scale: 1.1 }}
+                                              >
+                                              <div className="w-24 h-24 flex items-center justify-center overflow-hidden">
+                                                <Link href={`/brand/${slugify(brand.brand_name)}`}>
+                                                  <Image
+                                                    src={`/uploads/Brands/${brand.image}`}
+                                                    alt={brand.brand_name || "Brand Logo"}
+                                                    width={100}
+                                                    height={100}
+                                                    className="object-contain w-full h-full cursor-pointer"
+                                                    unoptimized
+                                                  />
+                                                </Link>
+                                              </div>
+                                              </motion.div>
+                                          ))}
+                                      </Slider>
+                                  </motion.div>
+                              )}
+                          </motion.div>
+                      </div>
+                  </motion.section>
              {/* Existing offer code start */}
 
              {/* Existing offer code start */}

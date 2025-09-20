@@ -42,6 +42,8 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     hasVariants: false,
     variantAttributes: [],
     files: [],
+    meta_title: "",
+    meta_description: "",
     overviewdescription : "",
     overviewImage: [null],
     overviewImageFile: [null],
@@ -186,8 +188,12 @@ export default function AddProductPage({ mode = "add", productData = null, produ
         if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
             setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
         }
+
+        if(productData.sub_category){
+          setSelectedCategory(productData.sub_category);
+        }
     }
-}, [mode, productData, setJsonHighlightsInput]);
+}, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
 useEffect(() => {
     fetchCategories();
     fetchFilter();
@@ -706,54 +712,27 @@ setProduct(prev => ({
   //   }
   // }, [product.variantAttributes, product.hasVariants]);
  
-//   const handleCategoryChange = (category) => {
-//   setSelectedCategory(category._id);
-//   setProduct((prev) => ({
-//     ...prev,
-//     category: category._id, // set subcategory here
-//   }));
-// };
-
-
-const handleCategoryChange = (category) => {
-  if (category.parentid !== "none") {
-    // This is a subcategory
-    setProduct((prev) => ({
-      ...prev,
-      category: category.parentid,   // parent category ID
-      sub_category: category._id,    // subcategory ID
-    }));
-  } else {
-    // This is a main category
-    setProduct((prev) => ({
-      ...prev,
-      category: category._id,
-      sub_category: null,
-    }));
-  }
+  const handleCategoryChange = (category) => {
   setSelectedCategory(category._id);
+  setProduct((prev) => ({
+    ...prev,
+    sub_category: category._id, // set subcategory here
+  }));
 };
 
 
-
- useEffect(() => {
-  if (product) {
-    if (product.sub_category) {
-      setSelectedCategory(product.sub_category); // ✅ highlight subcategory
-    } else {
-      setSelectedCategory(product.category);     // fallback to main
-    }
-  }
-}, [product]);
+//   useEffect(() => {
+//   if (product) {
+//     setSelectedCategory(product.category); // This is the subcategory ID
+//   }
+// }, [product]);
 
 
   
   
   const renderCategoryTree = (categories, level = 0) => {
     return categories.map((category) => (
-      // <div key={category._id} style={{ paddingLeft: `${level * 20}px` }}>
-      <div key={`${category._id}-${category.parentid || "root"}`} style={{ paddingLeft: `${level * 20}px` }}>
-
+      <div key={category._id} style={{ paddingLeft: `${level * 20}px` }}>
         <div className="flex items-center cursor-pointer p-2 text-sm font-medium text-gray-700">
           {category.children.length > 0 && (
             <button
@@ -789,7 +768,7 @@ const handleCategoryChange = (category) => {
           renderCategoryTree(category.children, level + 1)}
       </div>
     ));
- ; }
+  };
 
   useEffect(() => {
   if (
@@ -1005,18 +984,28 @@ const uploadImages = async (files) => {
      } finally {
      }
    }
-
-   const handleFilterChange = (selectedOptions) => {
+const handleFilterChange = (selectedOptions) => {
+  console.log(selectedOptions);
   // Extract only the 'value' from each selected option object
   const selectedValues = selectedOptions.map((option) => option.value);
-
+ 
   setProduct((prev) => ({
     ...prev,
     // Store an array of strings, not objects
     filters: selectedValues,
   }));
 };
-
+ 
+const handleupdatefilterchange = (filters) => {
+  const selectedValues = filters.map((option) => option.value);
+ 
+  setProduct((prev) => ({
+    ...prev,
+    // Store an array of strings, not objects
+    filters: selectedValues,
+  }));
+}
+ 
   // const handleFilterChange = (selectedOptions) => {
   //   console.log(selectedOptions);
   //   setProduct((prev) => ({
@@ -1068,6 +1057,8 @@ const uploadImages = async (files) => {
       images: product.images.filter(img => typeof img === "string") // clear images so no blob goes to DB
     };
 
+    console.log(product);
+    // return false;
     // ✅ Upload product images
     (product.files || []).forEach(file => {
       if (file) formData.append("images", file);
@@ -1091,7 +1082,6 @@ const uploadImages = async (files) => {
 
     formData.append("product", JSON.stringify({
     ...product,
-    category: selectedCategory,
     images: existingImages,   // keep old DB images
   }));
 
@@ -1491,19 +1481,19 @@ const uploadImages = async (files) => {
                                 <div className="grid grid-cols-2 gap-4">
                                   <div>
                                     <button
-                                          type="button"
-                                          onClick={() => AddproductImage(index)}
-                                          className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                        >
-                                          <svg
-                                            className="h-5 w-5"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                          >
-                                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
-                                          </svg>
-                                        </button>
+  type="button"
+  onClick={() => AddproductImage(index)}
+  className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+>
+  <svg
+    className="h-5 w-5"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
+  </svg>
+</button>
 
                                   </div>
                                   <div>
@@ -1649,223 +1639,10 @@ const uploadImages = async (files) => {
         {/* Step 3: Variants & Filters */}
         {currentStep === 3 && (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Variants & Filters</h3>
+            <h3 className="text-xl font-semibold mb-4">Filters</h3>
     
            
-            <div className="border p-4 rounded">
-              <div className="flex items-center space-x-2 mb-4">
-                <input
-  type="checkbox"
-  checked={product.hasVariants}
-  onChange={(e) => {
-    const isChecked = e.target.checked;
-    setProduct(prev => ({
-      ...prev,
-      hasVariants: isChecked,
-      variants: isChecked && prev.variants.length === 0
-        ? [{
-            variant_attribute_name: "",
-            options: "",
-            item_code: "",
-            price: "",
-            special_price: "",
-            quantity: "",
-            stock_status: "In Stock",
-            images: [],
-            status: "Active"
-          }]
-        : prev.variants
-    }));
-
-    if (isChecked && variant.length === 0) {
-      setVariant([{
-        variant_attribute_name: "",
-        options: "",
-        item_code: "",
-        price: "",
-        special_price: "",
-        quantity: "",
-        stock_status: "In Stock",
-        images: [],
-        status: "Active"
-      }]);
-
-      setVariantImages([{ images: [] }]);
-    }
-  }}
-/>
-
-                <label className="block text-sm font-medium text-gray-700">This product has variants</label>
-              </div>
-
-              {product.hasVariants && (
-            <>
-              {product.variants.map((varItem, index) => (
-                <div key={index} className="border p-4 rounded mb-4">
-                                <div className="flex gap-4 mb-2">
-                                  <input
-                                    type="text"
-                                    placeholder="Attribute name"
-                                    value={varItem.variant_attribute_name || ''}
-                                    onChange={(e) => handleVariantFieldChange1(index, 'variant_attribute_name', e.target.value)}
-                                    className="border p-2 rounded flex-1"
-                                  />
-                                  <button type="button" onClick={() => setVariant(prev => prev.filter((_, i) => i !== index))} className="bg-red-500 text-white px-4 py-2 rounded">Remove</button>
-                                </div>
-                                <input
-                                  type="text"
-                                  placeholder="Option"
-                                  value={varItem.options || ''}
-                                  onChange={(e) => handleVariantFieldChange1(index, 'options', e.target.value)}
-                                  className="w-full border p-2 rounded mb-2"
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Item Code"
-                                  value={varItem.item_code|| ''}
-                                  onChange={(e) => handleVariantFieldChange1(index, 'item_code', e.target.value)}
-                                  className="w-full border p-2 rounded mb-2"
-                                />
-                                <div className="flex gap-4 mb-2">
-                                  <input
-                                    type="number"
-                                    placeholder="Price"
-                                    value={varItem.price || ''}
-                                    onChange={(e) => handleVariantFieldChange1(index, 'price', e.target.value)}
-                                    className="w-full border p-2 rounded mb-2"
-                                  />
-                                  <input
-                                    type="number"
-                                    placeholder="Special Price"
-                                    value={varItem.special_price || ''}
-                                    onChange={(e) => handleVariantFieldChange1(index, 'special_price', e.target.value)}
-                                    className="w-full border p-2 rounded mb-2"
-                                  />
-                                </div>
-                                <input
-                                  type="number"
-                                  placeholder="Quantity"
-                                  value={varItem.quantity || ''}
-                                  onChange={(e) => handleVariantFieldChange1(index, 'quantity', e.target.value)}
-                                  className="w-full border p-2 rounded mb-2"
-                                />
-                                <div className="flex gap-2">
-                                  <Select
-                                    options={[
-                                      { value: 'In Stock', label: 'In Stock' },
-                                      { value: 'Out of Stock', label: 'Out of Stock' }
-                                    ]}
-                                    placeholder="stock status"
-                                    className="w-full rounded mb-2 varItem.stock_status"
-                                    name="stock_status"
-                                    value={{ 
-                                      value: varItem.stock_status, 
-                                      label: varItem.stock_status 
-                                    }}  // Convert string to option object
-                                    onChange={(selectedOption) => 
-                                      handleVariantFieldChange1(index, 'stock_status', selectedOption.value)
-                                    }
-                                  />
-                                  
-                                  <Select
-                                    options={[
-                                      { value: 'Active', label: 'Active' },
-                                      { value: 'Inactive', label: 'Inactive' }
-                                    ]}
-                                    placeholder="status"
-                                    className="w-full rounded mb-2"
-                                    name="status"
-                                    value={{
-                                      value: varItem.status,
-                                      label: varItem.status
-                                    }}  // Convert string to option object
-                                    onChange={(selectedOption) => 
-                                      handleVariantFieldChange1(index, 'status', selectedOption.value)
-                                    }
-                                  />
-                                </div>
-
-                                
-                                <div className="flex flex-col gap-4 p-4 bg-white rounded-lg shadow-md mt-4">
-                                  <div className="flex items-center">
-                                    <label className="w-1/4 text-sm font-medium text-gray-700">Variant Images (679×679)</label>
-                                    <div className="w-3/4 pl-4">
-                                      <div className="overflow-x-auto">
-                                        <div className="min-w-full divide-y divide-gray-200">
-                                          <div className="bg-gray-50">
-                                            <div className="grid grid-cols-12 gap-4 py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                              <div className="col-span-5">Image upload</div>
-                                              <div className="col-span-5">Image</div>
-                                              <div className="col-span-2"></div>
-                                            </div>
-                                          </div>
-                                          <div className="divide-y divide-gray-200">
-                                            {[0, 1, 2, 3].map((imgIndex) => (
-                                              <div key={imgIndex} className="grid grid-cols-12 gap-4 items-center py-4 px-4">
-                                                <div className="col-span-5">
-                                                  <input
-                                                    type="file"
-                                                    className="block w-full text-sm text-gray-500
-                                                      file:mr-4 file:py-2 file:px-4
-                                                      file:rounded-full file:border-0
-                                                      file:text-sm file:font-semibold
-                                                      file:bg-blue-50 file:text-blue-700
-                                                      hover:file:bg-blue-100"
-                                                    accept="image/*"
-                                                    onChange={(e) => handleVariantImageChange(index, imgIndex, e.target.files)}
-                                                    required={imgIndex === 0}
-                                                    key={`variant-${index}-img-${imgIndex}-${varItem.images[imgIndex] ? 'filled' : 'empty'}`}
-                                                  />
-                                                </div>
-                                                <div className="col-span-5">
-                                                 <img
-                                                    className="w-20 h-20 object-cover rounded border border-gray-200"
-                                                    alt={`Variant Preview ${imgIndex + 1}`}
-                                                    src={
-                                                      varItem.images[imgIndex]?.startsWith('blob:') || varItem.images[imgIndex]?.startsWith('data:')
-                                                        ? varItem.images[imgIndex]
-                                                        : `/uploads/products/${varItem.images[imgIndex] || 'no-image.jpg'}`
-                                                    }
-                                                  />
-
-                                                </div>
-                                                <div className="col-span-2">
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveVariantImage(index, imgIndex)}
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                                  >
-                                                    <svg
-                                                      className="h-5 w-5"
-                                                      xmlns="http://www.w3.org/2000/svg"
-                                                      viewBox="0 0 20 20"
-                                                      fill="currentColor"
-                                                    >
-                                                      <path
-                                                        fillRule="evenodd"
-                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                        clipRule="evenodd"
-                                                      />
-                                                    </svg>
-                                                  </button>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-              ))}
-              <button type="button" onClick={handleAddVariant1} className="bg-blue-200 px-4 py-2 rounded">
-                Add Variant
-              </button>
-            </>
-          )}
-
-            </div>
+           
            <div className="border p-4 rounded">
             <label className="block text-sm font-medium text-gray-700 mb-1">Filter</label>
             <Select
@@ -1905,43 +1682,88 @@ const uploadImages = async (files) => {
                 className="w-full border p-2 rounded"
               />
             </div>
+            {/* Meta Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Key Specifications</label>
-              <textarea name="key_specifications" value={product.key_specifications|| ''} onChange={handleChange} className="w-full border p-2 rounded" rows="3"></textarea>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+              <textarea
+                name="meta_description"
+                value={product.meta_description || ''}
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+                rows="3"
+              />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Key Specifications
+              </label>
+              <p className="text-xs text-gray-500 mb-2">
+                Example: Ram:8GB, capcity:1.5 ton(should seperated by comma)
+              </p>
+              <textarea
+                name="key_specifications"
+                value={product.key_specifications || ''}
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+                rows="3"
+              ></textarea>
+            </div>
+
 
             
 
 
            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Product Highlights</label>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Product Highlights
+  </label>
+  <p className="text-xs text-gray-500 mb-2">
+    ➤ Add highlights by clicking the <span className="font-semibold">green + button</span>.  
+    <br />
+    ➤ Each highlight should be written in <span className="italic">key: value</span> format.  
+    <br />
+    Example: <span className="text-gray-600">Processor: Snapdragon 8 Gen 2</span>, <span className="text-gray-600">Battery: 5000 mAh</span>, <span className="text-gray-600">Display: 6.5 inch AMOLED</span>
+  </p>
 
-              {(product.product_highlights && product.product_highlights.length > 0 ? product.product_highlights : [""]).map((highlight, index) => (
-                <div key={index} className="flex space-x-2 mb-2">
-                  <input
-                    type="text"
-                    value={highlight || ""}
-                    onChange={(e) => handleHighlightChange(index, e.target.value)}
-                    className="w-full border p-2 rounded"
-                    placeholder={`Highlight #${index + 1}`}
-                  />
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <button type="button"  onClick={addHighlight}  className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" > 
-                        <svg  className="h-5 w-5"  xmlns="http://www.w3.org/2000/svg" fill="currentColor"  viewBox="0 0 20 20"><path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" /></svg> 
-                      </button>
-                    </div>
-                    <div>
-                       {product.product_highlights && product.product_highlights.length > 0 && (
-         <button type="button" onClick={() => removeHighlight(index)} className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-           <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-         </button>
-      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+  {(product.product_highlights && product.product_highlights.length > 0 ? product.product_highlights : [""]).map((highlight, index) => (
+    <div key={index} className="flex space-x-2 mb-2">
+      <input
+        type="text"
+        value={highlight || ""}
+        onChange={(e) => handleHighlightChange(index, e.target.value)}
+        className="w-full border p-2 rounded"
+        placeholder={`Highlight #${index + 1}`}
+      />
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <button
+            type="button"
+            onClick={addHighlight}
+            className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+            </svg>
+          </button>
+        </div>
+        <div>
+          {product.product_highlights && product.product_highlights.length > 0 && (
+            <button
+              type="button"
+              onClick={() => removeHighlight(index)}
+              className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
 
       
             <div>

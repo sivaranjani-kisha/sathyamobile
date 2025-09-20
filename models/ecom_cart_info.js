@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const cartItemSchema = new mongoose.Schema({
-  item_code: {
-    type : String,
-    required: true,
-  },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
@@ -26,9 +22,6 @@ const cartItemSchema = new mongoose.Schema({
   },
   image: {
     type: String
-  },
-  quantity: {
-    type: Number,
   },
    warranty: { type: Number, default: 0 }, // ✅ Add this
   extendedWarranty: { type: Number, default: 0 }, // ✅ Add this

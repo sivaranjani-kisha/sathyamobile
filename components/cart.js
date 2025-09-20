@@ -48,7 +48,7 @@ const ConfirmModal = ({ show, onClose, onConfirm }) => (
               Cancel
             </button>
             <button
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               onClick={onConfirm}
             >
               Yes, Delete
@@ -89,6 +89,35 @@ const SuccessModal = ({ show, message, onClose }) => (
   </AnimatePresence>
 );
 
+const ErrorModal = ({ show, message, onClose }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 text-center shadow-xl"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.8 }}
+        >
+          <h3 className="text-xl font-semibold text-red-600 mb-2">Warning!</h3>
+          <p className="text-gray-500 mb-4">{message}</p>
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            onClick={onClose}
+          >
+            OK
+          </button>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
 const CouponModal = ({ show, onClose, coupon, onApply, onChange, couponError, isValidating }) => (
   <AnimatePresence>
     {show && (
@@ -111,12 +140,12 @@ const CouponModal = ({ show, onClose, coupon, onApply, onChange, couponError, is
               value={coupon}
               onChange={onChange}
               placeholder="Enter coupon code"
-              className="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               onClick={onApply}
               disabled={isValidating}
-              className="px-4 py-2 bg-red-500 text-white rounded-r-lg hover:bg-red-600 disabled:bg-red-300"
+              className="px-4 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 disabled:bg-blue-300"
             >
               {isValidating ? 'Applying...' : 'Apply'}
             </button>
@@ -145,6 +174,8 @@ const CouponModal = ({ show, onClose, coupon, onApply, onChange, couponError, is
     )}
   </AnimatePresence>
 );
+
+
 export default function CartComponent() {
   const router = useRouter();
   const [cartData, setCartData] = useState(null);
@@ -155,9 +186,11 @@ export default function CartComponent() {
   // Modal states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   
   // Coupon states
   const [couponCode, setCouponCode] = useState("");
@@ -255,63 +288,66 @@ export default function CartComponent() {
     });
   };
 
-  const updateQuantity = async (productId, newQuantity, original_quantity = null) => {
-    try {
-      if (original_quantity !== null && newQuantity > original_quantity) {
-        setSuccessMessage("Requested quantity exceeds available stock.");
-        setShowSuccessModal(true);
-        return;
-      }
-
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/cart', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ productId, quantity: newQuantity })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update quantity');
-      }
-
-      const updatedCart = await response.json();
-      
-      // Preserve discounts when updating quantity
-      const itemsWithDiscount = updatedCart.cart.items.map(item => {
-        const existingItem = cartData.items.find(i => i.productId === item.productId);
-        return {
-          ...item,
-          discount: existingItem ? existingItem.discount : 0
-        };
-      });
-      
-      setCartData({
-        ...updatedCart.cart,
-        items: itemsWithDiscount
-      });
-      
-      updateCartCount(updatedCart.cart.totalItems);
-      
-      // Reapply coupon if exists
-      if (appliedCoupon) {
-        const itemsWithUpdatedDiscount = applyDiscountToItems(appliedCoupon, itemsWithDiscount);
-        setCartData(prev => ({
-          ...prev,
-          items: itemsWithUpdatedDiscount
-        }));
-      }
-      
-      setSuccessMessage("Quantity updated successfully");
-      setShowSuccessModal(true);
-    
-    } catch (err) {
-      console.error('Update quantity error:', err);
-      setError(err.message);
+const updateQuantity = async (productId, newQuantity, original_quantity = null) => {
+  try {
+    if (original_quantity !== null && newQuantity > original_quantity) {
+      setErrorMessage("Requested quantity exceeds available stock.");
+      setShowErrorModal(true);
+      return;
     }
-  };
+
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/cart', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId, quantity: newQuantity })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update quantity');
+    }
+
+    const updatedCart = await response.json();
+
+    // ✅ Merge with existing items so image/name don’t vanish
+    const itemsWithDiscount = updatedCart.cart.items.map(item => {
+      const existingItem = cartData.items.find(i => i.productId === item.productId);
+      return {
+        ...existingItem, // keeps image, name, etc.
+        ...item,         // updates quantity, price
+        discount: existingItem ? existingItem.discount : 0,
+        original_quantity: existingItem?.original_quantity ?? item.original_quantity ?? Infinity // ✅ keep stock info
+      };
+    });
+
+    setCartData({
+      ...updatedCart.cart,
+      items: itemsWithDiscount
+    });
+
+    updateCartCount(updatedCart.cart.totalItems);
+
+    // Reapply coupon if exists
+    if (appliedCoupon) {
+      const itemsWithUpdatedDiscount = applyDiscountToItems(appliedCoupon, itemsWithDiscount);
+      setCartData(prev => ({
+        ...prev,
+        items: itemsWithUpdatedDiscount
+      }));
+    }
+
+    setSuccessMessage("Quantity updated successfully");
+    setShowSuccessModal(true);
+
+  } catch (err) {
+    console.error('Update quantity error:', err);
+    setError(err.message);
+  }
+};
+
 
   const confirmRemoveItem = (productId) => {
     setProductToDelete(productId);
@@ -598,8 +634,8 @@ const validateCoupon = async () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center p-6 bg-red-50 rounded-lg max-w-md mx-4">
-          <p className="text-red-500 font-medium">{error}</p>
+        <div className="text-center p-6 bg-blue-50 rounded-lg max-w-md mx-4">
+          <p className="text-blue-500 font-medium">{error}</p>
           <button 
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
@@ -645,6 +681,11 @@ const validateCoupon = async () => {
         message={successMessage}
         onClose={() => setShowSuccessModal(false)}
       />
+      <ErrorModal
+        show={showErrorModal}
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
      <CouponModal
   show={showCouponModal}
   onClose={() => {
@@ -658,318 +699,208 @@ const validateCoupon = async () => {
   isValidating={isValidatingCoupon}
 />
 
-      {/* Header */}
-      <div className="bg-red-50 py-4 px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">
-          Cart ({cartData.totalItems} items)
-        </h2>
-        <div className="flex items-center space-x-1 text-sm">
-          <span className="text-gray-600">🏠 Home</span>
-          <span className="text-gray-500">›</span>
-          <span className="text-red-500 font-semibold">Product Cart</span>
+    {/* Header */}
+      <div className=" sm:pl-[3rem] sm:pr-[2rem] flex flex-col sm:flex-row justify-between items-center gap-2 my-[35px]">
+        <div style={{ "--heading-color": "#0069c6" }}>
+          <h1 className="font-bold text-[1.75rem] text-[#0069c6]"> My Cart</h1>
         </div>
+        
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 sm:p-6">
-        {/* Cart Table - Mobile optimized */}
-        <div className="w-full lg:w-2/3 bg-white p-4 sm:p-6 rounded-lg border">
-          <div className="hidden sm:block overflow-x-auto">
-           <table className="min-w-full border">
-  <thead className="bg-gray-50">
-    <tr>
-      <th className="py-3 px-4 text-center">Delete</th>
-      <th className="py-3 px-4">Product</th>
-      <th className="py-3 px-4 text-center">Price</th>
-      <th className="py-3 px-4 text-center">Quantity</th>
-      <th className="py-3 px-4 text-center">Subtotal</th>
-    </tr>
-  </thead>
-  <tbody>
-    {cartData.items.map((item) => (
-      <Fragment key={item.productId}>
+       {/* Main Content */}
 
-        {/* Product Row */}
-        <tr className="border-b">
-          <td className="py-4 px-4 text-center">
-            <button
-              className="text-red-500 hover:text-red-600 font-medium"
-              onClick={() => confirmRemoveItem(item.productId)}
-            >
-              ✖
-            </button>
-          </td>
-          <td className="flex items-center py-4 px-4 gap-3">
-            <Image
-              src={`/uploads/products/${item.image}`}
-              alt="No image"
-              width={60}
-              height={60}
-              className="rounded-md"
-            />
-            <div className="relative group w-fit">
-              <Link href={`/product/${slugify(item.name)}`}>
-                <p className="font-semibold hover:text-red-500 transition-colors duration-300">
-                  {item.name.length > 50 ? item.name.slice(0, 50) + "..." : item.name}
-                </p>
-              </Link>
-              <div className="absolute z-10 hidden group-hover:block bg-black text-white text-sm px-2 py-1 rounded shadow-md top-full mt-1 max-w-xs w-max whitespace-normal">
-                {item.name}
-              </div>
-            </div>
-          </td>
-          <td className="py-4 px-4 text-center">₹{item.price.toFixed(2)}</td>
-          <td className="py-4 px-4 text-center">
-            <div className="flex justify-center items-center gap-2">
-              <button
-                className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                onClick={() => updateQuantity(item.productId, item.quantity - 1, null)}
-                disabled={item.quantity <= 1}
-              >
-                −
-              </button>
-              <span>{item.quantity}</span>
-              <button
-                className="px-2 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                disabled={item.quantity >= item.original_quantity}
-                onClick={() => updateQuantity(item.productId, item.quantity + 1, item.original_quantity)}
-              >
-                +
-              </button>
-            </div>
-          </td>
-          <td className="py-4 px-4 text-center font-semibold">
-            ₹{(item.price * item.quantity).toFixed(2)}
-          </td>
-        </tr>
-
-        {/* Breakdown Row */}
-        <tr className="bg-gray-50">
-          <td colSpan={4} className="py-3 px-4 text-right text-sm font-medium text-gray-500">
-            Product Subtotal<br />
-            Warranty<br />
-            Extended Warranty<br />
-            Discount
-          </td>
-          <td className="py-3 px-4 text-center text-sm font-semibold">
-            ₹{(item.price * item.quantity).toFixed(2)}<br />
-            {item.warranty > 0 ? `₹${item.warranty.toFixed(2)}` : "-"}<br />
-            {item.extendedWarranty > 0 ? `₹${item.extendedWarranty.toFixed(2)}` : "-"}<br />
-            {item.discount > 0 ? `-₹${item.discount.toFixed(2)}` : "-"}
-          </td>
-        </tr>
-
-        {/* Total Row */}
-        <tr className="border-t bg-gray-100">
-          <td colSpan={4} className="py-3 px-4 text-right font-bold">Item Total</td>
-          <td className="py-3 px-4 text-center font-bold">
-            ₹{(
-              (item.price * item.quantity) +
-              (item.warranty || 0) +
-              (item.extendedWarranty || 0) -
-              (item.discount || 0)
-            ).toFixed(2)}
-          </td>
-        </tr>
-
-      </Fragment>
-    ))}
-  </tbody>
-</table>
-
-          </div>
-
-          {/* Mobile view - list layout */}
-          <div className="sm:hidden space-y-6">
-            {cartData.items.map((item) => (
-              <div key={item.productId} className="border rounded-lg p-4 space-y-3">
-                {/* Top Section: Image, Name, Remove */}
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-3">
-                    <Image
-                      src={`/uploads/products/${item.image}`}
-                      alt={item.name}
-                      width={60}
-                      height={60}
-                      className="rounded-md"
-                    />
-                    <div>
-                      <Link href={`/product/${item.name}`}>
-                        <p className="font-semibold hover:text-red-500 transition-colors duration-300">
-                          {item.name}
-                        </p>
-                      </Link>
-                      <p className="text-gray-600 text-sm mt-1">₹{item.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                  <button
-                    className="text-red-500 hover:text-red-600"
-                    onClick={() => confirmRemoveItem(item.productId)}
-                  >
-                    ✖
-                  </button>
-                </div>
-
-                {/* Quantity Controls */}
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                      onClick={() => updateQuantity(item.productId, item.quantity - 1, null)}
-                      disabled={item.quantity <= 1}
-                    >
-                      −
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      className="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300"
-                      onClick={() => updateQuantity(item.productId, item.quantity + 1, item.original_quantity)}
-                      disabled={item.quantity >= item.original_quantity}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className="text-right">
-                    {item.discount > 0 && (
-                      <p className="text-green-600 text-sm">
-                        Discount: -₹{item.discount.toFixed(2)}
-                      </p>
+        
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-[35px] px-4 sm:pl-[3rem] sm:pr-[2rem] py-0">
+        
+        {/* Left Side - Cart Table (big width) */}
+        <div className="lg:col-span-2">
+          {/* Updated table for responsiveness */}
+          <div className="overflow-x-auto bg-white rounded-lg border">
+            <table className="min-w-full border">
+              <thead className="bg-white-50 border-b">
+                <tr>
+                  <th className="py-3 px-4 text-left text-gray-500 text-sm font-semibold">Product</th>
+                  <th className="text-center text-gray-500 text-sm font-semibold">Quantity</th>
+                  <th className="text-center text-gray-500 text-sm font-semibold">Subtotal</th>
+                  <th className="text-center text-gray-500 text-sm font-semibold">&emsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartData.items.map((item) => (
+                  <Fragment key={item.productId}>
+                    <tr className="border-b">
+                      <td className="flex items-center py-4 px-4 gap-3">
+                         <div className="w-20 h-20 flex items-center justify-center border rounded-md overflow-hidden">
+                            <Image
+                              src={`/uploads/products/${item.image}`}
+                              alt={item.name}
+                              width={80}
+                              height={80}
+                              className="object-contain w-full h-full"
+                            />
+                          </div>
+                        <div className="flex flex-col gap-1 text-sm md:text-base">
+                          <h3 className="text-xs text-gray-500 uppercase">{item.item_code}</h3>
+                          <Link href={`/product/${slugify(item.name)}`}>
+                            <p className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                              {item.name.length > 50 ? item.name.slice(0, 50) + "..." : item.name}
+                            </p>
+                          </Link>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base font-semibold text-red-600">₹{item.price.toFixed(2)}</h3>
+                            <h3 className="text-xs text-gray-500 line-through">₹{item.actual_price.toFixed(2)}</h3>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="flex justify-center items-center gap-2 border border-gray-300 rounded p-1">
+                          <button
+                            className="px-2 py-1 text-black hover:text-blue-600"
+                            onClick={() => updateQuantity(item.productId, item.quantity - 1, null)}
+                            disabled={item.quantity <= 1}
+                          >
+                            −
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            className="px-2 py-1 text-black hover:text-blue-600"
+                            onClick={() => updateQuantity(item.productId, item.quantity + 1, item.original_quantity)}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button
+                          className="text-gray-500 text-xs font-semibold hover:text-blue-600"
+                          onClick={() => confirmRemoveItem(item.productId)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                      <td className="py-4 px-4 text-center font-semibold text-gray-900">
+                        ₹{(item.price * item.quantity).toFixed(2)}
+                      </td>
+                      <td className="py-4 px-4 text-center">&emsp;</td>
+                    </tr>
+                    {(item.warranty > 0 || item.extendedWarranty > 0) && (
+                      <tr className="border-b bg-gray-100">
+                        <td className="py-4 px-4 text-center">&emsp;</td>
+                        <td className="py-4 px-4 text-center">
+                          <h3 className="text-gray-500 text-sm font-semibold">Warranty</h3>
+                          <h3 className="text-gray-500 text-sm font-semibold">Extended Warranty</h3>
+                          <h3 className="text-gray-500 text-sm font-semibold">Discount</h3>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          <h3 className="text-gray-500 text-sm font-semibold">₹{item.warranty.toFixed(2)}</h3>
+                          <h3 className="text-gray-500 text-sm font-semibold">₹{item.extendedWarranty.toFixed(2)}</h3>
+                          <h3 className="text-gray-500 text-sm font-semibold">₹{item.discount.toFixed(2)}</h3>
+                        </td>
+                        <td className="py-4 px-4 text-center">&emsp;</td>
+                      </tr>
                     )}
-                    <p className="font-semibold">
-                      ₹{(
-                        (item.price * item.quantity) - 
-                        (item.discount || 0)
-                      ).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Warranty Info */}
-                <div className="text-sm text-gray-600 space-y-1 mt-2">
-                  <div className="flex justify-between">
-                    <span>Warranty</span>
-                    <span className="font-medium text-black">
-                      {item.warranty > 0 ? `₹${item.warranty.toFixed(2)}` : "-"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Extended Warranty</span>
-                    <span className="font-medium text-black">
-                      {item.extendedWarranty > 0
-                        ? `₹${item.extendedWarranty.toFixed(2)}`
-                        : "-"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Total */}
-                <div className="flex justify-between border-t pt-2 mt-2 font-semibold text-black">
-                  <span>Total</span>
-                  <span>
-                    ₹
-                    {(
-                      (item.price * item.quantity) +
-                      (item.warranty || 0) +
-                      (item.extendedWarranty || 0) -
-                      (item.discount || 0)
-                    ).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            ))}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          <div className="flex justify-between items-center mt-6 flex-wrap gap-2">
+            {/* Continue Shopping Button */}
+          {/* <div className="flex justify-between items-center mt-6 flex-wrap gap-2">
             <button
               className="text-gray-500 hover:underline"
               onClick={() => router.push("/index")}
             >
               ← Continue Shopping
             </button>
-          </div>
+          </div> */}
         </div>
 
-        {/* Summary Section */}
-        <div className="w-full md:w-1/3 bg-white p-6 rounded-lg border">
-          <h3 className="text-lg font-semibold text-gray-900">Cart Totals</h3>
-          
-          {/* Coupon Section */}
-          <div className="mt-4">
-            {appliedCoupon ? (
-              <div className="bg-green-50 p-3 rounded-lg mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-green-700">
-                    Coupon: {appliedCoupon.offer_code}
-                  </span>
-                  <button 
-                    onClick={removeCoupon}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    ✖
-                  </button>
+        {/* Right Side - Cart Totals (small width) */}
+        <div className="lg:col-span-1 bg-white p-3 rounded-lg border ">
+          {/* Cart Totals content */}
+          <h3 className="text-gray-500 text-sm font-semibold cursor-pointer">Cart Total</h3>
+                
+                {/* Coupon Section */}
+                {/* <div className="mt-4">
+                  {appliedCoupon ? (
+                    <div className="bg-white-200 p-2 mt-0  rounded-lg flex justify-between text-red-500 text-large  cursor-pointer">
+                      <span>YOU SAVED ₹{calculateTotal().toFixed(2)}</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowCouponModal(true)}
+                      className="w-full py-2 rounded-lg text-sm font-semibold cursor-pointer transition-colors"
+                      style={{
+                        border: "1px solid #0069c6",
+                        color: "#0069c6",
+                        backgroundColor: "transparent",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#0069c6"; // light blue
+                        e.currentTarget.style.color = "white"; // optional if you want white text on hover
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "#0069c6";
+                      }}
+                    >
+                      Apply Coupon
+                    </button>
+                  )}
+                  {couponError && (
+                    <p className="text-red-500 text-sm mb-2">{couponError}</p>
+                  )}
+                </div> */}
+                
+                <div className=" p-4 rounded-lg space-y-3">
+                  <div className="flex justify-between text-gray-600 text-gray-500 text-sm font-semibold cursor-pointer ">
+                    <span>Subtotal</span>
+                    <span className="font-semibold text-gray-900">
+                      ₹{calculateSubtotal().toFixed(2)}
+                    </span>
+                    
+                  </div>
+                  <hr className="my-2 border-gray-300" />
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-gray-600 text-gray-500 text-sm font-semibold cursor-pointer">
+                      <span>Discount</span>
+                      <span className="font-semibold text-green-600">
+                        -₹{calculateDiscount().toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between text-gray-600 text-gray-500 text-sm font-semibold cursor-pointer">
+                    <span>Estimated Delivery</span>
+                    <span className="font-semibold text-gray-900">Free</span>
+                  </div>
+                  <hr className="my-2 border-gray-300" />
+                  <div className="flex justify-between text-gray-600 text-gray-500 text-sm font-semibold cursor-pointer">
+                    <span>Estimated Taxes</span>
+                    <span className="font-semibold text-gray-900">₹0.00</span>
+                  </div>
+                  <hr className="my-2 border-gray-300" />
                 </div>
-                <p className="text-sm text-green-600 mt-1">
-                  {appliedCoupon.offer_type === "percentage" 
-                    ? `${appliedCoupon.percentage}% off` 
-                    : `₹${appliedCoupon.fixed_price} off`}
-                </p>
-              </div>
-            ) : (
+              
+                {/* Total price section */}
+                <div className="bg-gray-200 p-4 mt-4  rounded-lg flex justify-between text-gray-900 font-bold text-gray-500 text-sm font-semibold cursor-pointer">
+                  <span>Total</span>
+                  <span className="text-gray-900 text-sm font-semibold cursor-pointer">
+                    ₹{calculateTotal().toFixed(2)}
+                  </span>
+                </div>
+              
               <button
-                onClick={() => setShowCouponModal(true)}
-                className="w-full py-2 text-red-500 border border-red-500 rounded-lg hover:bg-red-50 mb-4"
+                className="mt-4 text-white w-full py-3 rounded-md hover:brightness-110 transition-all text-gray-500 text-sm font-semibold cursor-pointer"
+                style={{ backgroundColor: "#2453D3" }}
+                onClick={proceedToCheckout}
               >
-                Apply Coupon
+                Checkout
               </button>
-            )}
-            {couponError && (
-              <p className="text-red-500 text-sm mb-2">{couponError}</p>
-            )}
-          </div>
-          
-          <div className="bg-gray-100 p-4 rounded-lg space-y-3">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span className="font-semibold text-gray-900">
-                ₹{calculateSubtotal().toFixed(2)}
-              </span>
-            </div>
 
-            {appliedCoupon && (
-              <div className="flex justify-between text-gray-600">
-                <span>Discount</span>
-                <span className="font-semibold text-green-600">
-                  -₹{calculateDiscount().toFixed(2)}
-                </span>
-              </div>
-            )}
-
-            <div className="flex justify-between text-gray-600">
-              <span>Estimated Delivery</span>
-              <span className="font-semibold text-gray-900">Free</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Estimated Taxes</span>
-              <span className="font-semibold text-gray-900">₹0.00</span>
-            </div>
-          </div>
-        
-          {/* Total price section */}
-          <div className="bg-gray-100 p-4 mt-4 rounded-lg flex justify-between text-gray-900 font-bold">
-            <span>Total</span>
-            <span>
-              ₹{calculateTotal().toFixed(2)}
-            </span>
-          </div>
-        
-          <button
-            className="mt-4 bg-red-500 text-white w-full py-3 rounded-md hover:bg-red-600 transition-all"
-            onClick={proceedToCheckout}
-          >
-            Proceed to Checkout
-          </button>
         </div>
+
       </div>
-    </div>
+
+  </div>
+  
   );
 }

@@ -8,7 +8,6 @@ export default function BulkUploadPage() {
   const [excelFile, setExcelFile] = useState(null);
   const [imageZip, setImageZip] = useState(null);
   const [overviewZip, setOverviewZip] = useState(null);
-  const [updateMode, setUpdateMode] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,7 +16,7 @@ export default function BulkUploadPage() {
     const fileName = file.name.toLowerCase();
     return allowedExtensions.some((ext) => fileName.endsWith(ext));
   };
-
+  
   useEffect(() => {
     import("react-toastify/dist/ReactToastify.css");
   }, []);
@@ -25,14 +24,14 @@ export default function BulkUploadPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required Excel file
+    // Validate required files - only Excel is required now
     if (!excelFile || !validateFile(excelFile, [".xlsx", ".csv"])) {
       toast.error("Please upload a valid Excel (.xlsx) or CSV (.csv) file.");
       return;
     }
 
-    // Validate images only if not in update mode
-    if (!updateMode && (!imageZip || !validateFile(imageZip, [".zip"]))) {
+    // Validate optional image ZIP file
+    if (imageZip && !validateFile(imageZip, [".zip"])) {
       toast.error("Please upload a valid .zip file for product images.");
       return;
     }
@@ -48,9 +47,6 @@ export default function BulkUploadPage() {
 
     const formData = new FormData();
     formData.append("excel", excelFile);
-    formData.append("updateMode", updateMode.toString());
-    
-    // Only append images if they're provided
     if (imageZip) formData.append("images", imageZip);
     if (overviewZip) formData.append("overview", overviewZip);
 
@@ -64,21 +60,11 @@ export default function BulkUploadPage() {
 
       if (response.ok) {
         toast.success(data.message);
-        // Reset form after successful upload
-        setExcelFile(null);
-        setImageZip(null);
-        setOverviewZip(null);
-        setUpdateMode(false);
-        
-        // Reset file inputs
-        document.querySelectorAll('input[type="file"]').forEach(input => {
-          input.value = '';
-        });
       } else {
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error);
       }
     } catch (error) {
-      toast.error("Network error: " + error.message);
+      toast.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -93,45 +79,35 @@ export default function BulkUploadPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg overflow-hidden p-6 space-y-8">
-          {/* Update Mode Toggle */}
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Update Mode</h3>
-              <p className="text-sm text-gray-500">Enable to update existing products without re-uploading images</p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={updateMode}
-                onChange={(e) => setUpdateMode(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
-            </label>
-          </div>
-
+          <Link
+            href="/admin/product/status_bulk"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm transition duration-150 inline-block"
+          >
+            Status bulkupload
+          </Link>
+          
           {/* Excel File Section */}
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-red-500 transition-colors">
+          <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-colors">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Excel/CSV File *
+                Excel/CSV File
               </h3>
-              <p className="text-sm text-gray-500 mt-1">Upload your product data file (required)</p>
+              <p className="text-sm text-gray-500 mt-1">Upload your product data file</p>
             </div>
             <div className="space-y-4">
               <input
                 type="file"
                 accept=".xlsx,.csv"
                 onChange={(e) => setExcelFile(e.target.files?.[0] || null)}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-red-100"
                 required
               />
               <Link
                 href="/uploads/files/test_upload.xlsx"
-                className="inline-flex items-center text-sm text-red-600 hover:text-red-800 transition-colors"
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -141,33 +117,28 @@ export default function BulkUploadPage() {
             </div>
           </div>
 
-          {/* Product Images Section */}
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-red-500 transition-colors">
+          {/* Product Images Section - Now Optional */}
+          <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-colors">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Product Images (ZIP)
-                {!updateMode && <span className="text-xs text-red-500">*</span>}
+                <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Optional</span>
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
-                {updateMode 
-                  ? "Optional: Upload new images to replace existing ones" 
-                  : "Required: Upload compressed product images"}
-              </p>
+              <p className="text-sm text-gray-500 mt-1">Upload compressed product images (optional). If not provided, existing images will be preserved.</p>
             </div>
             <div className="space-y-4">
               <input
                 type="file"
                 accept=".zip"
                 onChange={(e) => setImageZip(e.target.files?.[0] || null)}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
-                required={!updateMode}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-blue-700 hover:file:bg-red-100"
               />
               <Link
                 href="/uploads/files/Sample.zip"
-                className="inline-flex items-center text-sm text-red-600 hover:text-red-800 transition-colors"
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -178,7 +149,7 @@ export default function BulkUploadPage() {
           </div>
 
           {/* Overview Images Section */}
-          <div className="border border-gray-200 rounded-lg p-6 hover:border-red-500 transition-colors">
+          <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-colors">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,17 +158,13 @@ export default function BulkUploadPage() {
                 Overview Images (ZIP)
                 <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Optional</span>
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
-                {updateMode 
-                  ? "Upload new overview images to replace existing ones" 
-                  : "Upload additional overview images"}
-              </p>
+              <p className="text-sm text-gray-500 mt-1">Upload additional overview images (optional). If not provided, existing images will be preserved.</p>
             </div>
             <input
               type="file"
               accept=".zip"
               onChange={(e) => setOverviewZip(e.target.files?.[0] || null)}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-blue-700 hover:file:bg-red-100"
             />
           </div>
 
@@ -206,7 +173,7 @@ export default function BulkUploadPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isLoading ? (
                 <span className="flex items-center">
@@ -214,10 +181,10 @@ export default function BulkUploadPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {updateMode ? 'Updating...' : 'Uploading...'}
+                  Uploading...
                 </span>
               ) : (
-                updateMode ? 'Update Products' : 'Upload Products'
+                'Start Upload'
               )}
             </button>
           </div>
