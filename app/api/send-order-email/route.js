@@ -33,7 +33,7 @@ export async function POST(req) {
     const customerMailOptions = {
       from: process.env.EMAIL_USER,
       to: customerEmail,
-       cc: "ecom@bharathelectronics.in",
+       //cc: "ecom@bharathelectronics.in",
       subject: 'Your Order Confirmation',
       html: `
        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
@@ -99,7 +99,7 @@ export async function POST(req) {
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: adminEmail,
-       cc: "ecom@bharathelectronics.in",
+      // cc: "ecom@bharathelectronics.in",
       subject: 'New Order Received',
       html: `
       <div style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 30px;">
