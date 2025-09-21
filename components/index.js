@@ -295,26 +295,28 @@ const scrollCategories = (direction) => {
         }
     }, [isInView.banner, controls]);
 
-    const CustomPrevArrow = ({ onClick }) => (
-        <button onClick={onClick} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-md z-10 hover:bg-gray-600"> ◀ </button>
-    );
+   
+  const CustomPrevArrow = ({ onClick }) => (
+    <button onClick={onClick} className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-md z-10 hover:bg-gray-600"> ◀ </button>
+  );
 
-    const CustomNextArrow = ({ onClick }) => (
-        <button onClick={onClick} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-md z-10 hover:bg-gray-600"> ▶ </button>
-    );
+  const CustomNextArrow = ({ onClick }) => (
+    <button onClick={onClick} className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-md z-10 hover:bg-gray-600"> ▶ </button>
+  );
 
-    const settings = {
-        dots: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 5000,
-        arrows: true,
-        prevArrow: <CustomPrevArrow />,
-        nextArrow: <CustomNextArrow />,
-    };
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    arrows: false,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+  };
+
 
     const flashSalesSettings = {
         dots: false,
@@ -585,66 +587,66 @@ const handleCategoryClick = useCallback((category) => (e) => {
               
                    
                  {/* Banner Section start */}
-        <motion.section id="topbanner"
-                                          ref={refs.banner}
-                                          initial="hidden"
-                                          animate="visible"
-                                          variants={containerVariants}
-                                          className="overflow-hidden pt-0 m-0 "
-                                        >
-              <div className="relative">
-                {isBannerLoading ? (
-                  <div className="p-6 flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-                  </div>
-                ) : bannerData.banner.items.length > 0 ? (
-                  bannerData.banner.items.length > 1 ? (
-                    <Slider {...settings} className="relative">
-                      {bannerData.banner.items.map((item) => (
-                        <motion.div
-                          key={item.id}
-                          className="relative w-full aspect-[2000/667] max-h-auto"
-                          variants={itemVariants}
-                        >
-                          <div className="absolute inset-0 overflow-hidden">
-                            <Image
-                              src={item.bgImageUrl}
-                              alt="Banner"
-                              fill
-                              quality={100}
-                              className="object-fill w-full h-full"
-                              style={{ objectPosition: "center 30%" }}
-                              priority
-                            />
-                          </div>
-                        </motion.div>
-                      ))}
-                    </Slider>
-                  ) : (
-                    <motion.div
-                      className="p-4 md:p-6 relative aspect-[2000/667] max-h-auto"
-                      variants={itemVariants}
-                    >
-                      <div className="absolute inset-0 flex justify-center items-center bg-white">
-                        <Image
-                          src={bannerData.banner.items[0].bgImageUrl}
-                          alt="Banner"
-                          fill
-                          className=" object-fill w-full h-full"
-                          priority
-                        />
-                      </div>
-                    </motion.div>
-                  )
-                ) : (
-                  <div>
-                    </div>
-                  // <div className="p-6 text-center">
-                  //   <p className="text-lg">No active banners available</p>
-                  // </div>
-                )}
+       <motion.section
+  id="topbanner"
+  ref={refs.banner}
+  initial="hidden"
+  animate="visible"
+  variants={containerVariants}
+  className="overflow-hidden pt-0 m-0"
+>
+  <div className="relative">
+    {isBannerLoading ? (
+      <div className="p-6 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    ) : bannerData.banner.items.length > 0 ? (
+      bannerData.banner.items.length > 1 ? (
+        <Slider {...settings} className="relative">
+          {bannerData.banner.items.map((item) => (
+            <motion.div
+              key={item.id}
+              className="relative w-full aspect-[2000/667]"
+              variants={itemVariants}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <Image
+                  src={item.bgImageUrl}
+                  alt="Banner"
+                  fill
+                  quality={100}
+                  className="object-fill w-full h-full"
+                  style={{ objectPosition: "center 30%" }}
+                  priority
+                />
               </div>
-            </motion.section>
+            </motion.div>
+          ))}
+        </Slider>
+      ) : (
+        <motion.div
+          className="p-4 md:p-6 relative aspect-[2000/667]"
+          variants={itemVariants}
+        >
+          <div className="absolute inset-0 overflow-hidden">
+            <Image
+              src={bannerData.banner.items[0].bgImageUrl}
+              alt="Banner"
+              fill
+              className="object-fill w-full h-full"
+              priority
+            />
+          </div>
+        </motion.div>
+      )
+    ) : (
+      <div className="p-6 text-center">
+        <p className="text-lg">No active banners available</p>
+      </div>
+    )}
+  </div>
+</motion.section>
+
               {/* features code start */}
              {/* features code start */}
           <section className="pt-7 px-4 sm:px-6 md:px-6" id="features">
