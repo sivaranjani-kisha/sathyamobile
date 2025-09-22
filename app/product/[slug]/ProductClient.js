@@ -1533,7 +1533,7 @@ const fetchBrand = async () => {
                 className="block mb-1"
                 onClick={() => handleProductClick(item)}
               >
-                <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                   {item.name}
                 </h3>
               </Link>
@@ -1651,7 +1651,7 @@ const fetchBrand = async () => {
   {/* Related Products Section - show ONLY if no featured products */}
   {featuredProducts?.length === 0 && relatedProducts.length > 0 && (
     <div className="px-4 py-4">
-      <h2 className="text-sm font-bold text-customBlue underline mb-2">
+      <h2 className="text-sm font-bold text-red-600 underline mb-2">
         Similar Products
       </h2>
       {relatedProducts
@@ -1679,7 +1679,7 @@ const fetchBrand = async () => {
                   className="block mb-1"
                   onClick={() => handleProductClick(item)}
                 >
-                  <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                  <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                     {item.name}
                   </h3>
                 </Link>
