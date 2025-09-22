@@ -6,13 +6,20 @@ import ProductClient from "./ProductClient";
 export async function generateMetadata({ params  }) {
   const slug = params.slug;
 
-  // Always use absolute URL
+  /* // Always use absolute URL
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const response = await fetch(`${baseUrl}/api/product/${slug}`, {
     // Disable caching so metadata is always fresh
     cache: "no-store",
-  });
+  }); */
+
+  const baseUrl =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+const response = await fetch(`${baseUrl}/api/product/${slug}`, {
+  cache: "no-store",
+});
 
   if (!response.ok) {
     console.error("Metadata fetch failed:", response.status);
