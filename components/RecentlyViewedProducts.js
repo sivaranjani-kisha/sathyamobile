@@ -209,7 +209,7 @@ const RecentlyViewedProducts = () => {
                   {visibleProducts.map((product) => (
                     <div
                       key={product._id}
-                      className="group border border-gray-200 hover:border-[#0069c1] hover:shadow-md transition-all duration-300 rounded-lg"
+                      className="group border border-gray-200 hover:border-[#e20e0e] hover:shadow-md transition-all duration-300 rounded-lg"
                     >
                       
                       {/* Product Image */}
@@ -307,7 +307,7 @@ const RecentlyViewedProducts = () => {
                           className="block mb-2"
                           onClick={() => handleProductClick(product)}
                         >
-                          <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                          <h3 className="text-xs sm:text-sm font-medium text-[#e71919] hover:text-[#e42565] line-clamp-2 min-h-[40px]">
                             {product.name}
                           </h3>
                         </Link>
