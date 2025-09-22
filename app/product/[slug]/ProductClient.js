@@ -642,7 +642,7 @@ const fetchBrand = async () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-blue-500">{error}</h2>
+          <h2 className="text-2xl font-bold text-red-500">{error}</h2>
           <Link href="/" className="mt-4 inline-flex items-center text-blue-600">
             ← Back to Home
           </Link>
@@ -897,7 +897,7 @@ const fetchBrand = async () => {
                 <div className="flex items-center gap-2">
                   {/* Price Section */}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-blue-800">
+                    <span className="text-2xl font-bold text-red-800">
                      Rs.{Math.round(product.special_price || product.price)}
                     </span>
                     {product.special_price && (
@@ -1317,41 +1317,41 @@ const fetchBrand = async () => {
   <div className="mt-3 flex flex-col md:flex-row md:justify-between gap-2 space-y-2 md:space-y-0">
     {/* Replacement Box */}
     <div
-      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setShowReplacementModal(true)}
     >
      <span className="text-3xl mr-3 mt-1">
-  <Icon icon="mdi:refresh" className="text-blue-600" />
+  <Icon icon="mdi:refresh" className="text-red-600" />
 </span>
       <div>
-        <div className="text-sm font-semibold text-blue-800">Replacement</div>
-        <div className="text-xs text-blue-600">in 7 days</div>
+        <div className="text-sm font-semibold text-red-800">Replacement</div>
+        <div className="text-xs text-red-600">in 7 days</div>
       </div>
     </div>
 
     {/* Warranty Box */}
     <div
-      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setshowWarrantyModal(true)}
     >
       <span className="text-3xl mr-3 mt-1">
-  <Icon icon="mdi:shield" className="text-blue-500" />
+  <Icon icon="mdi:shield" className="text-red-600" />
 </span>
       <div>
-        <div className="text-sm font-semibold text-blue-800">Warranty</div>
-        <div className="text-xs text-blue-600">in 1 Year</div>
+        <div className="text-sm font-semibold text-red-800">Warranty</div>
+        <div className="text-xs text-red-600">in 1 Year</div>
       </div>
     </div>
 
     {/* GST Invoice Box */}
     <div
-      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setshowGstInvoiceModal(true)}
     >
       <span className="text-yellow-500 text-xl mr-3 mt-1">📄</span>
       <div>
-        <div className="text-sm font-semibold text-blue-800">GST Invoice</div>
-        <div className="text-xs text-blue-600">Available</div>
+        <div className="text-sm font-semibold text-red-800">GST Invoice</div>
+        <div className="text-xs text-red-600">Available</div>
       </div>
     </div>
   </div>
