@@ -632,8 +632,12 @@ const fetchBrand = async () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
+        <div className="bounce-loader flex space-x-2">
+          <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+          <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+          <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+        </div>
       </div>
     );
   }
@@ -643,7 +647,7 @@ const fetchBrand = async () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-500">{error}</h2>
-          <Link href="/" className="mt-4 inline-flex items-center text-blue-600">
+          <Link href="/" className="mt-4 inline-flex items-center text-red-600">
             ← Back to Home
           </Link>
         </div>
@@ -656,7 +660,7 @@ const fetchBrand = async () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Product not found</h2>
-          <Link href="/" className="mt-4 inline-flex items-center text-blue-600">
+          <Link href="/" className="mt-4 inline-flex items-center text-red-600">
             ← Back to Homee
           </Link>
         </div>
@@ -675,9 +679,9 @@ const fetchBrand = async () => {
       {/* <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Shop Details</h2>
         <div className="flex items-center space-x-2">
-          <Link href="/" className="text-gray-600 hover:text-blue-600">🏠 Home</Link>
+          <Link href="/" className="text-gray-600 hover:text-red-600">🏠 Home</Link>
           <span className="text-gray-500">›</span>
-          <span className="text-blue-600 font-semibold">Shop Details</span>
+          <span className="text-red-600 font-semibold">Shop Details</span>
         </div>
       </div> */}
 
@@ -1034,15 +1038,15 @@ const fetchBrand = async () => {
                         alt="Bank Logos" 
                         className="h-6 w-auto"
                       />
-                      <span className="text-sm text-blue-700">
+                      <span className="text-sm text-red-700">
                         From <span className="font-bold">₹{Math.floor((product.special_price || product.price) / 6)}</span>/month
                       </span>
                     </div>
-                    <button className="text-sm font-semibold text-blue-700 hover:underline">
+                    <button className="text-sm font-semibold text-red-700 hover:underline">
                       View Plans
                     </button>
                   </div>
-                  <p className="text-xs text-blue-600">
+                  <p className="text-xs text-red-600">
                     Credit Card EMI available on orders above ₹5,000
                   </p>
                 </div>
@@ -1302,7 +1306,7 @@ const fetchBrand = async () => {
 
                   <span className="text-gray-700 text-xs">Mfr. coupon. $3.00 off 5</span>
                 </div>
-                <button className="text-blue-500 text-xs font-semibold hover:underline">
+                <button className="text-red-500 text-xs font-semibold hover:underline">
                   View Details
                 </button>
               </div>
@@ -1362,7 +1366,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-blue-800">Replacement</h2>
+                    <h2 className="text-lg font-semibold text-red-800">Replacement</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setShowReplacementModal(false)}
@@ -1408,7 +1412,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/cancellation-refund-policy"
-                      className="text-sm text-blue-600 font-medium hover:underline"
+                      className="text-sm text-red-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1423,7 +1427,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-blue-800">Warranty</h2>
+                    <h2 className="text-lg font-semibold text-red-800">Warranty</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setshowWarrantyModal(false)}
@@ -1441,7 +1445,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/privacypolicy"
-                      className="text-sm text-blue-600 font-medium hover:underline"
+                      className="text-sm text-red-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1456,7 +1460,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-blue-800">GST Invoice</h2>
+                    <h2 className="text-lg font-semibold text-red-800">GST Invoice</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setshowGstInvoiceModal(false)}
@@ -1474,7 +1478,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/shipping"
-                      className="text-sm text-blue-600 font-medium hover:underline"
+                      className="text-sm text-red-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1578,7 +1582,7 @@ const fetchBrand = async () => {
   {/* Warranty Section */}
   {(product?.warranty || product?.extended_warranty) && (
     <div className="px-4 py-4 border-b border-gray-300">
-      <h4 className="text-sm font-semibold text-blue-600 mb-2">
+      <h4 className="text-sm font-semibold text-red-600 mb-2">
         Want to protect your product?
       </h4>
 
@@ -1754,8 +1758,7 @@ const fetchBrand = async () => {
  {product.stock_status === "In Stock" && (
   <button
     onClick={handleBuyNow}
-    className="w-full bg-white hover:bg-customBlue hover:text-white text-customBlue border border-blue-200 font-semibold py-3 rounded-md shadow-md flex items-center justify-center gap-3"
-  >
+    className="px-2 py-2 md:px-2 md:py-2 mr-1 rounded-md shadow-md transition duration-300 text-md flex items-center justify-center gap-x-1 bg-white text-[#d32424] hover:bg-[#d32424] hover:text-white active:scale-95 disabled:active:scale-100 w-full min-[1400px]:w-[185px] border border-red-200">
     <FaStore className="h-5 w-5" />
     <span>Buy Now</span>
   </button>

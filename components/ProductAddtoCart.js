@@ -144,7 +144,7 @@ if (selectedFrequentProducts?.length > 0) {
 <button
   onClick={handleAddToCart}
   disabled={isLoading || isOutOfStock || isprice}
-  className={`w-full px-4 py-3 rounded-md shadow-md transition duration-300 text-md flex items-center justify-center gap-x-3 font-semibold text-center
+  className={`px-2 py-2 md:px-2 md:py-2 mr-1 rounded-md shadow-md transition duration-300 text-md flex items-center justify-center gap-x-1 bg-white text-[#d32424] hover:bg-[#d32424] hover:text-white active:scale-95 disabled:active:scale-100 w-full min-[1400px]:w-[185px] text-center
     ${isOutOfStock
       ? 'bg-gray-400 cursor-not-allowed text-white'
       : isLoading
