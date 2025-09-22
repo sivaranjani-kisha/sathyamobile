@@ -7,9 +7,9 @@ export async function generateMetadata({ params  }) {
   const slug = params.slug;
 
   // Always use absolute URL
-  // const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const response = await fetch(`/api/product/${slug}`, {
+  const response = await fetch(`${baseUrl}/api/product/${slug}`, {
     // Disable caching so metadata is always fresh
     cache: "no-store",
   });
@@ -22,14 +22,14 @@ export async function generateMetadata({ params  }) {
   }
 
   const data = await response.json();
-  console.log("Fetched product for metadata:", `/product/${slug}`);
+  console.log("Fetched product for metadata:", `${baseUrl}/product/${slug}`);
 
   return {
   title: data.name,
   openGraph: {
     title: data.name,
     description: 'Buy Now ' + data.name,
-    images: [`/uploads/products/${data.images[0]}`],
+    images: [`${baseUrl}/uploads/products/${data.images[0]}`],
     url: `${baseUrl}/product/${slug}`,
     type: "website",
   },
