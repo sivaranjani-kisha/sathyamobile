@@ -22,6 +22,7 @@ import ProductBreadcrumb from "@/components/ProductBreadcrumb";
 import RecentlyViewedProducts from '@/components/RecentlyViewedProducts';
 import RelatedProducts from "@/components/RelatedProducts";
 import RazorpayOffers from "@/components/RazorpayOffers";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ProductClient() {
   const router = useRouter(); 
@@ -82,6 +83,11 @@ const handleBuyNow = async () => {
   try {
     const token = localStorage.getItem("token");
 
+    let isLoggedIn = false;
+    let userData = null;
+
+    /*
+
     // ✅ Check authentication
     const response = await fetch("/api/auth/check", {
       method: "GET",
@@ -99,8 +105,35 @@ const handleBuyNow = async () => {
       });
       return;
     }
+      */
+
+    if (token) {
+      const response = await fetch("/api/auth/check", {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      isLoggedIn = data.loggedIn;
+      userData = data.user;
+
+          //updateHeaderdetails({ user: data.user });
+          //setIsLoggedIn(true);
+          //const role = data.role;
+          //if(role == 'admin'){
+            //setIsAdmin(true);
+          //}
+        }
+
+        // ✅ If not logged in → use guestCartId
+        let guestCartId = null;
+        if (!isLoggedIn) {
+          guestCartId = localStorage.getItem("guestCartId") || uuidv4();
+          localStorage.setItem("guestCartId", guestCartId);
+        }
 
     // ✅ Add main product
+
+    /*
     const cartResponse = await fetch("/api/cart", {
       method: "POST",
       headers: {
@@ -115,6 +148,24 @@ const handleBuyNow = async () => {
       }),
     });
 
+    */
+
+     // ✅ Add main product to cart
+    const cartResponse = await fetch("/api/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(isLoggedIn && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({
+        productId: product._id,
+        quantity,
+        selectedWarranty: selectedWarranty,
+        selectedExtendedWarranty: selectedExtendedWarranty,
+        ...(guestCartId && { guestCartId }), // ✅ include only if guest
+      }),
+    });
+
     if (!cartResponse.ok) {
       throw new Error("Failed to add main product to cart");
     }
@@ -124,7 +175,8 @@ const handleBuyNow = async () => {
       ...selectedFrequentProducts.map((p) => p._id),
       ...selectedRelatedProducts.map((p) => p._id),
     ];
-
+    
+    /*
     if (additionalProducts.length > 0) {
       await Promise.all(
         additionalProducts.map(async (id) => {
@@ -137,6 +189,28 @@ const handleBuyNow = async () => {
             body: JSON.stringify({ productId: id, quantity: 1 }),
           });
           if (!res.ok) throw new Error("Failed to add extra product");
+        })
+      );
+    } */
+
+    
+    // ✅ Add additional products (if any)
+    if (additionalProducts.length > 0) {
+      await Promise.all(
+        additionalProducts.map(async (id) => {
+          const res = await fetch("/api/cart", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(isLoggedIn && { Authorization: `Bearer ${token}` }),
+            },
+            body: JSON.stringify({
+              productId: id,
+              quantity: 1,
+              ...(guestCartId && { guestCartId }),
+            }),
+          });
+          if (!res.ok) throw new Error("Failed to add additional product");
         })
       );
     }
@@ -171,6 +245,7 @@ const handleBuyNow = async () => {
 
 
     // ✅ Save Buy Now state in localStorage
+    /*
     localStorage.setItem(
       "buyNowData",
       JSON.stringify({
@@ -178,6 +253,7 @@ const handleBuyNow = async () => {
         total,
       })
     );
+    */
 
     // ✅ Redirect
     window.location.href = "/checkout";
@@ -557,7 +633,7 @@ const fetchBrand = async () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -566,8 +642,8 @@ const fetchBrand = async () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-500">{error}</h2>
-          <Link href="/" className="mt-4 inline-flex items-center text-red-600">
+          <h2 className="text-2xl font-bold text-blue-500">{error}</h2>
+          <Link href="/" className="mt-4 inline-flex items-center text-blue-600">
             ← Back to Home
           </Link>
         </div>
@@ -580,7 +656,7 @@ const fetchBrand = async () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Product not found</h2>
-          <Link href="/" className="mt-4 inline-flex items-center text-red-600">
+          <Link href="/" className="mt-4 inline-flex items-center text-blue-600">
             ← Back to Homee
           </Link>
         </div>
@@ -596,12 +672,12 @@ const fetchBrand = async () => {
   return (
     <div className="bg-white min-h-screen overflow-x-hidden">
       {/* 🟠 Wishlist Header Bar */}
-      {/* <div className="bg-red-50 py-6 px-8 flex justify-between items-center">
+      {/* <div className="bg-blue-50 py-6 px-8 flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">Shop Details</h2>
         <div className="flex items-center space-x-2">
-          <Link href="/" className="text-gray-600 hover:text-red-600">🏠 Home</Link>
+          <Link href="/" className="text-gray-600 hover:text-blue-600">🏠 Home</Link>
           <span className="text-gray-500">›</span>
-          <span className="text-red-600 font-semibold">Shop Details</span>
+          <span className="text-blue-600 font-semibold">Shop Details</span>
         </div>
       </div> */}
 
@@ -821,7 +897,7 @@ const fetchBrand = async () => {
                 <div className="flex items-center gap-2">
                   {/* Price Section */}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-red-800">
+                    <span className="text-2xl font-bold text-blue-800">
                      Rs.{Math.round(product.special_price || product.price)}
                     </span>
                     {product.special_price && (
@@ -941,9 +1017,9 @@ const fetchBrand = async () => {
             </div>
 
             {/* Add this code right after the Stock Alert section */}
-              {/* <div className="border-2 border-customred rounded-lg overflow-hidden bg-red-50 shadow-md mt-4">
+              {/* <div className="border-2 border-customBlue rounded-lg overflow-hidden bg-blue-50 shadow-md mt-4">
               
-                <div className="bg-customred px-4 py-3 rounded-t-lg">
+                <div className="bg-customBlue px-4 py-3 rounded-t-lg">
                   <h3 className="text-base font-semibold text-white">
                     EMI OPTIONS AVAILABLE
                   </h3>
@@ -958,15 +1034,15 @@ const fetchBrand = async () => {
                         alt="Bank Logos" 
                         className="h-6 w-auto"
                       />
-                      <span className="text-sm text-red-700">
+                      <span className="text-sm text-blue-700">
                         From <span className="font-bold">₹{Math.floor((product.special_price || product.price) / 6)}</span>/month
                       </span>
                     </div>
-                    <button className="text-sm font-semibold text-red-700 hover:underline">
+                    <button className="text-sm font-semibold text-blue-700 hover:underline">
                       View Plans
                     </button>
                   </div>
-                  <p className="text-xs text-red-600">
+                  <p className="text-xs text-blue-600">
                     Credit Card EMI available on orders above ₹5,000
                   </p>
                 </div>
@@ -1037,7 +1113,7 @@ const fetchBrand = async () => {
       <div className="p-4 border-t text-sm">
         <p className="text-gray-600 mb-2">* Interest rates may vary based on your bank's policies</p>
         <button 
-          className="w-full bg-red-600 text-white py-2 rounded-lg font-medium"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium"
           onClick={() => setShowEMIModal(false)}
         >
           Close
@@ -1219,14 +1295,14 @@ const fetchBrand = async () => {
 
             {/* Coupons */}
             {/* <div className="mt-4">
-              <div className="flex items-center justify-between border border-red-400 rounded-md p-2 mb-3">
+              <div className="flex items-center justify-between border border-blue-400 rounded-md p-2 mb-3">
                 <div className="flex items-center gap-1">
                   //  <span className="text-gray-600 text-sm">➕</span> 
                   <span className="inline-flex items-center justify-center w-4 h-4 text-white bg-gray-600 rounded-full text-lg">+</span>
 
                   <span className="text-gray-700 text-xs">Mfr. coupon. $3.00 off 5</span>
                 </div>
-                <button className="text-red-500 text-xs font-semibold hover:underline">
+                <button className="text-blue-500 text-xs font-semibold hover:underline">
                   View Details
                 </button>
               </div>
@@ -1241,41 +1317,41 @@ const fetchBrand = async () => {
   <div className="mt-3 flex flex-col md:flex-row md:justify-between gap-2 space-y-2 md:space-y-0">
     {/* Replacement Box */}
     <div
-      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setShowReplacementModal(true)}
     >
      <span className="text-3xl mr-3 mt-1">
-  <Icon icon="mdi:refresh" className="text-red-600" />
+  <Icon icon="mdi:refresh" className="text-blue-600" />
 </span>
       <div>
-        <div className="text-sm font-semibold text-red-800">Replacement</div>
-        <div className="text-xs text-red-600">in 7 days</div>
+        <div className="text-sm font-semibold text-blue-800">Replacement</div>
+        <div className="text-xs text-blue-600">in 7 days</div>
       </div>
     </div>
 
     {/* Warranty Box */}
     <div
-      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setshowWarrantyModal(true)}
     >
       <span className="text-3xl mr-3 mt-1">
-  <Icon icon="mdi:shield" className="text-red-500" />
+  <Icon icon="mdi:shield" className="text-blue-500" />
 </span>
       <div>
-        <div className="text-sm font-semibold text-red-800">Warranty</div>
-        <div className="text-xs text-red-600">in 1 Year</div>
+        <div className="text-sm font-semibold text-blue-800">Warranty</div>
+        <div className="text-xs text-blue-600">in 1 Year</div>
       </div>
     </div>
 
     {/* GST Invoice Box */}
     <div
-      className="flex items-start bg-red-50 border border-red-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
+      className="flex items-start bg-blue-50 border border-blue-200 rounded-md p-4 w-full md:w-1/3 shadow-sm cursor-pointer"
       onClick={() => setshowGstInvoiceModal(true)}
     >
       <span className="text-yellow-500 text-xl mr-3 mt-1">📄</span>
       <div>
-        <div className="text-sm font-semibold text-red-800">GST Invoice</div>
-        <div className="text-xs text-red-600">Available</div>
+        <div className="text-sm font-semibold text-blue-800">GST Invoice</div>
+        <div className="text-xs text-blue-600">Available</div>
       </div>
     </div>
   </div>
@@ -1286,7 +1362,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-red-800">Replacement</h2>
+                    <h2 className="text-lg font-semibold text-blue-800">Replacement</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setShowReplacementModal(false)}
@@ -1332,7 +1408,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/cancellation-refund-policy"
-                      className="text-sm text-red-600 font-medium hover:underline"
+                      className="text-sm text-blue-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1347,7 +1423,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-red-800">Warranty</h2>
+                    <h2 className="text-lg font-semibold text-blue-800">Warranty</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setshowWarrantyModal(false)}
@@ -1365,7 +1441,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/privacypolicy"
-                      className="text-sm text-red-600 font-medium hover:underline"
+                      className="text-sm text-blue-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1380,7 +1456,7 @@ const fetchBrand = async () => {
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl relative p-6">
                   {/* Modal Header */}
                   <div className="flex justify-between items-center border-b pb-2">
-                    <h2 className="text-lg font-semibold text-red-800">GST Invoice</h2>
+                    <h2 className="text-lg font-semibold text-blue-800">GST Invoice</h2>
                     <button
                       className="text-gray-500 hover:text-gray-700 text-xl"
                       onClick={() => setshowGstInvoiceModal(false)}
@@ -1398,7 +1474,7 @@ const fetchBrand = async () => {
                   <div className="mt-6 flex justify-end border-t pt-3">
                     <a
                       href="/shipping"
-                      className="text-sm text-red-600 font-medium hover:underline"
+                      className="text-sm text-blue-600 font-medium hover:underline"
                     >
                       Know More
                     </a>
@@ -1502,7 +1578,7 @@ const fetchBrand = async () => {
   {/* Warranty Section */}
   {(product?.warranty || product?.extended_warranty) && (
     <div className="px-4 py-4 border-b border-gray-300">
-      <h4 className="text-sm font-semibold text-red-600 mb-2">
+      <h4 className="text-sm font-semibold text-blue-600 mb-2">
         Want to protect your product?
       </h4>
 
@@ -1571,7 +1647,7 @@ const fetchBrand = async () => {
   {/* Related Products Section - show ONLY if no featured products */}
   {featuredProducts?.length === 0 && relatedProducts.length > 0 && (
     <div className="px-4 py-4">
-      <h2 className="text-sm font-bold text-customred underline mb-2">
+      <h2 className="text-sm font-bold text-customBlue underline mb-2">
         Similar Products
       </h2>
       {relatedProducts
@@ -1655,7 +1731,7 @@ const fetchBrand = async () => {
     selectedFrequentProducts.length > 0 ||
     selectedWarranty ||
     selectedExtendedWarranty) && (
-    <div className="w-full bg-customred text-white border border-gray-400 font-semibold py-2 rounded-md shadow-md flex items-center justify-between px-4">
+    <div className="w-full bg-customBlue text-white border border-gray-400 font-semibold py-2 rounded-md shadow-md flex items-center justify-between px-4">
       {/* Left - Icon + Label */}
       <div className="flex items-center gap-2">
         <FaCartPlus className="text-white w-5 h-5" />
@@ -1678,7 +1754,7 @@ const fetchBrand = async () => {
  {product.stock_status === "In Stock" && (
   <button
     onClick={handleBuyNow}
-    className="w-full bg-white hover:bg-customred hover:text-white text-customred border border-red-200 font-semibold py-3 rounded-md shadow-md flex items-center justify-center gap-3"
+    className="w-full bg-white hover:bg-customBlue hover:text-white text-customBlue border border-blue-200 font-semibold py-3 rounded-md shadow-md flex items-center justify-center gap-3"
   >
     <FaStore className="h-5 w-5" />
     <span>Buy Now</span>
@@ -1699,7 +1775,7 @@ const fetchBrand = async () => {
     selectedRelatedProducts={selectedRelatedProducts}
     extendedWarranty={selectedExtendedWarranty}
     selectedFrequentProducts={selectedFrequentProducts}
-    className="w-full bg-custom-red hover:bg-red-700 text-white hover:text-white font-semibold py-3 rounded-md shadow-md text-center"
+    className="w-full bg-customBlue hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow-md text-center"
   />
 </div>
 
@@ -1737,5 +1813,4 @@ const fetchBrand = async () => {
     
   );
 }
-
 
