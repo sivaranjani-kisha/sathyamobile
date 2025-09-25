@@ -1735,7 +1735,7 @@ const fetchBrand = async () => {
     selectedFrequentProducts.length > 0 ||
     selectedWarranty ||
     selectedExtendedWarranty) && (
-    <div className="w-full bg-customBlue text-white border border-gray-400 font-semibold py-2 rounded-md shadow-md flex items-center justify-between px-4">
+    <div className="w-full bg-red-600 text-white border border-red-400 font-semibold py-2 rounded-md shadow-md flex items-center justify-between px-4">
       {/* Left - Icon + Label */}
       <div className="flex items-center gap-2">
         <FaCartPlus className="text-white w-5 h-5" />

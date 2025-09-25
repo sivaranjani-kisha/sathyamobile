@@ -307,7 +307,7 @@ const RecentlyViewedProducts = () => {
                           className="block mb-2"
                           onClick={() => handleProductClick(product)}
                         >
-                          <h3 className="text-xs sm:text-sm font-medium text-[#e71919] hover:text-[#e42565] line-clamp-2 min-h-[40px]">
+                          <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                             {product.name}
                           </h3>
                         </Link>

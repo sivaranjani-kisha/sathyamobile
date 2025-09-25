@@ -48,7 +48,7 @@ const ConfirmModal = ({ show, onClose, onConfirm }) => (
               Cancel
             </button>
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               onClick={onConfirm}
             >
               Yes, Delete
@@ -622,10 +622,12 @@ const validateCoupon = async () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your cart...</p>
+      <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
+        <div className="bounce-loader flex space-x-2">
+          <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+          <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+          <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+          {/* <p className="mt-4 text-gray-600">Loading your cart...</p> */}
         </div>
       </div>
     );
@@ -702,7 +704,7 @@ const validateCoupon = async () => {
     {/* Header */}
       <div className=" sm:pl-[3rem] sm:pr-[2rem] flex flex-col sm:flex-row justify-between items-center gap-2 my-[35px]">
         <div style={{ "--heading-color": "#0069c6" }}>
-          <h1 className="font-bold text-[1.75rem] text-[#0069c6]"> My Cart</h1>
+          <h1 className="font-bold text-[1.75rem] text-red-600"> My Cart</h1>
         </div>
         
       </div>
@@ -742,7 +744,7 @@ const validateCoupon = async () => {
                         <div className="flex flex-col gap-1 text-sm md:text-base">
                           <h3 className="text-xs text-gray-500 uppercase">{item.item_code}</h3>
                           <Link href={`/product/${slugify(item.name)}`}>
-                            <p className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                            <p className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                               {item.name.length > 50 ? item.name.slice(0, 50) + "..." : item.name}
                             </p>
                           </Link>
@@ -770,7 +772,7 @@ const validateCoupon = async () => {
                           </button>
                         </div>
                         <button
-                          className="text-gray-500 text-xs font-semibold hover:text-blue-600"
+                          className="text-gray-500 text-xs font-semibold hover:text-red-600"
                           onClick={() => confirmRemoveItem(item.productId)}
                         >
                           Remove
@@ -890,7 +892,7 @@ const validateCoupon = async () => {
               
               <button
                 className="mt-4 text-white w-full py-3 rounded-md hover:brightness-110 transition-all text-gray-500 text-sm font-semibold cursor-pointer"
-                style={{ backgroundColor: "#2453D3" }}
+                style={{ backgroundColor: "#c11116" }}
                 onClick={proceedToCheckout}
               >
                 Checkout
