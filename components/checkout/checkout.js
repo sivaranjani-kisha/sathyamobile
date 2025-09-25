@@ -753,10 +753,12 @@ const grandTotal = subtotal - totalDiscount;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading checkout...</p>
+      <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
+        <div className="bounce-loader flex space-x-2">
+          <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+          <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+          <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+          {/* <p className="mt-4 text-gray-600">Loading checkout...</p> */}
         </div>
       </div>
     );
@@ -914,7 +916,7 @@ const grandTotal = subtotal - totalDiscount;
 
                     {/* Product Details */}
                     <div className="flex-1">
-                      <div title={item.name} className="leading-snug text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-3 min-h-[40px]">
+                      <div title={item.name} className="leading-snug text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-3 min-h-[40px]">
                         {item.name}
                       </div>
 

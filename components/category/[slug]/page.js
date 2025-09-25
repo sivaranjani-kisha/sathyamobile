@@ -543,9 +543,11 @@ const STEP = 100;
     
   if ((loading || !categoryData.category) && page == 1) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
+        <div className="bounce-loader flex space-x-2">
+          <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+          <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+          <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
         </div>
       </div>
     );
@@ -990,7 +992,7 @@ const STEP = 100;
                         className="block mb-2"
                         onClick={() => handleProductClick(product)}
                       >
-                        <h3 className="text-xs sm:text-sm font-medium text-gray-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
+                        <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                           {product.name}
                         </h3>
                       </Link>

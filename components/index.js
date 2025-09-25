@@ -1098,7 +1098,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
                                 </div>
                                 <Link
                                   href={`/product/${encodeURIComponent(product.slug || product._id)}`}
-                                  className="font-semibold text-gray-800 hover:text-red-600 mb-2 line-clamp-2"
+                                  className="font-semibold text-red-800 hover:text-red-600 mb-2 line-clamp-2"
                                 >
                                   {product.name}
                                 </Link>
