@@ -148,14 +148,14 @@ export default function Order() {
           {/* Sidebar Navigation - Desktop */}
           <div className="hidden lg:block w-full lg:w-72 flex-shrink-0">
             <div className="bg-white p-6 rounded-xl border border-gray-200 hover:border-customBlue transition-all duration-300 shadow-sm">
-              <h3 className="text-lg font-semibold text-customBlue mb-6 pb-2 border-b border-gray-100">My Account</h3>
+              <h3 className="text-lg font-semibold text-red-600 mb-6 pb-2 border-b border-gray-100">My Account</h3>
               <nav className="space-y-2">
-                <Link href="/order" className="w-full flex items-center gap-2 px-5 py-3 text-base font-medium text-gray-600 rounded-lg hover:text-customBlue hover:bg-blue-100 hover:pl-6 transition-all">
-                  <HiShoppingBag className="text-customBlue text-xl" />
+                <Link href="/order" className="w-full flex items-center gap-2 px-5 py-3 text-base font-medium text-gray-600 rounded-lg hover:text-red-600 hover:bg-red-100 hover:pl-6 transition-all">
+                  <HiShoppingBag className="text-red-600 text-xl" />
                   <span>Orders</span>
                 </Link>
-                <Link href="/wishlist" className="w-full flex items-center gap-2 px-5 py-3 text-base font-medium text-gray-600 rounded-lg hover:text-customBlue hover:bg-blue-100 hover:pl-6 transition-all">
-                  <FaHeart className="text-customBlue text-xl" />
+                <Link href="/wishlist" className="w-full flex items-center gap-2 px-5 py-3 text-base font-medium text-gray-600 rounded-lg hover:text-red-600 hover:bg-red-100 hover:pl-6 transition-all">
+                  <FaHeart className="text-red-600 text-xl" />
                   <span>Wishlist</span>
                 </Link>
               </nav>
@@ -174,7 +174,7 @@ export default function Order() {
                     className={`px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium flex items-center whitespace-nowrap ${
                       activeFilter === filter
                         ? filter === 'all'
-                          ? 'bg-customBlue text-white'
+                          ? 'bg-red-600 text-white'
                           : filter === 'pending'
                           ? 'bg-amber-100 text-amber-800'
                           : filter === 'shipped'
@@ -196,9 +196,15 @@ export default function Order() {
 
               {/* Orders List */}
               {loading ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-customBlue mx-auto"></div>
-                  <p className="mt-4 text-gray-600">Loading your orders...</p>
+                <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
+                  <div className="flex flex-col items-center">
+                    <div className="bounce-loader flex space-x-2">
+                      <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                      <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+                      <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+                    </div>
+                    <p className="mt-4 text-gray-600">Loading your orders...</p>
+                  </div>
                 </div>
               ) : filteredOrders.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
@@ -305,7 +311,7 @@ export default function Order() {
                           <div className="mt-4 sm:mt-6 flex flex-wrap gap-2 sm:gap-3">
                             <button 
                               onClick={handleBuyAgain}
-                              className="px-3 sm:px-4 py-1 sm:py-2 bg-blue-50 text-customBlue rounded-md hover:bg-blue-100 transition-colors flex items-center text-xs sm:text-sm"
+                              className="px-3 sm:px-4 py-1 sm:py-2 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors flex items-center text-xs sm:text-sm"
                             >
                               <FiShoppingBag className="mr-1 sm:mr-2 text-xs sm:text-sm" />
                               Buy Again

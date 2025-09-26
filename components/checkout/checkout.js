@@ -754,11 +754,13 @@ const grandTotal = subtotal - totalDiscount;
   if (loading) {
     return (
       <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
-        <div className="bounce-loader flex space-x-2">
-          <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-          <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
-          <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
-          {/* <p className="mt-4 text-gray-600">Loading checkout...</p> */}
+        <div className="flex flex-col items-center">
+          <div className="bounce-loader flex space-x-2">
+            <div className="bounce1 w-3 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+            <div className="bounce2 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.2s]"></div>
+            <div className="bounce3 w-3 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.4s]"></div>
+          </div>
+          <p className="mt-4 text-gray-600">Loading checkout...</p> 
         </div>
       </div>
     );
