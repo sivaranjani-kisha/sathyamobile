@@ -144,16 +144,17 @@ if (selectedFrequentProducts?.length > 0) {
 <button
   onClick={handleAddToCart}
   disabled={isLoading || isOutOfStock || isprice}
-  className={`px-2 py-2 md:px-2 md:py-2 mr-1 rounded-md shadow-md transition duration-300 text-md flex items-center justify-center gap-x-1 bg-white text-[#d32424] hover:bg-[#d32424] hover:text-white active:scale-95 disabled:active:scale-100 w-full min-[1400px]:w-[185px] border border-red-200 text-center
-    ${isOutOfStock
-      ? 'bg-gray-400 cursor-not-allowed text-red'
-      : isLoading
-        ? 'bg-red-700 cursor-not-allowed opacity-75 text-white'
-        : cartSuccess
-          ? 'bg-green-500 text-white hover:bg-green-600'
-          : 'bg-white hover:bg-customred hover:text-white text-customred border border-red-200'
+  className={`px-2 py-2 md:px-2 md:py-2 mr-1 rounded-md shadow-md transition duration-300 text-md flex items-center justify-center gap-x-1 w-full min-[1400px]:w-[185px] border text-center
+    ${
+      isOutOfStock
+        ? 'bg-gray-400 cursor-not-allowed text-white border-gray-300'
+        : isLoading
+          ? 'bg-red-700 cursor-not-allowed opacity-75 text-white border-red-700'
+          : cartSuccess
+            ? 'bg-green-500 text-white hover:bg-green-600 border-green-500'
+            : 'bg-white text-[#d32424] border border-red-200 hover:bg-[#FFFF00] hover:text-[#d32424] active:scale-95'
     }
-    active:scale-95 disabled:active:scale-100`}
+  `}
 >
   {isOutOfStock ? (
     <span>Out of Stock</span>
@@ -201,6 +202,7 @@ if (selectedFrequentProducts?.length > 0) {
     </>
   )}
 </button>
+
 
 
 {/* 
