@@ -1414,7 +1414,7 @@ const handleSubmit = async (e) => {
         <button
           type="button"
           onClick={nextStep}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-red-500 text-white px-4 py-2 rounded flex items-center gap-2"
         >
           Next <FaArrowRight />
         </button>

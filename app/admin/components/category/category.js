@@ -729,7 +729,7 @@ const handleUpdateNavImageChange = async (e) => {
 
 
           {/* Categories Table */}
-          <div className="overflow-x-auto">
+          {/* <div className="overflow-x-auto"> */}
             <table className="w-full border border-gray-300">
               <thead>
                 <tr className="bg-gray-200">
@@ -745,7 +745,7 @@ const handleUpdateNavImageChange = async (e) => {
                 {renderCategoryRows()}
               </tbody>
             </table>
-          </div>
+          {/* </div> */}
 
           {/* Pagination */}
           <div className="flex justify-between items-center mt-6 flex-wrap gap-3">
