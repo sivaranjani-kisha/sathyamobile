@@ -358,7 +358,8 @@ const exportToExcel = () => {
   };
 
   const renderCategoryOptions = () => {
-    const mainCategories = categories.filter(cat => cat.parentid === "none");
+    const mainCategories = categories.filter(cat => cat.parentid === "none").slice() // prevent mutating original
+    .sort((a, b) => a.category_name.localeCompare(b.category_name)); // ✅ sort ascending A–Z;
     const options = [];
     
     options.push(
@@ -386,7 +387,8 @@ const exportToExcel = () => {
       <option key="all" value="">
         All Brands
       </option>,
-      ...brands.map(brand => (
+      ...brands.slice() // create a shallow copy so you don't mutate the original array
+      .sort((a, b) => a.brand_name.localeCompare(b.brand_name)).map(brand => (
         <option 
           key={brand.id} 
           value={brand.id}
@@ -600,7 +602,7 @@ if (stockFilter) {
       {isLoading ? (
         <p>Loading Products...</p>
       ) : (
-        <div className="bg-white shadow-md rounded-lg p-5 h-[500px] overflow-x-auto">
+        <div className="bg-white shadow-md rounded-lg p-5 mb-5 overflow-x-auto">
           {/* Search and Filters */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end mb-4">
             {/* Search Filter */}

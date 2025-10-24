@@ -40,6 +40,26 @@ export default function OfferComponent() {
       setSelectedUsers(newSelected);
     }
   };
+  const initialOfferData = {
+  offer_code: "",
+  fest_offer_status: "",
+  notes: "",
+  from_date: "",
+  to_date: "",
+  offer_product_category: "",
+  offer_product: [],
+  offer_category: [],
+  offer_type: "",
+  percentage: "",
+  fixed_price: "",
+  limit_enabled: false,
+  offer_limit: "",
+};
+// const [offerData, setOfferData] = useState(initialOfferData);
+// const [isModalOpen, setIsModalOpen] = useState(false);
+// const [selectedOfferType, setSelectedOfferType] = useState("");
+// const [selectedUsers, setSelectedUsers] = useState([]);
+
 const [isMailModalOpen, setIsMailModalOpen] = useState(false);
 const [currentOffer, setCurrentOffer] = useState(null);
 const [mailContent, setMailContent] = useState({
@@ -328,7 +348,8 @@ useEffect(() => {
         ...offerData,
         id: editingOfferId,
         from_date: new Date(offerData.from_date),
-        to_date: new Date(offerData.to_date),
+        // to_date: new Date(offerData.to_date),
+        to_date: new Date(new Date(offerData.to_date).setHours(23, 59, 59, 999)),
       selected_users: selectedUsers.includes("all") 
         ? users.map(user => user._id) 
         : selectedUsers.filter(id => id !== "all")
@@ -456,7 +477,8 @@ useEffect(() => {
       const formattedData = {
         ...offerData,
         from_date: new Date(offerData.from_date),
-        to_date: new Date(offerData.to_date),
+        // to_date: new Date(offerData.to_date),
+        to_date: new Date(new Date(offerData.to_date).setHours(23, 59, 59, 999)),
           selected_users: selectedUsers.includes("all") 
         ? users.map(user => user._id) 
         : selectedUsers.filter(id => id !== "all"),
@@ -519,6 +541,28 @@ useEffect(() => {
       setTimeout(() => setAlertMessage(""), 3000);
     }
   };
+const handleStatusToggle = async (offer) => {
+  try {
+    const newStatus = offer.fest_offer_status === "active" ? "inactive" : "active";
+
+    // Update UI instantly
+    const updatedOffers = currentItems.map((item) =>
+      item._id === offer._id ? { ...item, fest_offer_status: newStatus } : item
+    );
+    setOffers(updatedOffers);
+console.log(updatedOffers);
+    // Update DB
+    await fetch(`/api/offers/updateStatus/${offer._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fest_offer_status: newStatus,id: offer._id}),
+    });
+
+    console.log(`Status toggled to ${newStatus}`);
+  } catch (error) {
+    console.error("Error updating status:", error);
+  }
+};
 
   // Search functionality
 // Search functionality
@@ -624,12 +668,18 @@ const filteredOffers = offers.filter((offer) => {
 
     {/* Add Offer Button */}
     <div className="flex justify-end">
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
-      >
-        + Add Offer
-      </button>
+     <button
+  onClick={() => {
+    // Reset all states before opening modal
+    setOfferData(initialOfferData);
+    setSelectedOfferType("");
+    setSelectedUsers([]);
+    setIsModalOpen(true);
+  }}
+  className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+>
+  + Add Offer
+</button>
     </div>
   </div>
 
@@ -659,13 +709,28 @@ const filteredOffers = offers.filter((offer) => {
                         ? `${offer.percentage}%`
                         : `₹${offer.fixed_price}`}
                     </td>
-                    <td className="p-2 font-semibold">
-                      {offer.fest_offer_status === "active" ? (
-                        <span className="bg-green-100 text-green-600 px-6 py-1.5 rounded-full font-medium text-sm">Active</span>
-                      ) : (
-                        <span className="bg-red-100 text-red-600 px-6 py-1.5 rounded-full font-medium text-sm">Inactive</span>
-                      )}
+                    <td className="p-2 text-center">
+                      <button
+                        onClick={() => handleStatusToggle(offer)}
+                        className={`relative flex items-center justify-${
+                          offer.fest_offer_status === "active" ? "end" : "start"
+                        } w-12 h-6 rounded-full transition-all duration-300 mx-auto ${
+                          offer.fest_offer_status === "active"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      >
+                        <span
+                          className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+                            offer.fest_offer_status === "active"
+                              ? "translate-x-[-2px]"
+                              : "translate-x-[2px]"
+                          }`}
+                        ></span>
+                      </button>
                     </td>
+
+
                     <td>
   <div className="flex items-center gap-2 justify-center">
     <button
@@ -948,10 +1013,13 @@ const filteredOffers = offers.filter((offer) => {
                       Select Products
                     </label>
                     <Select
-                      options={products.map(product => ({
-                        value: product._id,
-                        label: product.name
-                      }))}
+                      options={products
+                        .filter(product => product.status === "Active") // Only active products
+                        .map(product => ({
+                          value: product._id,
+                          label: product.name
+                        }))
+                      }
                       isMulti
                       placeholder="Search and select products..."
                       value={offerData.offer_product.map(p => ({
@@ -1291,10 +1359,13 @@ const filteredOffers = offers.filter((offer) => {
                       Select Products
                     </label>
                     <Select
-                      options={products.map(product => ({
-                        value: product._id,
-                        label: product.name
-                      }))}
+                      options={products
+                        .filter(product => product.status === "Active") // Only active products
+                        .map(product => ({
+                          value: product._id,
+                          label: product.name
+                        }))
+                      }
                       isMulti
                       placeholder="Search and select products..."
                       value={offerData.offer_product.map(p => ({

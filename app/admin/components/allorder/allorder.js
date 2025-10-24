@@ -384,7 +384,7 @@ const OrdersTable = () => {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        to: "estore.bharathelectronics.in",
+                        to: "siva96852@gmail.com",
                         subject: `Order ${selectedOrder.order_number} Status Update`,
                         text: `Hi, Order ${selectedOrder.order_number} for ${selectedOrder.order_username} was updated from ${oldStatus} to ${selectedOrder.newStatus}.`,
                       }),

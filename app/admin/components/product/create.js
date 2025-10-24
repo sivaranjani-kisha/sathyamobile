@@ -2,10 +2,14 @@
 import { React, useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { FaPlus, FaMinus, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import TinyEditor from "./TinyEditor";
 const Select = dynamic(() => import('react-select'), { ssr: false });
 import { combinations } from '@/utils/combinations';
 import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { components } from "react-select";
+import { Check } from "react-feather";
+
 
 const steps = [
   { title: "Basic Information" },
@@ -26,6 +30,7 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     special_price: "",
     quantity: "",
     brand: "",
+    brand_code: "", // added to keep input controlled and consistent
     category: "",
     stock_status: "In Stock",
     description: "",
@@ -100,6 +105,32 @@ export default function AddProductPage({ mode = "add", productData = null, produ
   const [selectedCategory, setSelectedCategory] = useState(""); 
   const [allproducts, setAllProducts] = useState([]);
   const router = useRouter();
+  const [selectedParentCategory, setSelectedParentCategory] = useState("");
+
+
+  // Extended warranty 
+  const [warranties, setWarranties] = useState(
+  product.extend_warranty && product.extend_warranty.length > 0
+    ? product.extend_warranty
+    : [{ year: "", amount: "" }]
+);
+
+const handleWarrantyChange = (index, field, value) => {
+  const updated = [...warranties];
+  updated[index][field] = value;
+  setWarranties(updated);
+};
+
+const addWarranty = () => {
+  setWarranties([...warranties, { year: "", amount: "" }]);
+};
+
+const removeWarranty = (index) => {
+  setWarranties(warranties.filter((_, i) => i !== index));
+};
+
+
+
 
   const handleRelatedProductsChange = (selectedOptions) => {
   setProduct(prev => ({
@@ -144,56 +175,195 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     }
   };
 
+  // const fetchFilter = async () => {
+  //   try {
+  //     const response = await fetch("/api/filter");
+  //     const result = await response.json();
+  //     const data = result.data;
+  //     console.log(data);
+  //     const filterOptions = data.map((cat) => ({
+  //       value: cat._id,
+  //       label: cat.filter_name,
+  //     }));
+  //     setFilter(filterOptions);
+  //   } catch (error) {
+  //     toast.error(error);
+  //   }
+  // };
   const fetchFilter = async () => {
-    try {
-      const response = await fetch("/api/filter");
-      const result = await response.json();
-      const data = result.data;
-      console.log(data);
-      const filterOptions = data.map((cat) => ({
-        value: cat._id,
-        label: cat.filter_name,
-      }));
-      setFilter(filterOptions);
-    } catch (error) {
-      toast.error(error);
+  try {
+    const response = await fetch("/api/filter");
+    const result = await response.json();
+
+    if (result.error) {
+      toast.error(result.error);
+      return;
     }
-  };
 
-   useEffect(() => {
-    if (mode === "edit" && productData) {
-        console.log(productData);
+    const data = result.data;
 
-        // This code sets the state for the 'product' object
-        setProduct(prevProduct => ({
-            ...productData,
-            // Ensure product_highlights is an array when setting productData
-            product_highlights: Array.isArray(productData.product_highlights) 
-                ? productData.product_highlights 
-                : [],
-            // Ensure filters are in the correct format for react-select if they are just IDs
-            filters: productData.filterDetails && productData.filterDetails.length > 0
-                ? productData.filterDetails.map(item => ({ value: item._id, label: item.filter_name }))
-                : [],
-            hasVariants: productData.hasVariants || false, // Ensure hasVariants is a boolean
-            variants: productData.variants || [], // Ensure variants is an array
-            images: productData.images || ['', '', '', ''], // Ensure images is an array with placeholders
-            files: productData.files || [],
-            overviewImage: productData.overviewImage || [null],
-            overviewImageFile: productData.overviewImageFile || [null],
-            featured_products: productData.featured_products || [],
-        }));
+    // Group filters by filter_group name
+    const groupedFilters = {};
 
-        // This code now correctly runs after the setProduct call, setting the JSON input field
-        if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
-            setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
-        }
+    data.forEach((filter) => {
+      const groupName = filter.filter_group_name || "Other Filters"; // depends on your API structure
+      if (!groupedFilters[groupName]) groupedFilters[groupName] = [];
 
-        if(productData.sub_category){
-          setSelectedCategory(productData.sub_category);
-        }
+      groupedFilters[groupName].push({
+        value: filter._id,
+        label: filter.filter_name,
+      });
+    });
+
+    // Convert grouped data into format React-Select can understand
+    const filterOptions = Object.entries(groupedFilters).map(([group, options]) => ({
+      label: group,
+      options,
+    }));
+
+    setFilter(filterOptions);
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+// ✅ Custom Option with tick symbol
+const CustomOption = (props) => (
+  <components.Option {...props}>
+    <div className="flex items-center justify-between">
+      <span>{props.label}</span>
+      {props.isSelected && <Check size={16} className="text-green-600" />}
+    </div>
+  </components.Option>
+);
+
+
+//    useEffect(() => {
+//     if (mode === "edit" && productData) {
+//         console.log(productData);
+
+//         // Initialize warranties from productData
+//     if (productData.extend_warranty && productData.extend_warranty.length > 0) {
+//       setWarranties(productData.extend_warranty);
+//     } else {
+//       setWarranties([{ year: "", amount: "" }]);
+//     }
+
+//         // This code sets the state for the 'product' object
+//         setProduct(prevProduct => ({
+//             ...productData,
+//             brand_code: productData.brand_code || "", // ensure brand_code defaults to empty string
+//             product_highlights: Array.isArray(productData.product_highlights) 
+//                 ? productData.product_highlights 
+//                 : [],
+//             // Ensure filters are in the correct format for react-select if they are just IDs
+//             filters: productData.filterDetails && productData.filterDetails.length > 0
+//                 ? productData.filterDetails.map(item => ({ value: item._id, label: item.filter_name }))
+//                 : [],
+//             hasVariants: productData.hasVariants || false, // Ensure hasVariants is a boolean
+//             variants: productData.variants || [], // Ensure variants is an array
+//             images: productData.images || ['', '', '', ''], // Ensure images is an array with placeholders
+//             files: productData.files || [],
+//             overviewImage: productData.overview_image || [null],
+//             overviewImageFile: productData.overviewImageFile || [null],
+//             featured_products: productData.featured_products || [],
+//         }));
+
+//         // This code now correctly runs after the setProduct call, setting the JSON input field
+//         if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
+//             setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
+//         }
+
+//         if(productData.sub_category){
+//           setSelectedCategory(productData.sub_category);
+//         }
+//     }
+// }, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
+// useEffect(() => {
+//   if (mode === "edit" && productData) {
+//     console.log(productData);
+
+//     // Initialize warranties from productData
+//     if (productData.extend_warranty && productData.extend_warranty.length > 0) {
+//       setWarranties(productData.extend_warranty);
+//     } else {
+//       setWarranties([{ year: "", amount: "" }]);
+//     }
+
+//     // This code sets the state for the 'product' object
+//     setProduct(prevProduct => ({
+//       ...productData,
+//       brand_code: productData.brand_code || "",
+//       product_highlights: Array.isArray(productData.product_highlights) 
+//         ? productData.product_highlights 
+//         : [],
+//       filters: productData.filterDetails && productData.filterDetails.length > 0
+//         ? productData.filterDetails.map(item => ({ value: item._id, label: item.filter_name }))
+//         : [],
+//       hasVariants: productData.hasVariants || false,
+//       variants: productData.variants || [],
+//       images: productData.images || ['', '', '', ''],
+//       files: productData.files || [],
+//       // FIX: Properly handle overview_image array
+//       overviewImage: Array.isArray(productData.overview_image) && productData.overview_image.length > 0 
+//         ? productData.overview_image 
+//         : [null],
+//       overviewImageFile: productData.overviewImageFile || [null],
+//       featured_products: productData.featured_products || [],
+//     }));
+
+//     // This code now correctly runs after the setProduct call, setting the JSON input field
+//     if (!Array.isArray(productData.product_highlights) && typeof productData.product_highlights === 'object') {
+//       setJsonHighlightsInput(JSON.stringify(productData.product_highlights, null, 2));
+//     }
+
+//     if(productData.sub_category){
+//       setSelectedCategory(productData.sub_category);
+//     }
+//   }
+// }, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
+
+useEffect(() => {
+  if (mode === "edit" && productData) {
+    console.log("Edit mode - Product data:", productData);
+    console.log("Overview images from DB:", productData.overview_image);
+
+    // Initialize warranties from productData
+    if (productData.extend_warranty && productData.extend_warranty.length > 0) {
+      setWarranties(productData.extend_warranty);
+    } else {
+      setWarranties([{ year: "", amount: "" }]);
     }
+
+    // This code sets the state for the 'product' object
+    setProduct(prevProduct => ({
+      ...productData,
+      brand_code: productData.brand_code || "",
+      product_highlights: Array.isArray(productData.product_highlights) 
+        ? productData.product_highlights 
+        : [],
+      filters: productData.filterDetails && productData.filterDetails.length > 0
+        ? productData.filterDetails.map(item => ({ value: item._id, label: item.filter_name }))
+        : [],
+      hasVariants: productData.hasVariants || false,
+      variants: productData.variants || [],
+      images: productData.images || ['', '', '', ''],
+      files: productData.files || [],
+      // FIX: Use overview_image from database
+      overviewImage: Array.isArray(productData.overview_image) && productData.overview_image.length > 0 
+        ? productData.overview_image 
+        : [null],
+      overviewImageFile: productData.overviewImageFile || [null],
+      featured_products: productData.featured_products || [],
+      removedOverviewImages: [] // Reset removed images
+    }));
+
+    if(productData.sub_category){
+      setSelectedCategory(productData.sub_category);
+    }
+  }
 }, [mode, productData, setJsonHighlightsInput,setSelectedCategory]);
+
 useEffect(() => {
     fetchCategories();
     fetchFilter();
@@ -206,6 +376,7 @@ useEffect(() => {
     if (initialProductData) {
       setProduct({
         ...initialProductData,
+        brand_code: initialProductData.brand_code || "", // ensure brand_code defaults to empty string
         // Ensure product_highlights is an array, even if it's null/undefined from backend
         product_highlights: initialProductData.product_highlights || [],
         // Ensure featured_products is an array or object, depending on your schema
@@ -453,24 +624,46 @@ setProduct(prev => ({
     // };
   
 
-    const handleOverviewImageChange = (index, files) => {
-      const file = files[0];
-      if (!file) return;
+    // const handleOverviewImageChange = (index, files) => {
+    //   const file = files[0];
+    //   if (!file) return;
   
-      setProduct(prev => {
-        const newImages = [...prev.overviewImage];
-        const newFiles = [...prev.overviewImageFile];
+    //   setProduct(prev => {
+    //     const newImages = [...prev.overviewImage];
+    //     const newFiles = [...prev.overviewImageFile];
         
-        newImages[index] = URL.createObjectURL(file);
-        newFiles[index] = file;
+    //     newImages[index] = URL.createObjectURL(file);
+    //     newFiles[index] = file;
   
-        return {
-          ...prev,
-          overviewImage: newImages,
-          overviewImageFile: newFiles
-        };
-      });
+    //     return {
+    //       ...prev,
+    //       overviewImage: newImages,
+    //       overviewImageFile: newFiles
+    //     };
+    //   });
+    // };
+    const handleOverviewImageChange = (index, files) => {
+  const file = files[0];
+  if (!file) return;
+
+  setProduct(prev => {
+    const newImages = [...prev.overviewImage];
+    const newFiles = [...prev.overviewImageFile];
+    
+    // Ensure arrays are long enough
+    while (newImages.length <= index) newImages.push(null);
+    while (newFiles.length <= index) newFiles.push(null);
+    
+    newImages[index] = URL.createObjectURL(file);
+    newFiles[index] = file;
+
+    return {
+      ...prev,
+      overviewImage: newImages,
+      overviewImageFile: newFiles
     };
+  });
+};
 
   const AddproductImage = () => {
   setProduct(prev => ({
@@ -484,44 +677,40 @@ setProduct(prev => ({
 
   
     const handleAddOverviewImage = () => {
-      setProduct(prev => ({
-        ...prev,
-        overviewImage: [...prev.overviewImage, null],
-        overviewImageFile: [...prev.overviewImageFile, null]
-      }));
-    };
+  setProduct(prev => ({
+    ...prev,
+    overviewImage: [...prev.overviewImage, null],
+    overviewImageFile: [...prev.overviewImageFile, null]
+  }));
+};
   
-    const handleRemoveOverviewImage = (index) => {
-      // Don't remove if it's the last one
-      if (product.overviewImage.length <= 1){
-        const newImages = [...product.overviewImage];
-        const newFiles = [...product.overviewImageFile];
-      
-        newImages[index] = null;
-        newFiles[index] = null;
-      
-        setProduct(prev => ({
-          ...prev,
-          overviewImage: newImages,
-          overviewImageFile: newFiles
-        }));
-        return;
-      }
-      
-      setProduct(prev => {
-        const newImages = [...prev.overviewImage];
-        const newFiles = [...prev.overviewImageFile];
-        
-        newImages.splice(index, 1);
-        newFiles.splice(index, 1);
-  
-        return {
-          ...prev,
-          overviewImage: newImages,
-          overviewImageFile: newFiles
-        };
-      });
+   const handleRemoveOverviewImage = (index) => {
+  setProduct(prev => {
+    const newImages = [...prev.overviewImage];
+    const newFiles = [...prev.overviewImageFile];
+    
+    // Store the removed overview image filename for backend cleanup
+    const removedImage = newImages[index];
+    
+    newImages.splice(index, 1);
+    newFiles.splice(index, 1);
+
+    console.log('Removing overview image:', {
+      index,
+      removedImage,
+      currentImages: prev.overviewImage,
+      newImages: newImages
+    });
+
+    return {
+      ...prev,
+      overviewImage: newImages,
+      overviewImageFile: newFiles,
+      // Keep track of removed OVERVIEW images only
+      removedOverviewImages: [...(prev.removedOverviewImages || []), removedImage]
     };
+  });
+};
     const handleRemoveImage = (variantIndex, imgIndex) => {
       const updatedVariants = [...variant];
       updatedVariants[variantIndex].images.splice(imgIndex, 1);
@@ -694,7 +883,6 @@ setProduct(prev => ({
   //           quantity: "",
   //           images: [],
   //         }))
-  //       };
   //     });
 
   //     setProduct(prev => ({
@@ -714,9 +902,28 @@ setProduct(prev => ({
  
   const handleCategoryChange = (category) => {
   setSelectedCategory(category._id);
+  
+  // Find the parent category
+  const findParentCategory = (categories, childId) => {
+    for (const cat of categories) {
+      if (cat.children && cat.children.some(child => child._id === childId)) {
+        return cat._id;
+      }
+      if (cat.children) {
+        const found = findParentCategory(cat.children, childId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const parentCategoryId = findParentCategory(categories, category._id);
+  setSelectedParentCategory(parentCategoryId);
+
   setProduct((prev) => ({
     ...prev,
-    sub_category: category._id, // set subcategory here
+    sub_category: category._id,
+    category: parentCategoryId, // Set the parent category
   }));
 };
 
@@ -984,17 +1191,17 @@ const uploadImages = async (files) => {
      } finally {
      }
    }
-const handleFilterChange = (selectedOptions) => {
-  console.log(selectedOptions);
-  // Extract only the 'value' from each selected option object
-  const selectedValues = selectedOptions.map((option) => option.value);
+// const handleFilterChange = (selectedOptions) => {
+//   console.log(selectedOptions);
+//   // Extract only the 'value' from each selected option object
+//   const selectedValues = selectedOptions.map((option) => option.value);
  
-  setProduct((prev) => ({
-    ...prev,
-    // Store an array of strings, not objects
-    filters: selectedValues,
-  }));
-};
+//   setProduct((prev) => ({
+//     ...prev,
+//     // Store an array of strings, not objects
+//     filters: selectedValues,
+//   }));
+// };
  
 const handleupdatefilterchange = (filters) => {
   const selectedValues = filters.map((option) => option.value);
@@ -1006,13 +1213,13 @@ const handleupdatefilterchange = (filters) => {
   }));
 }
  
-  // const handleFilterChange = (selectedOptions) => {
-  //   console.log(selectedOptions);
-  //   setProduct((prev) => ({
-  //     ...prev,
-  //     filters: selectedOptions,
-  //   }));
-  // };
+  const handleFilterChange = (selectedOptions) => {
+    console.log(selectedOptions);
+    setProduct(prev => ({
+      ...prev,
+      filters: selectedOptions,
+    }));
+  };
 
   const handleHighlightChange = (index, value) => {
   setProduct((prevProduct) => {
@@ -1040,36 +1247,60 @@ const handleupdatefilterchange = (filters) => {
     ),
   }));
 };
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const formData = new FormData();
-  const existingImages = product.images.filter(
-    (img) => typeof img === "string" && !img.startsWith("blob:")
-  );
-    // clean product (⚠️ do NOT send images)
+    
+    // Get existing product images (filter out blob URLs and nulls)
+    const existingProductImages = product.images.filter(
+      (img) => typeof img === "string" && !img.startsWith("blob:")
+    );
+
+    // Get existing overview images (filter out blob URLs and nulls)
+    const existingOverviewImages = product.overviewImage.filter(
+      (img) => img && typeof img === "string" && !img.startsWith("blob:")
+    );
+
+    // Filter out empty warranty entries
+    const validWarranties = warranties.filter(
+      warranty => warranty.year !== "" && warranty.amount !== "" && warranty.year != null && warranty.amount != null
+    );
+
+    // Clean product data
+    const { brand_code, removedOverviewImages, ...restProduct } = product;
+    const trimmedBrandCode = (brand_code ?? '').toString().trim();
+
     const cleanedProduct = {
-      ...product,
+      ...restProduct,
+      ...(trimmedBrandCode ? { brand_code: trimmedBrandCode } : {}),
+      extend_warranty: validWarranties.length > 0 ? validWarranties : [],
       filters: (product.filters || []).map(f => f.value),
       related_products: product.related_products || [],
       category: product.category || "",
       product_highlights: product.product_highlights || [],
-      images: product.images.filter(img => typeof img === "string") // clear images so no blob goes to DB
+      // Product images
+      images: existingProductImages,
+      // FIX: Send as overview_image (database field name) not overviewImage
+      overview_image: existingOverviewImages,
+      // Send removed overview images to backend
+      removedOverviewImages: removedOverviewImages || []
     };
 
-    console.log(product);
-    // return false;
-    // ✅ Upload product images
+    console.log("Overview images to save:", existingOverviewImages);
+    console.log("Overview images to remove:", removedOverviewImages);
+
+    // Upload product images
     (product.files || []).forEach(file => {
       if (file) formData.append("images", file);
     });
 
-    // ✅ Upload overview images
+    // Upload NEW overview images
     (product.overviewImageFile || []).forEach(file => {
       if (file) formData.append("overviewImages", file);
     });
 
-    // ✅ Variants with images
+    // Variants with images
     const variantsWithImages = (product.variants || []).map((variant, i) => {
       const files = variantImages[i]?.images || [];
       files.forEach((file, j) => {
@@ -1077,15 +1308,15 @@ const handleupdatefilterchange = (filters) => {
           formData.append(`variant_${i}_image_${j}`, file);
         }
       });
-      return { ...variant, images: [] }; // backend fills real filenames
+      return { ...variant, images: [] };
     });
 
-    formData.append("product", JSON.stringify({
-    ...product,
-    images: existingImages,   // keep old DB images
-  }));
+    const finalProductData = {
+      ...cleanedProduct,
+      extend_warranty: validWarranties,
+    };
 
-    formData.append("product", JSON.stringify(cleanedProduct));
+    formData.append("product", JSON.stringify(finalProductData));
     formData.append("variant", JSON.stringify(variantsWithImages));
     formData.append("highlights", JSON.stringify(cleanedProduct.product_highlights));
 
@@ -1367,6 +1598,7 @@ const handleupdatefilterchange = (filters) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Item Code</label>
                 <input type="text" name="item_code" value={product.item_code} onChange={handleChange} className="w-full border p-2 rounded" required />
               </div>
+              
             </div>
             <div className="grid grid-cols-2 gap-4">
             <div className="rounded-md mb-2">
@@ -1416,6 +1648,16 @@ const handleupdatefilterchange = (filters) => {
                 <option value="In Stock">In Stock</option>
                 <option value="Out of Stock">Out of Stock</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Brand Code</label>
+              <input
+                type="text"
+                name="brand_code"
+                value={product.brand_code || ""} // optional and controlled
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+              />
             </div>
             </div>
 
@@ -1531,7 +1773,14 @@ const handleupdatefilterchange = (filters) => {
         
               <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" value={product.description || ''} onChange={handleChange} className="w-full border p-2 rounded" rows="4"></textarea>
+                {/* <textarea name="description" value={product.description || ''} onChange={handleChange} className="w-full border p-2 rounded" rows="4"></textarea> */}
+                <TinyEditor value={product.description} onChange={handleChange} />
+                
+                      {/* <h3 className="mt-4 font-semibold">Preview:</h3>
+                      <div
+                        className="border p-3 rounded bg-gray-50"
+                        dangerouslySetInnerHTML={{ __html: product.description }}
+                      /> */} 
               </div>
             <div className="space-y-6">
               {/* Overview Image */}
@@ -1547,78 +1796,88 @@ const handleupdatefilterchange = (filters) => {
                     <table className="min-w-full border rounded-lg overflow-hidden">
                       <thead className="bg-gray-100">
                         <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Image upload</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">Image</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase w-32">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {product.overviewImage.map((image, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            <td className="px-4 py-4">
-                              <div className="flex flex-col space-y-2">
-                                <input
-                                  type="file"
-                                  // name="overview_image[]"
-                                  className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded file:border-0
-                                    file:text-sm file:font-medium
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
-                                  accept="image/*"
-                                  onChange={(e) => handleOverviewImageChange(index, e.target.files)}
-                                  required={index === 0}
-                                  key={`overviewimagefile-${index}-${product.overviewImage[index] ? 'filled' : 'empty'}`}
-                                 
-                                />
-                                {image && (
-                                  <div className="mt-2 flex items-center space-x-4">
-                                    <img
-                                      src={image}
-                                      alt={`Preview ${index}`}
-                                      className="w-20 h-20 object-cover border rounded"
-                                    />
-                                    <span className="text-xs text-gray-500">Preview</span>
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-4 space-x-2">
+                   <tbody className="divide-y divide-gray-200">
+  {product.overviewImage.map((image, index) => (
+    <tr key={index} className="border-b">
+      <td className="px-4 py-3">
+        <input
+          type="file"
+          className="block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded file:border-0
+            file:text-sm file:font-medium
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100"
+          accept="image/*"
+          onChange={(e) => handleOverviewImageChange(index, e.target.files)}
+        />
+        {image && (
+          <div className="mt-2 flex items-center space-x-4">
+            <img
+              src={
+                typeof image === 'string' && 
+                (image.startsWith('http') ||
+                 image.startsWith('blob:') ||
+                 image.startsWith('data:'))
+                  ? image
+                  : `/uploads/products/${image}`
+              }
+              alt={`Preview ${index}`}
+              className="w-20 h-20 object-cover border rounded"
+            />
+            <span className="text-xs text-gray-500">Preview</span>
+          </div>
+        )}
+      </td>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <button type="button" onClick={handleAddOverviewImage} className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                      <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z"/>
-                                      </svg>
-                                    </button>
-                                  </div>
-                                  <div>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleRemoveOverviewImage(index)}
-                                      className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                    >
-                                      <svg
-                                        className="h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                
-                                </div>
-                         
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
+      <td className="px-4 py-3">
+        <img
+          className="w-20 h-20 object-cover rounded border border-gray-200"
+          alt={`Preview ${index + 1}`}
+          src={
+            image && typeof image === 'string'
+              ? (image.startsWith('http') ||
+                 image.startsWith('blob:') ||
+                 image.startsWith('data:'))
+                  ? image
+                  : `/uploads/products/${image}`
+              : '/uploads/products/no-image.jpg'
+          }
+        />
+      </td>
+
+      <td className="px-4 py-3">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={handleAddOverviewImage}
+            className="inline-flex items-center p-2 rounded-full text-white bg-green-600 hover:bg-green-700"
+          >
+            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM5 5h14v14H5V5zm9 9h-3v3h-2v-3H6v-2h3V9h2v3h3v2z" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleRemoveOverviewImage(index)}
+            className="inline-flex items-center p-2 rounded-full text-white bg-red-600 hover:bg-red-700"
+          >
+            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
                     </table>
                   </div>
                 </div>
@@ -1638,32 +1897,116 @@ const handleupdatefilterchange = (filters) => {
 
         {/* Step 3: Variants & Filters */}
         {currentStep === 3 && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold mb-4">Filters</h3>
-    
-           
-           
-           <div className="border p-4 rounded">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Filter</label>
-            <Select
-              options={Filter}
-              isMulti
-              value={
-                // Ensure value is always full `{ label, value }` array for react-select
-                Array.isArray(product.filters)
-                  ? product.filters.every(f => typeof f === 'string')
-                    ? Filter.filter(option => product.filters.includes(option.value))
-                    : product.filters
-                  : []
-              }
-              onChange={handleFilterChange}
-              placeholder="Select filters..."
-            />
+  <div className="space-y-4">
+    <h3 className="text-xl font-semibold mb-4">Filters</h3>
 
-          </div>
+    <div className="border p-4 rounded">
+      <label className="block text-sm font-medium text-gray-700 mb-1">Filter</label>
+     <Select
+  options={Filter}
+  isMulti
+  hideSelectedOptions={false}  // ✅ keeps selected options visible in dropdown
+  closeMenuOnSelect={false}    // ✅ keeps dropdown open while selecting multiple
+  components={{ Option: CustomOption }}
+  value={
+    Array.isArray(product.filters)
+      ? product.filters.every(f => typeof f === 'string')
+        ? Filter.flatMap(g => g.options).filter(o => product.filters.includes(o.value))
+        : product.filters
+      : []
+  }
+  onChange={handleFilterChange}
+  placeholder="Select filters..."
+  styles={{
+    groupHeading: (base) => ({
+      ...base,
+      backgroundColor: '#f3f4f6',
+      color: '#1f2937',
+      fontWeight: 600,
+      padding: '8px 12px',
+      borderBottom: '1px solid #e5e7eb',
+      borderRadius: '4px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#e6f4ea' : state.isFocused ? '#f9fafb' : 'white',
+      color: '#111827',
+      fontWeight: state.isSelected ? 600 : 400,
+    }),
+  }}
+/>
+      {/* <Select
+  options={Filter}
+  isMulti
+  value={
+    Array.isArray(product.filters)
+      ? product.filters.every(f => typeof f === 'string')
+        ? Filter.flatMap(g => g.options).filter(o => product.filters.includes(o.value))
+        : product.filters
+      : []
+  }
+  onChange={handleFilterChange}
+  placeholder="Select filters..."
+  styles={{
+    groupHeading: (base) => ({
+      ...base,
+      backgroundColor: '#f3f4f6',   // light gray bar
+      color: '#1f2937',             // dark text
+      fontWeight: 600,
+      padding: '8px 12px',
+      borderBottom: '1px solid #e5e7eb',
+      borderRadius: '4px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+    }),
+  }}
+/> */}
 
-          </div>
-        )}
+
+    </div>
+
+    {/* Extended Warranty Section */}
+    <div className="border p-4 rounded">
+  <label className="block text-sm font-medium text-gray-700 mb-2">Extended Warranty</label>
+
+ {warranties.map((warranty, index) => (
+  <div key={index} className="flex space-x-2 mb-2">
+    <label className="text-sm font-medium mt-2">Years:</label>
+    <input
+      type="number"
+      value={warranty.year || ""}
+      onChange={(e) => handleWarrantyChange(index, "year", e.target.value)}
+      className="w-1/2 border p-2 rounded"
+      placeholder="Years"
+    />
+<label className="text-sm font-medium mt-2">Price:</label>
+    <input
+      type="number"
+      value={warranty.amount || ""}
+      onChange={(e) => handleWarrantyChange(index, "amount", e.target.value)}
+      className="w-1/2 border p-2 rounded"
+      placeholder="Amount"
+    />
+
+    <button type="button" onClick={addWarranty} className="p-2 bg-green-600 text-white rounded-full">+</button>
+    {warranties.length > 1 && (
+      <button
+        type="button"
+        onClick={() => removeWarranty(index)}
+        className="p-2 bg-red-600 text-white rounded-full"
+      >
+        -
+      </button>
+    )}
+  </div>
+))}
+
+</div>
+
+  </div>
+)}
 
    
 
@@ -1741,8 +2084,8 @@ const handleupdatefilterchange = (filters) => {
             onClick={addHighlight}
             className="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
-            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+            <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
             </svg>
           </button>
         </div>
@@ -1800,29 +2143,21 @@ const handleupdatefilterchange = (filters) => {
 
 
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700">Warranty</label>
               <input
                 type="number"
                 name= "warranty"
+               
                 placeholder="Warranty"
                 value={product.warranty || ''}
-                onChange={handleChange}
-                className="w-full border p-2 rounded mb-2"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Extended Warranty</label>
-              <input
-                type="number"
                 name="extended_warranty"
                 placeholder="Extended Warranty"
                 value={product.extended_warranty || ''}
                 onChange={handleChange}
                 className="w-full border p-2 rounded mb-2"
               />
-            </div>
+            </div> */}
             <div>
                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
