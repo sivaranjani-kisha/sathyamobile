@@ -374,11 +374,11 @@ const RecentlyViewedProducts = () => {
                   {clickElement === "next" ? (
                     <>
                       <span className="w-2.5 h-2.5 bg-gray-300 rounded-full"></span>
-                      <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
+                      <span className="w-2.5 h-2.5 bg-red-600 rounded-full"></span>
                     </>
                   ) : (
                     <>
-                      <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
+                      <span className="w-2.5 h-2.5 bg-red-600 rounded-full"></span>
                       <span className="w-2.5 h-2.5 bg-gray-300 rounded-full"></span>
                     </>
                   )}

@@ -222,6 +222,7 @@ const scrollCategories = (direction) => {
         }, 2000);
         return () => clearTimeout(timer);
     }, []);
+   
     useEffect(() => {
         setHasMounted(true);
       }, []);
@@ -375,33 +376,7 @@ const scrollCategories = (direction) => {
   ],
 };
 
-    // const brandSettings = {
-    //     infinite: true,
-    //     speed: 5000, // Higher speed for continuous effect
-    //     slidesToShow: 7, // Adjust according to your design
-    //     slidesToScroll: 1,
-    //     autoplay: true,
-    //     autoplaySpeed: 0, // 0ms delay between scrolls
-    //     cssEase: "linear", // Smooth continuous scroll
-    //     arrows: false, // Optional: hide arrows
-    //     pauseOnHover: false, // Optional: keep scrolling on hover
-    // };
-
-    // const brandSettings = {
-    //     dots: false,
-    //     infinite: true,
-    //     speed: 500,
-    //     slidesToShow: 7,
-    //     slidesToScroll: 1,
-    //     autoplay: true,
-    //     autoplaySpeed: 4000,
-    //     responsive: [
-    //         { breakpoint: 1024, settings: { slidesToShow: 4 } },
-    //         { breakpoint: 768, settings: { slidesToShow: 2 } },
-    //         { breakpoint: 480, settings: { slidesToShow: 1 } }
-    //     ]
-    // };
-    
+   
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -500,12 +475,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
 
     setNavigating(true);
 
-    // Optional: Save to recently viewed categories
-    // const stored = JSON.parse(localStorage.getItem('recentlyViewedCategories')) || [];
-    // const updated = stored.filter(c => c._id !== category._id); // Remove if already exists
-    // updated.unshift(category);
-    // localStorage.setItem('recentlyViewedCategories', JSON.stringify(updated.slice(0, 10)));
-
+    
     router.push(`/category/${category.category_slug}`);
 }, [navigating, router]);
 
@@ -650,108 +620,59 @@ const handleCategoryClick = useCallback((category) => (e) => {
               {/* features code start */}
              {/* features code start */}
           <section className="pt-7 px-4 sm:px-6 md:px-6" id="features">
-<div className="max-w-7xl mx-auto px-4">
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-{features.map((feature, index) => (
-  <div
-    key={index}
-    className="flex flex-col items-center cursor-pointer group"
-    onMouseEnter={(e) => {
-      const img = e.currentTarget.querySelector(".img-flip");
-      if (img) img.style.transform = "rotateY(360deg)";
-    }}
-    onMouseLeave={(e) => {
-      const img = e.currentTarget.querySelector(".img-flip");
-      if (img) img.style.transform = "rotateY(0deg)";
-    }}
-  >
-    {/* Image instead of Icon */}
-    <div
-      className="mb-4 img-flip"
-      style={{
-        transition: "transform 0.5s",
-        transformStyle: "preserve-3d",
-      }}
-    >
-      <img
-        src={feature.image}
-        alt={feature.title}
-        className="w-16 h-16 object-contain"
-      />
-    </div>
+            <div className="max-w-7xl mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center cursor-pointer group"
+                onMouseEnter={(e) => {
+                  const img = e.currentTarget.querySelector(".img-flip");
+                  if (img) img.style.transform = "rotateY(360deg)";
+                }}
+                onMouseLeave={(e) => {
+                  const img = e.currentTarget.querySelector(".img-flip");
+                  if (img) img.style.transform = "rotateY(0deg)";
+                }}
+              >
+                {/* Image instead of Icon */}
+                <div
+                  className="mb-4 img-flip"
+                  style={{
+                    transition: "transform 0.5s",
+                    transformStyle: "preserve-3d",
+                  }}
+                >
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-16 h-16 object-contain"
+                  />
+                </div>
 
-    {/* Title */}
-    <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:transition-colors duration-300">
-      {feature.title}
-    </h3>
+                {/* Title */}
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:transition-colors duration-300">
+                  {feature.title}
+                </h3>
 
-    {/* Description */}
-    <p className="text-gray-600 text-sm leading-relaxed max-w-[250px] group-hover:transition-colors duration-300">
-      {feature.description}
-    </p>
-  </div>
-))}
-</div>
-</div>
-</section>
-
-<motion.section id="brands"
-                      ref={refs.delivery} 
-                      initial={scrollDirection === 'down' ? 'hiddenDown' : 'hiddenUp'} 
-                      animate= 'visible' 
-                      variants={sectionVariants} 
-                      className="px-4 sm:px-6 md:px-6 pt-7"
-                  >
-                      <div>
-                          <motion.div variants={containerVariants} className="  rounded-[23px] mx-2">
-                              <motion.div variants={itemVariants} className="flex justify-between items-center mb-4">
-                                  <h5 className= "text-lg font-semibold">Shop by Brands</h5>
-                              </motion.div>
-
-                              {isBrandsLoading ? (
-                                  <div className="flex justify-center items-center h-32">
-                                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-                                  </div>
-                              ) : (
-                                  <motion.div variants={itemVariants}>
-                                      <Slider {...brandSettings} className="brand-slider px-2 sm:px-[50px] relative">
-                                          {brands.map((brand) => (
-                                              <motion.div
-                                                  key={brand.id}
-                                                  className="p-4 flex justify-center items-center"
-                                                  whileHover={{ scale: 1.1 }}
-                                              >
-                                              <div className="w-24 h-24 flex items-center justify-center overflow-hidden">
-                                                <Link href={`/brand/${slugify(brand.brand_name)}`}>
-                                                  <Image
-                                                    src={`/uploads/Brands/${brand.image}`}
-                                                    alt={brand.brand_name || "Brand Logo"}
-                                                    width={100}
-                                                    height={100}
-                                                    className="object-contain w-full h-full cursor-pointer"
-                                                    unoptimized
-                                                  />
-                                                </Link>
-                                              </div>
-                                              </motion.div>
-                                          ))}
-                                      </Slider>
-                                  </motion.div>
-                              )}
-                          </motion.div>
-                      </div>
-                  </motion.section>
-             {/* Existing offer code start */}
-
-             {/* Existing offer code start */}
-              {offerProducts.length > 0 && (
+                {/* Description */}
+                <p className="text-gray-600 text-sm leading-relaxed max-w-[250px] group-hover:transition-colors duration-300">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+            </div>
+            </div>
+          </section>
+           
+          <div className="overflow-hidden pt-6 px-4 sm:px-6 md:px-6">
+            {offerProducts.length > 0 && (
+              <section id="offer">
                 <div className="px-2 py-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Exciting Offers</h2>
                     {offerProducts.length > 3 && (
-                      <div className="flex gap-2">
-                        {/* Optional navigation buttons */}
-                      </div>
+                      <div className="flex gap-2">{/* Optional navigation buttons */}</div>
                     )}
                   </div>
 
@@ -761,16 +682,21 @@ const handleCategoryClick = useCallback((category) => (e) => {
                       {offerProducts.slice(0, 4).map((product, index) => (
                         <div
                           key={product._id}
-                          className={`card rounded-lg shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
+                          className={`card shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
                         >
                           <div className="flex items-center">
                             <div className="w-1/3 p-2">
                               <Link href={`/product/${product.slug}`} className="block">
                                 <div className="h-[100px] sm:h-[120px] md:h-[130px] bg-white flex items-center justify-center overflow-hidden rounded-md">
                                   <img
-                                    src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
-                                    alt={product.item_code}
+                                    src={
+                                      product.images?.[0]
+                                        ? `/uploads/products/${product.images[0]}`
+                                        : "/noimage.jpg"
+                                    }
+                                    alt={product.item_code || "Product image"}
                                     className="object-contain w-full h-full"
+                                    onError={(e) => (e.currentTarget.src = "/noimage.jpg")}
                                   />
                                 </div>
                               </Link>
@@ -819,16 +745,21 @@ const handleCategoryClick = useCallback((category) => (e) => {
                         {offerProducts.map((product, index) => (
                           <SwiperSlide key={product._id}>
                             <div
-                              className={`card rounded-lg shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
+                              className={`card shadow-sm h-[140px] min-h-[140px] flex overflow-hidden ${bgClasses[index % bgClasses.length]}`}
                             >
                               <div className="flex items-center">
                                 <div className="w-1/3 p-2">
                                   <Link href={`/product/${product.slug}`} className="block">
                                     <div className="h-[100px] sm:h-[120px] md:h-[130px] flex items-center justify-center overflow-hidden rounded-md">
                                       <img
-                                        src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
-                                        alt={product.item_code}
+                                        src={
+                                          product.images?.[0]
+                                            ? `/uploads/products/${product.images[0]}`
+                                            : "/noimage.jpg"
+                                        }
+                                        alt={product.item_code || "Product image"}
                                         className="object-contain w-full h-full"
+                                        onError={(e) => (e.currentTarget.src = "/noimage.jpg")}
                                       />
                                     </div>
                                   </Link>
@@ -859,129 +790,188 @@ const handleCategoryClick = useCallback((category) => (e) => {
                     )}
                   </div>
                 </div>
-              )}
+              </section>
+            )}
+          </div>
 
 
+                  <motion.section
+                    id="brands"
+                    ref={refs.delivery}
+                    initial={scrollDirection === "down" ? "hiddenDown" : "hiddenUp"}
+                    animate="visible"
+                    variants={sectionVariants}
+                    className="px-4 sm:px-6 md:px-6 pt-7"
+                  >
+                    <div>
+                      <motion.div variants={containerVariants} className="rounded-[23px] mx-2">
+                        <motion.div variants={itemVariants} className="flex justify-between items-center mb-4">
+                          <h5 className="text-lg font-semibold">Shop by Brands</h5>
+                        </motion.div>
 
+                        {isBrandsLoading ? (
+                          <div className="flex justify-center items-center h-32">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+                          </div>
+                        ) : (
+                          <motion.div variants={itemVariants}>
+                            <Slider {...brandSettings} className="brand-slider px-2 sm:px-[50px] relative">
+                              {brands.map((brand) => (
+                                <motion.div
+                                  key={brand.id}
+                                  className="p-4 flex justify-center items-center"
+                                  whileHover={{ scale: 1.1 }}
+                                >
+                                  <div className="w-24 h-24 flex items-center justify-center overflow-hidden">
+                                    <Link href={`/brand/${slugify(brand.brand_name)}`}>
+                                      <Image
+                                        src={
+                                          brand.image
+                                            ? `/uploads/Brands/${brand.image}`
+                                            : "/nobrand.jpg"
+                                        }
+                                        alt={brand.brand_name || "Brand Logo"}
+                                        width={100}
+                                        height={100}
+                                        className="object-contain w-full h-full cursor-pointer"
+                                        unoptimized
+                                        onError={(e) => {
+                                          e.currentTarget.src = "/nobrand.jpg";
+                                        }}
+                                      />
+                                    </Link>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </Slider>
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    </div>
+                  </motion.section>
 
+             {/* Existing offer code start */}
 
-
-
-               
+             
 
                 {/* flash sale section code start */}
-                <motion.section
+              <motion.section
                 ref={refs.flashSales}
                 initial="hiddenDown"
                 animate={isInView.flashSales ? "visible" : "hiddenDown"}
                 variants={sectionVariants}
                 id="flash-sales-section"
                 className=""
-                >
+              >
                 {flashSalesData.filter(item => item.bgImage && item.productImage).length > 0 && (
-                <div className="py-2">
+                  <div className="py-2">
                     <motion.div
-                    variants={itemVariants}
-                    className="section-heading flex justify-between items-center mb-4 p-2"
+                      variants={itemVariants}
+                      className="section-heading flex justify-between items-center mb-4 p-2"
                     >
-                    <h5 className="text-2xl font-bold text-red-500">Categories</h5>
-                    {/* <a href="/shop" className="text-sm font-medium text-gray-700 hover:underline">
-                        View All Deals
-                    </a> */}
+                      <h5 className="text-2xl font-bold text-red-500">Categories</h5>
                     </motion.div>
 
                     {isFlashSalesLoading ? (
-                    <div className="flex justify-center items-center h-64">
+                      <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
-                    </div>
-                    ) : flashSalesData.length === 1 && flashSalesData[0].bgImage && flashSalesData[0].productImage ? (
-                    <motion.div variants={itemVariants} className="px-2">
+                      </div>
+                    ) : flashSalesData.length === 1 &&
+                      (flashSalesData[0].bgImage || flashSalesData[0].productImage) ? (
+                      <motion.div variants={itemVariants} className="px-2">
                         <motion.div
-                        whileHover={{ y: -5 }}
-                        className="relative p-6 rounded-lg shadow-lg h-full min-h-[250px] flex items-center overflow-hidden"
-                        style={{
-                            backgroundImage: `url(${flashSalesData[0].bgImage})`,
+                          whileHover={{ y: -5 }}
+                          className="relative p-6 rounded-lg shadow-lg h-full min-h-[250px] flex items-center overflow-hidden"
+                          style={{
+                            backgroundImage: `url(${
+                              flashSalesData[0].bgImage || "/noimage.jpg"
+                            })`,
                             backgroundSize: "cover",
-                            backgroundPosition: "center"
-                        }}
+                            backgroundPosition: "center",
+                          }}
                         >
-                        <div className="relative z-10 w-full flex flex-col md:flex-row items-center justify-center">
+                          <div className="relative z-10 w-full flex flex-col md:flex-row items-center justify-center">
                             <div className="w-full md:w-1/2 flex justify-center items-center overflow-hidden">
-                            <Image
-                                src={flashSalesData[0].productImage}
+                              <Image
+                                src={flashSalesData[0].productImage || "/noimage.jpg"}
                                 alt={flashSalesData[0].title}
                                 width={180}
                                 height={180}
                                 className="object-contain max-h-[180px] transform transition-transform duration-300 hover:scale-110"
-                            />
+                                unoptimized
+                                onError={(e) => (e.currentTarget.src = "/noimage.jpg")}
+                              />
                             </div>
                             <div className="w-full md:w-1/2 flex flex-col justify-center items-center text-center mt-4 md:mt-0 md:pl-4">
-                            <h6 className="text-xl font-semibold mb-2 text-gray-900">{flashSalesData[0].title}</h6>
-                            <motion.a
+                              <h6 className="text-xl font-semibold mb-2 text-gray-900">
+                                {flashSalesData[0].title}
+                              </h6>
+                              <motion.a
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 href={flashSalesData[0].redirectUrl}
                                 className="mt-auto px-4 py-2 bg-red-600 text-white rounded-full text-center hover:bg-red-700 transition"
-                            >
+                              >
                                 Shop Now →
-                            </motion.a>
+                              </motion.a>
                             </div>
-                        </div>
+                          </div>
                         </motion.div>
-                    </motion.div>
+                      </motion.div>
                     ) : (
-                    <motion.div variants={itemVariants}>
+                      <motion.div variants={itemVariants}>
                         <Slider {...flashSalesSettings} className="flash-sales-slider relative">
-                        {flashSalesData
-                            .filter(item => item.bgImage && item.productImage)
-                            .map(item => (
+                          {flashSalesData.map((item) => (
                             <div key={item.id} className="px-2">
-                                <motion.div
+                              <motion.div
                                 className="relative p-6 rounded-lg shadow-lg h-full min-h-[250px] flex items-center overflow-hidden"
                                 style={{
-                                    backgroundImage: `url(${item.bgImage})`,
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center"
+                                  backgroundImage: `url(${item.bgImage || "/noimage.jpg"})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
                                 }}
-                                >
+                              >
                                 <div className="relative z-10 w-full flex flex-col md:flex-row items-center justify-center">
-                                    <div className="w-full md:w-1/2 flex justify-center items-center overflow-hidden">
+                                  <div className="w-full md:w-1/2 flex justify-center items-center overflow-hidden">
                                     <Image
-                                        src={item.productImage}
-                                        alt={item.title}
-                                        width={180}
-                                        height={180}
-                                        className="object-contain max-h-[180px] transform transition-transform duration-300 hover:scale-110"
+                                      src={item.productImage || "/noimage.jpg"}
+                                      alt={item.title}
+                                      width={180}
+                                      height={180}
+                                      className="object-contain max-h-[180px] transform transition-transform duration-300 hover:scale-110"
+                                      unoptimized
+                                      onError={(e) => (e.currentTarget.src = "/noimage.jpg")}
                                     />
-                                    </div>
-                                    <div className="w-full md:w-1/2 flex flex-col justify-center items-center text-center mt-4 md:mt-0 md:pl-4">
-                                       <motion.h6 
-                                            className="text-xl font-semibold mb-2 text-gray-900"
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 1.1 }}
-                                            transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                                            >
-                                            {item.title}
-                                        </motion.h6>
-                                    <motion.a
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        href={item.redirectUrl}
-                                        className="mt-auto px-4 py-2 bg-red-500 text-white rounded-full text-center hover:bg-red-600 transition"
+                                  </div>
+                                  <div className="w-full md:w-1/2 flex flex-col justify-center items-center text-center mt-4 md:mt-0 md:pl-4">
+                                    <motion.h6
+                                      className="text-xl font-semibold mb-2 text-gray-900"
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 1.1 }}
+                                      transition={{ type: "spring", stiffness: 300, damping: 10 }}
                                     >
-                                        Shop Now →
+                                      {item.title}
+                                    </motion.h6>
+                                    <motion.a
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      href={item.redirectUrl}
+                                      className="mt-auto px-4 py-2 bg-red-500 text-white rounded-full text-center hover:bg-red-600 transition"
+                                    >
+                                      Shop Now →
                                     </motion.a>
-                                    </div>
+                                  </div>
                                 </div>
-                                </motion.div>
+                              </motion.div>
                             </div>
-                            ))}
+                          ))}
                         </Slider>
-                    </motion.div>
+                      </motion.div>
                     )}
-                </div>
+                  </div>
                 )}
-                </motion.section>
+              </motion.section>
+
 
 
              
@@ -989,7 +979,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
 
                 {/* recomended product sections */}
                <motion.section className="mb-10 px-4 mt-5">
-                  <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <div className="bg-white rounded-xl border border-red-200 p-6 shadow-sm">
                     {/* Section Header with scroll buttons */}
                     <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-red-500">Shop by Category Products</h2>
@@ -1056,10 +1046,19 @@ const handleCategoryClick = useCallback((category) => (e) => {
                               </h3>
                               <div className="flex items-center justify-center py-4">
                                 <img
-                                  src={selectedCategory.image}
-                                  alt={selectedCategory.category_name}
-                                  className="h-32 object-contain"
-                                />
+                                src={
+                                  selectedCategory?.image
+                                    ? `/uploads/categories/${selectedCategory.image}`
+                                    : "/noimage.jpg"
+                                }
+                                alt={selectedCategory?.category_name || "Category image"}
+                                className="h-32 object-contain"
+                                onError={(e) => {
+                                  e.target.onerror = null; // Prevents infinite loop
+                                  e.target.src = "/noimage.jpg";
+                                }}
+                              />
+
                               </div>
                               <Link
                                 href={`/category/${selectedCategory.category_slug || selectedCategory._id}`}
@@ -1077,7 +1076,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
                             <div key={product._id} className="w-[280px] shrink-0">
                               <motion.div
                                 whileHover={{ y: -3 }}
-                                className="relative bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col h-full"
+                                className="relative bg-white border border-gray-200 hover:border-[#e20e0e] rounded-lg shadow-sm p-4 flex flex-col h-full"
                               >
                                 {product.special_price && (
                                   <span className="absolute top-3 left-3 text-xs bg-red-500 text-white px-2 py-0.5 rounded">
@@ -1090,11 +1089,25 @@ const handleCategoryClick = useCallback((category) => (e) => {
                                 </div>
 
                                 <div className="h-40 flex items-center justify-center mb-4">
-                                  <img
-                                    src={`/uploads/products/${product.images?.[0]}` || "/placeholder.jpg"}
-                                    alt={product.images?.[0] || "Product image"}
-                                    className="max-h-full object-contain"
-                                  />
+                                  <Link
+                                      href={`/product/${encodeURIComponent(product.slug || product._id)}`}
+                                      className="block"
+                                    >
+                                 <img
+                                  src={
+                                    product.images?.[0]
+                                      ? `/uploads/products/${product.images[0]}`
+                                      : "/noimage.jpg"
+                                  }
+                                  alt={product.name || "Product image"}
+                                  className="max-h-full object-contain"
+                                  onError={(e) => {
+                                    e.target.onerror = null; // prevent infinite loop
+                                    e.target.src = "/noimage.jpg";
+                                  }}
+                                />
+
+                                  </Link>
                                 </div>
                                 <Link
                                   href={`/product/${encodeURIComponent(product.slug || product._id)}`}
@@ -1136,7 +1149,7 @@ const handleCategoryClick = useCallback((category) => (e) => {
 
 
 
-                  <RecentlyViewedProducts />
+                  {/* <RecentlyViewedProducts /> */}
                 {/* Hot deal section - showing only parent categories */}
                 
             </div>
