@@ -147,8 +147,16 @@ const RelatedProducts = ({ currentProductId,categoryId }) => {
       {visibleProducts.map((product) => (
         <div
                 key={product._id}
-                className="group relative bg-white rounded-lg border hover:border-blue-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full"
+                className="group relative bg-white rounded-lg border hover:border-[#e20e0e] transition-all shadow-sm hover:shadow-md flex flex-col h-full"
               >
+                <Link
+                    href={`/product/${product.slug || product._id}`}
+                    className="block mb-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleProductClick(product);
+                    }}
+                  >
                 <div className="relative aspect-square bg-gray-50">
                   {product.images?.[0] && (
                     <img
@@ -177,9 +185,10 @@ const RelatedProducts = ({ currentProductId,categoryId }) => {
                     <ProductCard productId={product._id} />
                   </div>
                 </div>
+                </Link>
 
                 <div className="p-2 md:p-4 flex flex-col h-full">
-                  <h4 className="text-xs text-gray-500 mb-2 uppercase hover:text-blue-600">
+                  <h4 className="text-xs text-gray-500 mb-2 uppercase hover:text-red-600">
                      {brandMap[product.brand] || ""}
                   </h4>
 

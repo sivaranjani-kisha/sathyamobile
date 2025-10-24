@@ -147,7 +147,7 @@ const RecentlyViewedProducts = () => {
     <>
       {navigating && (
         <div className="fixed inset-0 z-[9999] flex justify-center items-center bg-black bg-opacity-30">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
         </div>
       )}
       
@@ -189,14 +189,14 @@ const RecentlyViewedProducts = () => {
                     <button
                       onClick={prev}
                       disabled={startIndex === 0}
-                      className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition disabled:opacity-50"
+                      className="p-2 border border-gray-300 rounded-full hover:bg-blue-600 hover:text-white transition disabled:opacity-50"
                     >
                       <ChevronLeft size={20} />
                     </button>
                     <button
                       onClick={next}
                       disabled={startIndex + visibleCount >= recentProducts.length}
-                      className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition disabled:opacity-50"
+                      className="p-2 border border-gray-300 rounded-full hover:bg-blue-600 hover:text-white transition disabled:opacity-50"
                     >
                       <ChevronRight size={20} />
                     </button>
@@ -205,13 +205,18 @@ const RecentlyViewedProducts = () => {
                 </div>
 
                 {/* Products Row */}
-                <div className="flex grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 overflow-x-auto sm:overflow-visible px-0">
+                <div className="flex grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-20 overflow-x-auto sm:overflow-visible px-0">
                   {visibleProducts.map((product) => (
                     <div
                       key={product._id}
-                      className="group border border-gray-200 hover:border-[#e20e0e] hover:shadow-md transition-all duration-300 rounded-lg"
+                      className="group border border-gray-200 hover:border-[#e20e0e] hover:shadow-md transition-all duration-300 rounded-lg min-w-[230px]"
+
                     >
-                      
+                      <Link
+                          href={`/product/${product.slug}`}
+                          className="block mb-2"
+                          onClick={() => handleProductClick(product)}
+                        >
                       {/* Product Image */}
                       <div className="relative w-full h-[210px] group overflow-hidden rounded-t-lg aspect-square">
 
@@ -281,24 +286,20 @@ const RecentlyViewedProducts = () => {
 
                         {/* Wishlist (only show on hover) */}
                         <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <ProductCard productId={product._id} />
+                          <ProductCard productId={product._id} isOutOfStock={product.quantity === 0} />
                         </div>
                       </div>
 
-
+                      </Link>
                       {/* Product Info */}
                       <div className="p-4 flex flex-col">
                          <h4 className="text-xs text-gray-500 mb-2 uppercase">
-                           <Link
-  href={
-    product.brand
-      ? `/brand/${product.brand.toLowerCase().replace(/\s+/g, "-")}`
-      : "#"
-  }
-  className="hover:text-red-600"
->
-  {product.brand || "Unknown Brand"}
-</Link>
+                            <Link
+                              href={`/brand/${product.brand.toLowerCase().replace(/\s+/g, "-")}`}
+                              className="hover:text-red-600"
+                            >
+                              {product.brand}
+                            </Link>
                           </h4>
 
                         {/* Title truncate */}
@@ -332,15 +333,9 @@ const RecentlyViewedProducts = () => {
                           )}
                         </div>
 
-                        <h4
-                          className={`text-xs mb-3 ${
-                            product.stock_status === "In Stock" ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {product.stock_status}
-                          {product.stock_status === "In Stock" && product.quantity
-                            ? `, ${product.quantity} units`
-                            : ""}
+                        <h4 className={`text-xs mb-3 ${product.stock_status === "In Stock" && product.quantity ? "text-green-600" : "text-red-600"}`}>
+                          {product.stock_status === "In Stock" && product.quantity ? ` ${product.stock_status}` : "Out Of Stock"}
+                          {product.stock_status === "In Stock" && product.quantity ? `, ${product.quantity} units` : ""}
                         </h4>
 
                         {/* Add To Cart Button */}
@@ -379,11 +374,11 @@ const RecentlyViewedProducts = () => {
                   {clickElement === "next" ? (
                     <>
                       <span className="w-2.5 h-2.5 bg-gray-300 rounded-full"></span>
-                      <span className="w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                      <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
                     </>
                   ) : (
                     <>
-                      <span className="w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                      <span className="w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
                       <span className="w-2.5 h-2.5 bg-gray-300 rounded-full"></span>
                     </>
                   )}
