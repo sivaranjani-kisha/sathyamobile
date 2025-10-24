@@ -946,6 +946,11 @@ const STEP = 100;
                   <div key={product._id} className="group relative bg-white rounded-lg border hover:border-red-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full">
                     {/* Product Image */}
                     <div className="relative aspect-square bg-white">
+                      <Link
+                        href={`/product/${product.slug}`}
+                        className="block mb-2"
+                        onClick={() => handleProductClick(product)}
+                      >
                       {product.images?.[0] && (
                         <Image
                           src={
@@ -960,7 +965,7 @@ const STEP = 100;
                           unoptimized
                         />
                       )}
-  
+                      </Link>
                       {/* Discount Badge */}
                       {product.special_price &&
                         product.special_price !== product.price &&
