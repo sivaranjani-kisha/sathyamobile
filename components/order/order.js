@@ -117,7 +117,7 @@ export default function Order() {
       </div>
       
       {/* Desktop Header */}
-      <div className="hidden lg:block bg-blue-50 py-6 px-8 flex justify-between items-center border-b border-gray-200 shadow-sm">
+      <div className="hidden lg:block bg-red-100 py-6 px-8 flex justify-between items-center border-b border-gray-200 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800">My Orders</h2>
         <div className="flex items-center space-x-2 text-sm mt-1">
           <span className="text-gray-600">🏠 Home</span>
