@@ -12,6 +12,16 @@ const offerSchema = new mongoose.Schema(
       enum: ['active', 'inactive'], // Only allow 'active' or 'inactive'
       required: true,
     },
+    fest_offer_status2: {
+      type: String,
+      enum: ['active', 'inactive'], // Only allow 'active' or 'inactive'
+      required: true,
+    },
+    selected_user_type: {
+      type: String,
+      enum: ['all', 'custom'], // Only allow 'all' or 'custom'
+      required: true,
+    },
     notes: {
       type: String,
       required: true,
