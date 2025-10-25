@@ -124,7 +124,7 @@ export default function Order() {
           <FiChevronRight className="text-gray-400" />
           <span className="text-gray-500">Shop</span>
           <FiChevronRight className="text-gray-400" />
-          <span className="text-customBlue font-medium">Orders</span>
+          <span className="text-red-600 font-medium">Orders</span>
         </div>
       </div>
 
@@ -147,7 +147,7 @@ export default function Order() {
           
           {/* Sidebar Navigation - Desktop */}
           <div className="hidden lg:block w-full lg:w-72 flex-shrink-0">
-            <div className="bg-white p-6 rounded-xl border border-gray-200 hover:border-customBlue transition-all duration-300 shadow-sm">
+            <div className="bg-white p-6 rounded-xl border border-gray-200 hover:border-red-200 transition-all duration-300 shadow-sm">
               <h3 className="text-lg font-semibold text-red-600 mb-6 pb-2 border-b border-gray-100">My Account</h3>
               <nav className="space-y-2">
                 <Link href="/order" className="w-full flex items-center gap-2 px-5 py-3 text-base font-medium text-gray-600 rounded-lg hover:text-red-600 hover:bg-red-100 hover:pl-6 transition-all">
@@ -164,7 +164,7 @@ export default function Order() {
 
           {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 hover:border-customBlue transition-all duration-300 shadow-sm">
+            <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 hover:border-red-200 transition-all duration-300 shadow-sm">
               {/* Order Filters */}
               <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6 pb-2 sm:pb-4 border-b border-gray-100 overflow-x-auto pb-2">
                 {['all', 'pending', 'shipped', 'delivered', 'cancelled'].map((filter) => (
