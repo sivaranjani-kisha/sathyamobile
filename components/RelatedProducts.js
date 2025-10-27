@@ -7,13 +7,25 @@ import { useEffect, useState } from "react";
 import Addtocart from "@/components/AddToCart";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
-
+import { useRouter } from 'next/navigation';
 const RelatedProducts = ({ currentProductId,categoryId }) => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [navigating, setNavigating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
+ 
+    const handleProductClick = (product) => {
+    if (navigating) return;
+    
+    setNavigating(true);
+    const stored = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+    const updated = stored.filter(p => p._id !== product._id);
+    updated.unshift(product);
+    localStorage.setItem('recentlyViewed', JSON.stringify(updated.slice(0, 10)));
+    router.push(`/product/${product.slug || product._id}`);
+  };
 
   const fetchRelatedProducts = async () => {
     try {
