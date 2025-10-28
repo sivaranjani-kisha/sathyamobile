@@ -95,33 +95,11 @@ export default function CategoryProductSection() {
           <h2 className="text-2xl font-bold text-red-500">
             Shop by Category Products
           </h2>
-          <div className="flex items-center space-x-3">
-            {selectedCategory && (
-              <Link
-                href={`/category/${selectedCategory.category_slug}`}
-                className="flex items-center text-sm text-red-600 hover:underline font-medium"
-              >
-                View All Products
-                <HiArrowRight className="ml-1 text-base" />
-              </Link>
-            )}
-            <button
-              onClick={scrollLeft}
-              className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
-            >
-              <FiChevronLeft size={18} />
-            </button>
-            <button
-              onClick={scrollRight}
-              className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
-            >
-              <FiChevronRight size={18} />
-            </button>
-          </div>
+          
         </div>
 
         {/* 🔴 Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
+        <div className="flex flex-wrap justify-center gap-3 mb-2">
           {parentCategories.map((category) => (
             <button
               key={category._id}
@@ -148,7 +126,29 @@ export default function CategoryProductSection() {
             </button>
           ))}
         </div>
-
+        <div className="flex justify-end  items-center space-x-3 mb-2">
+          {selectedCategory && (
+            <Link
+              href={`/category/${selectedCategory.category_slug}`}
+              className="flex items-center text-sm text-red-600 hover:underline font-medium"
+            >
+              View All Products
+              <HiArrowRight className="ml-1 text-base" />
+            </Link>
+          )}
+          <button
+            onClick={scrollLeft}
+            className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
+          >
+            <FiChevronLeft size={18} />
+          </button>
+          <button
+            onClick={scrollRight}
+            className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
+          >
+            <FiChevronRight size={18} />
+          </button>
+        </div>
         {/* 🛒 Product List */}
         {filteredProducts.length === 0 ? (
           <div className="text-center text-gray-500 font-medium py-10">
