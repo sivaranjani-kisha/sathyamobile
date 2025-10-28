@@ -683,7 +683,7 @@ const STEP = 100;
         <div className="lg:col-span-3">
           {/* Sorting and Count */}
           <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <p className="text-sm text-gray-600">{products.length} products founds</p>
+            <p className="text-sm text-gray-600">{pagination.totalProducts} products found</p>
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600">Sort by:</span>
               <select

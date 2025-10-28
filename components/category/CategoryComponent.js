@@ -961,7 +961,11 @@ useEffect(() => {
                         className="block mb-2"
                         onClick={() => handleProductClick(product)}
                       >
-                        <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                        
+                        {/* <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
+                          {product.name}
+                        </h3> */}
+                          <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
                           {product.name}
                         </h3>
                       </Link>
