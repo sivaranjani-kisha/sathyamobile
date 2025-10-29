@@ -251,7 +251,7 @@ export default function CategoryProductSection() {
                     </div>
 
                     {/* Product Image */}
-                    <div className="h-40 flex items-center justify-center mb-4">
+                    <div className="h-75 flex items-center justify-center mb-4">
                       <Link
                         href={`/product/${encodeURIComponent(
                           product.slug || product._id
