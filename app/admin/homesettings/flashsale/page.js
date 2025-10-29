@@ -249,7 +249,7 @@ export default function FlashSalePage() {
 
               {/* Banner Image Upload */}
               <div>
-                <label className="block text-sm font-medium mb-1">Banner Image * (Size: 260x240)</label>
+                <label className="block text-sm font-medium mb-1">Banner Image * (Size: 300x250)</label>
                 <input
                   type="file"
                   onChange={(e) =>
@@ -373,7 +373,7 @@ export default function FlashSalePage() {
                   alt="banner"
                   className="w-48 h-28 object-cover rounded mb-2"
                 />
-                <label className="block text-sm font-medium mb-1">Banner (260x240)</label>
+                <label className="block text-sm font-medium mb-1">Banner (300x250)</label>
                 <input
                   type="file"
                   onChange={(e) => {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Reusable Banner Schema (same as brand la irukku)
+
 const BannerSchema = new mongoose.Schema({
   banner_name: { type: String, required: true },
   banner_image: { type: String },

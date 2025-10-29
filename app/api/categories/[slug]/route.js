@@ -47,6 +47,7 @@ export async function GET(request, { params }) {
     
     // In your GET handler
     const allCategoryIds = getAllCategoryIds(categoryTree);
+    console.log(allCategoryIds);
     const products = await Product.find({
       sub_category: { $in: allCategoryIds },
       status: "Active"

@@ -85,7 +85,7 @@ export async function POST(req) {
     let backgroundImagePath, bannerImagePath;
     try {
       backgroundImagePath = await saveFile(background_image, 429, 250);
-      bannerImagePath = await saveFile(banner_image, 260, 240);
+      bannerImagePath = await saveFile(banner_image, 300, 250);
     } catch (err) {
       return NextResponse.json(
         { success: false, message: err.message },
@@ -176,7 +176,7 @@ if (redirect_url !== null) updateData.redirect_url = redirect_url;
     const banner_image = formData.get("banner_image");
     if (banner_image && banner_image.size > 0) {
       try {
-        const bannerImagePath = await saveFile(banner_image, 260, 240);
+        const bannerImagePath = await saveFile(banner_image, 300, 250);
         updateData.banner_image = bannerImagePath;
 
         if (existingFlashSale.banner_image) {
