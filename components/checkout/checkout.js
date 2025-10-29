@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useCart } from '@/context/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
@@ -146,6 +147,7 @@ const DeliveryOptions = ({ formData, handleChange, isDeliverySaved, setIsDeliver
 };
 
 export default function CheckoutPage() {
+  const { cartCount, updateCartCount } = useCart();
   const router = useRouter();
   const [stores, setStores] = useState([]);
   const [formData, setFormData] = useState({
@@ -156,7 +158,7 @@ export default function CheckoutPage() {
     address: "",
     landmark: "",
     city: "",
-    state: "",
+    state: "Tamilnadu",
     postCode: "",
     phonenumber: "",
     email: "",
@@ -174,6 +176,12 @@ export default function CheckoutPage() {
   const [authError, setAuthError] = useState('');
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  // / ✅ NEW: summary state
+  const [orderSummary, setOrderSummary] = useState({
+    discount: 0,
+    subtotal: 0,
+    total: 0
+  });
   console.log(cartItems);
 const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
@@ -193,22 +201,33 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     fetchStores();
   }, []);
 
+  const uniqueCities = [...new Set(stores.map(store => store.city))];
+  const extraCities = ["Ariyalur","Chennai","Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode","Kanchipuram","Kanyakumari","Karur","Krishnagiri","Madurai","Nagapattinam","Namakkal","Nilgiris","Perambalur","Pudukkottai","Ramanathapuram","Salem","Sivaganga","Thanjavur","Theni","Thoothukudi","Tirunelveli","Tiruvallur","Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar", "Singanallur", "Sivananthapuram", "Vadavalli", "Annur", "Mettupalayam", "Thennur", "Ariyamangalam", "Komarapalayam", "Kattur"];
+
+  const finalCities = [...new Set([...uniqueCities, ...extraCities])];
+
   useEffect(() => {
-  const buyNowData = localStorage.getItem("buyNowData");
-  const checkoutData = localStorage.getItem("checkoutData");
+    const buyNowData = localStorage.getItem("buyNowData");
+    const checkoutData = localStorage.getItem("checkoutData");
 
-  if (buyNowData) {
-    const parsedData = JSON.parse(buyNowData);
-    setCartItems(parsedData.cart.items);
-    localStorage.removeItem("buyNowData"); // ✅ clear after use
-  } else if (checkoutData) {
-    const parsedData = JSON.parse(checkoutData);
-    setCartItems(parsedData.cart.items);
-  }
+    if (buyNowData) {
+      const parsedData = JSON.parse(buyNowData);
+      setCartItems(parsedData.cart.items);
+      localStorage.removeItem("buyNowData");
+    } else if (checkoutData) {
+      const parsedData = JSON.parse(checkoutData);
+      setCartItems(parsedData.cart.items);
 
-  // Then run fetchData for user address & fallback cart
-  fetchData();
-}, []);
+      // ✅ also load discount, subtotal, total
+      setOrderSummary({
+        discount: parsedData.discount || 0,
+        subtotal: parsedData.subtotal || 0,
+        total: parsedData.total || 0
+      });
+    }
+
+    fetchData();
+  }, []);
 
 
   const fetchData = async () => {
@@ -251,7 +270,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
         country: addr.country || "",
         address: addr.address || "",
         city: addr.city || "",
-        state: addr.state || "",
+        state: addr.state || "Tamilnadu",
         postCode: addr.postCode || "",
         phonenumber: addr.phonenumber || "",
         landmark: addr.landmark || "",
@@ -462,9 +481,17 @@ const grandTotal = subtotal - totalDiscount;
       const userId = decoded.userId;
   
       // Use saved address data if selected, otherwise use form data
-      const addressData = useSavedAddress && selectedAddress !== null 
-        ? useraddress[selectedAddress]
-        : formData;
+        const addressData = useSavedAddress && selectedAddress !== null
+  ? {
+      ...useraddress[selectedAddress],
+      state: useraddress[selectedAddress].state || "Tamilnadu",
+      country: useraddress[selectedAddress].country || "India",
+    }
+  : {
+      ...formData,
+      state: formData.state || "Tamilnadu",
+      country: formData.country || "India",
+    };
   
       // Validation Checks (only if not using saved address)
       if (!useSavedAddress || selectedAddress === null) {
@@ -472,11 +499,18 @@ const grandTotal = subtotal - totalDiscount;
         const phoneRegex = /^[0-9]{10}$/;
         const postCodeRegex = /^[0-9]{4,6}$/;
   
-        if (!addressData.firstName || !addressData.lastName || !addressData.email || 
-            !addressData.phonenumber || !addressData.postCode) {
-          toast.error("Please fill in all required fields.");
-          return;
-        }
+            if (
+        !addressData.firstName ||
+        !addressData.lastName ||
+        !addressData.email ||
+        !addressData.phonenumber ||
+        !addressData.postCode ||
+        !addressData.state
+      ) {
+        toast.error("Please fill in all required fields.");
+        return;
+      }
+
         if (!emailRegex.test(addressData.email)) {
           toast.error("Please enter a valid email address.");
           return;
@@ -493,10 +527,8 @@ const grandTotal = subtotal - totalDiscount;
     setIsSubmitting(true);
       setError("");
   
-           const totalAmount = cartItems.reduce(
-        (sum, item) => sum + (item.price * item.quantity) - (item.discount || 0),
-        0
-      );
+           const totalAmount = orderSummary.total;
+
       let paymentId = "";
       let paymentStatus = "";
       let paymentMode = "";
@@ -533,7 +565,7 @@ const grandTotal = subtotal - totalDiscount;
         formDataToSend.append('address', addressData.address);
         formDataToSend.append('postCode', addressData.postCode);
         formDataToSend.append('city', addressData.city);
-        formDataToSend.append('state', addressData.state);
+        formDataToSend.append('state', addressData.state); 
         formDataToSend.append('landmark', addressData.landmark || '');
         formDataToSend.append('phonenumber', addressData.phonenumber);
         formDataToSend.append('altnumber', addressData.altnumber || '');
@@ -665,6 +697,7 @@ const grandTotal = subtotal - totalDiscount;
         body: JSON.stringify({ clearAll: true })
       });
 
+
       if (cartdelte.status === 401) {
         localStorage.removeItem('token');
         router.push('/login');
@@ -676,39 +709,40 @@ const grandTotal = subtotal - totalDiscount;
         localStorage.removeItem('appliedCoupon')
         const orderData = await orderRes.json()
         // Prepare email data
-        const emailData = {
-          orderDetails: {
-            order_number: orderData.order_number || "ORD" + Date.now(),
-            order_amount: totalAmount,
-            payment_method: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
-            order_item: cartItems,
-            order_username: `${addressData.firstName} ${addressData.lastName}`,
-            order_phonenumber: addressData.phonenumber,
-            order_deliveryaddress: deliveryAddress
-          },
-          customerEmail: addressData.email,
-          adminEmail: 'msivaranjani2036@gmail.com'
-        };
-
+        // console.log(orderData,orderData.order.order_number);
+        // const emailData = {
+        //   orderDetails: {
+        //     order_number: orderData.order.order_number || "ORD" + Date.now(),
+        //     order_amount: totalAmount,
+        //     payment_method: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
+        //     order_item: cartItems,
+        //     order_username: `${addressData.firstName} ${addressData.lastName}`,
+        //     order_phonenumber: addressData.phonenumber,
+        //     order_deliveryaddress: deliveryAddress
+        //   },
+        //   customerEmail: addressData.email,
+        //   adminEmail: 'msivaranjani2036@gmail.com'
+        // };
+ 
        // console.log(cartItems);
-
+ 
         const proresponse = await fetch(`/api/product/get/${cartItems[0].productId}`);
        
         if (!proresponse.ok) {
           throw new Error(`HTTP error! status: ${proresponse.status}`);
         }
-        
+       
         const productData = await proresponse.json();
-
+ 
         const authResponse = await fetch('/api/auth/check', {
-				method: 'GET',
-				headers: {
-				  'Content-Type': 'application/json',
-				  Authorization: token ? `Bearer ${token}` : '',
-				},
-			  });
-			  const authData = await authResponse.json();
-			  //console.log(cartItems);
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        });
+        const authData = await authResponse.json();
+        //console.log(cartItems);
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         trackCheckout({
           user: {
@@ -726,32 +760,90 @@ const grandTotal = subtotal - totalDiscount;
             currency: "INR",
           },
         });
-        
-        
+       
+       
         // Send confirmation emails
-        const emailResponse = await fetch('/api/send-order-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailData)
+        // const emailResponse = await fetch('/api/send-order-email', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(emailData)
+        // });
+ 
+        // if (!emailResponse.ok) {
+        //   const errorData = await emailResponse.json();
+        //   console.error('Email sending failed:', errorData.error);
+        // }
+     
+          const name = addressData.firstName + ' ' + addressData.lastName;
+       const itemsHtml = orderData.order.order_item.map(item => {
+          return `<li>${item.name} - ₹${item.price.toFixed(2)} x ${item.quantity}</li>`;
+        }).join('');
+        const itemHtml = `<ul style="padding-left: 20px; color: #555555;">${itemsHtml}</ul>`;
+        const order_amount = `₹${Number(orderData.order.order_amount).toFixed(2)}`;
+        // FIXED: Renamed this variable as well to avoid conflict
+        const emailFormData = new FormData();
+        emailFormData.append("campaign_id", "0800f221-7805-4b76-988c-bbecd66e7500");
+        emailFormData.append("email", addressData.email);
+        emailFormData.append(
+          "params",
+          JSON.stringify([name,orderData.order.order_number,order_amount,orderData.order.payment_method, itemHtml])
+        );
+       
+        const response = await fetch("https://bea.eygr.in/api/email/send-msg", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer 2|DC7TldSOIhrILsnzAf0gzgBizJcpYz23GHHs0Y2L",
+          },
+          body: emailFormData, // Use the renamed variable
+        });
+ 
+        const data = await response.json();
+ 
+        
+      const adminItemsHtml = orderData.order.order_item.map(item => {
+       return `<li>${item.name} - ₹${item.price.toFixed(2)} x ${item.quantity}</li>`;
+        }).join('');
+
+      const adminItemsTableHtml = `<ul style="padding-left: 20px; color: #555555;">${adminItemsHtml}</ul>`;
+
+        const adminemailFormData = new FormData();
+        adminemailFormData.append("campaign_id", "dd7b5f8d-5bf1-45a5-9116-fcb40f69ede6");
+        adminemailFormData.append(
+          "params",
+          JSON.stringify([name,addressData.email,addressData.phonenumber,deliveryAddress, adminItemsTableHtml])
+        );
+
+        // const emailadmin = ["arunkarthik@bharathelectronics.in","ecom@bharathelectronics.in","itadmin@bharathelectronics.in","telemarketing@bharathelectronics.in","sekarcorp@bharathelectronics.in","siva96852@gmail.com"];
+
+        const emailadmin = ["sorambeevi@gmail.com"];
+        emailadmin.forEach(async (adminEmail) => {
+          adminemailFormData.set("email", adminEmail);
+        let adminresponse = await fetch("https://bea.eygr.in/api/email/send-msg", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer 2|DC7TldSOIhrILsnzAf0gzgBizJcpYz23GHHs0Y2L",
+          },
+          body: adminemailFormData, // Use the renamed variable
         });
 
-        if (!emailResponse.ok) {
-          const errorData = await emailResponse.json();
-          console.error('Email sending failed:', errorData.error);
-        }
-      }
+        let adminData = await adminresponse.json();
+        });
 
-      toast.success("Order placed successfully!");
-      router.push('/order');
-      
+
+        toast.success("Order placed successfully!");
+        router.push('/orders');
+        updateCartCount(0);
+
+      }
     } catch (error) {
       console.error("Error submitting order:", error);
       toast.error("Failed to place order. Please try again.");
       setIsSubmitting(false);
     }
   };
+   
 
-  if (loading) {
+ if (loading) {
     return (
       <div className="loading-overlay fixed inset-0 z-[9999] flex justify-center items-center bg-white">
         <div className="flex flex-col items-center">
@@ -780,233 +872,541 @@ const grandTotal = subtotal - totalDiscount;
         </div>
       </div>
 
-      <div className="max-w-9xl mx-auto rounded-lg p-8">
-        {useraddress && useraddress.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Saved Addresses</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {useraddress.map((item, index) => (
-                <div 
-                  key={`address-${index}`} 
-                  className={`border p-4 rounded-lg cursor-pointer transition-all ${selectedAddress === index ? 'border-orange-500 bg-orange-50' : 'hover:border-gray-300'}`}
-                  onClick={() => setSelectedAddress(index)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium">{item.firstName} {item.lastName}</p>
-                      <p className="text-sm text-gray-600">{item.address}</p>
-                      <p className="text-sm text-gray-600">{item.city}, {item.state}, {item.postCode}</p>
-                      <p className="text-sm text-gray-600">{item.country}</p>
-                      <p className="text-sm text-gray-600">Phone: {item.phonenumber}</p>
-                    </div>
-                    {selectedAddress === index && (
-                      <span className="text-orange-500">✓ Selected</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4">
-              <button 
-                onClick={() => setUseSavedAddress(!useSavedAddress)}
-                className="text-orange-500 hover:text-orange-700 text-sm font-medium"
-              >
-                {useSavedAddress ? 'Use new address instead' : 'Use saved address'}
-              </button>
-            </div>
-          </div>
-        )}
+      {/* <div className="max-w-9xl mx-auto rounded-lg p-8 pt-0  container"> */}
+        <div className="w-full  rounded-lg  pt-0">
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row " style={{marginLeft: "100px"}}>
           {/* Left - Checkout Form */}
-          <div className="w-full lg:w-2/3 bg-white border p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+         <div className="w-full lg:w-2/4 bg-white p-0 pt-6">
+
+    {error && <p className="text-red-500 text-bold-sm mb-4">{error}</p>}
+
+    {useSavedAddress && selectedAddress !== null ? (
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="grid grid-cols-2 gap-4">
+          <p><span className="font-medium">Name:</span> {useraddress[selectedAddress].firstName} {useraddress[selectedAddress].lastName}</p>
+          <p><span className="font-medium">Phone:</span> {useraddress[selectedAddress].phonenumber}</p>
+          <p><span className="font-medium">Address:</span> {useraddress[selectedAddress].address}</p>
+          <p><span className="font-medium">City:</span> {useraddress[selectedAddress].city}</p>
+          <p><span className="font-medium">State:</span> {useraddress[selectedAddress].state}</p>
+          <p><span className="font-medium">Country:</span> {useraddress[selectedAddress].country}</p>
+          <p><span className="font-medium">Postal Code:</span> {useraddress[selectedAddress].postCode}</p>
+        </div>
+      </div>
+    ) : (
+      
+      <form onSubmit={handleSubmit} className="mr-2">
+  {/* Contact Section */}
+  <div className="mb-8">
+    <h2 className="text-xl font-semibold text-black mb-3">
+      Contact
+    </h2>
+   <div className="grid grid-cols-2 gap-4 mt-3">
+      <div className="relative mt-3">
+  <input
+    type="text"
+    name="phonenumber"
+    value={formData.phonenumber}
+    onChange={handleChange}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.phonenumber 
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    Phone Number
+  </span>
+</div>
+    <div className="relative mt-3 ">
+  <input
+    type="email"
+    onChange={handleChange}
+    name="email"
+    value={formData.email }
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.email 
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    Email Address
+  </span>
+</div>
+    </div>
+  </div>
+
+  {/* Delivery Section */}
+  <div className="mb-8">
+    <h2 className="text-xl font-semibold text-black mb-3">
+      Delivery
+    </h2>
+    <div className="relative mt-6">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="country"
+    value={formData.country}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.country
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    Country
+  </span>
+</div>
+
+    <div className="grid grid-cols-2 gap-4 mt-3">
+      <div className="relative mt-3">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="firstName"
+    value={formData.firstName}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.firstName
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    First Name
+  </span>
+</div>
+     <div className="relative mt-3">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="lastName"
+    value={formData.lastName}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.lastName
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    Last Name
+  </span>
+</div>
+    </div>
+
+    <div className="relative mt-6">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="businessName"
+    value={formData.businessName}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.businessName
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+    Company Name (Optional)
+  </span>
+</div>
+    
+   <div className="relative mt-6 w-full">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="address"
+    value={formData.address}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span
+    className={`absolute left-2 transition-all duration-200 pointer-events-none ${
+      formData.address
+        ? 'top-1 text-xs text-gray-500'
+        : 'top-3 text-gray-400'
+    }`}
+  >House number and street name
+  </span>
+</div>
+
+   
+   <div className="relative mt-6">
+  <input
+    type="text"
+    onChange={handleChange}
+    name="landmark"
+    value={formData.landmark}
+    className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+    required
+  />
+  <span className={`absolute left-2 transition-all duration-200 ${
+    formData.landmark
+      ? 'top-1 text-xs text-gray-500' 
+      : 'top-3 text-gray-400'
+  }`}>
+   Landmark, suite, unit, etc. (Optional)
+  </span>
+</div>
+
+    <div className="grid grid-cols-2 gap-4 mt-3">
+     {/* <div className="relative mt-3 w-full">
+      <select
+        name="state"
+        value={formData.state}
+        onChange={handleChange}
+        className="border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1 px-2"
+        required
+      >
+        <option value="">--Select State--</option>
+        <option value="Tamilnadu">Tamilnadu</option>
+      </select>
+        <span
+          className={`absolute left-2 transition-all duration-200 pointer-events-none ${
+            formData.state
+              ? 'top-1 text-xs text-gray-500'
+              : 'top-3 text-gray-400'
+          }`}
+        >
+          State
+        </span>
+      </div> */}
+
+    <div className="relative mt-3 w-full">
+  <input
+    type="text"
+    name="state"
+    value={formData.state}
+    readOnly
+    className="border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1 px-2 text-gray-700 cursor-not-allowed"
+  />
+  <label
+    className="absolute left-2 text-xs text-gray-500 top-1 pointer-events-none transition-all duration-200"
+  >
+    State
+  </label>
+</div>
+
+
+
+
+     <div className="relative mt-3 w-full">
+      <select
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        className="border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1 px-2"
+        required
+      >
+        <option value="" disabled hidden></option> {/* empty default */}
+        {finalCities.map((city, index) => (
+          <option key={index} value={city}>
+            {city}
+          </option>
+        ))}
+      </select> 
+      <span
+        className={`absolute left-2 transition-all duration-200 pointer-events-none ${
+          formData.city
+            ? 'top-1 text-xs text-gray-500'
+            : 'top-3 text-gray-400'
+        }`}
+      >
+        City
+      </span>
+    </div>
+
+    </div>
+
+   <div className="relative mt-6">
+    <input
+      type="text"
+      name="postCode"
+      value={formData.postCode}
+      onChange={handleChange}
+      className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200 pt-5 pb-1"
+      required
+    />
+    <span className={`absolute left-2 transition-all duration-200 ${
+      formData.postCode
+        ? 'top-1 text-xs text-gray-500' 
+        : 'top-3 text-gray-400'
+    }`}>
+      Post Code
+    </span>
+  </div>
+
+    <h2 className="text-xl font-semibold text-black mb-2 mt-6">
+      Shipping Method
+    </h2>
+
+    <DeliveryOptions
+      formData={formData}
+      handleChange={handleChange}
+      isDeliverySaved={isDeliverySaved}
+      setIsDeliverySaved={setIsDeliverySaved}
+      stores={stores}
+    />
+  </div>
+
+   <h2 className="text-xl font-semibold text-black mb-2 mt-6">
+      Billing Address
+    </h2>
+     {/* <h2 className="text-xl font-semibold text-gray-800 mb-4">
               {useSavedAddress && selectedAddress !== null ? 'Selected Address' : 'Billing Details'}
-            </h2>
-
-            {error && <p className="text-red-500 text-bold-sm mb-4">{error}</p>}
-
-            {useSavedAddress && selectedAddress !== null ? (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="grid grid-cols-2 gap-4">
-                  <p><span className="font-medium">Name:</span> {useraddress[selectedAddress].firstName} {useraddress[selectedAddress].lastName}</p>
-                  <p><span className="font-medium">Phone:</span> {useraddress[selectedAddress].phonenumber}</p>
-                  <p><span className="font-medium">Address:</span> {useraddress[selectedAddress].address}</p>
-                  <p><span className="font-medium">City:</span> {useraddress[selectedAddress].city}</p>
-                  <p><span className="font-medium">State:</span> {useraddress[selectedAddress].state}</p>
-                  <p><span className="font-medium">Country:</span> {useraddress[selectedAddress].country}</p>
-                  <p><span className="font-medium">Postal Code:</span> {useraddress[selectedAddress].postCode}</p>
+            </h2> */}
+            {useraddress && useraddress.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-sm font-semibold text-gray-800 mb-4">Saved Addresses</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {useraddress.map((item, index) => (
+                    <div 
+                      key={`address-${index}`} 
+                      className={`border p-4 rounded-lg cursor-pointer transition-all ${selectedAddress === index ? 'border-orange-500 bg-orange-50' : 'hover:border-gray-300'}`}
+                      onClick={() => setSelectedAddress(index)}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium">{item.firstName} {item.lastName}</p>
+                          <p className="text-sm text-gray-600">{item.address}</p>
+                          <p className="text-sm text-gray-600">{item.city}, {item.state}, {item.postCode}</p>
+                          <p className="text-sm text-gray-600">{item.country}</p>
+                          <p className="text-sm text-gray-600">Phone: {item.phonenumber}</p>
+                        </div>
+                        {selectedAddress === index && (
+                          <span className="text-orange-500">✓ Selected</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <button 
+                    onClick={() => setUseSavedAddress(!useSavedAddress)}
+                    className="text-orange-500 hover:text-orange-700 text-sm font-medium"
+                  >
+                    {useSavedAddress ? 'Use new address instead' : 'Use saved address'}
+                  </button>
                 </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-2 gap-4">
-                  <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                  <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                </div>
-
-                <input type="text" name="businessName" placeholder="Business Name (Optional)" value={formData.businessName} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200"/>
-                <input type="text" name="country" placeholder="Country" value={formData.country} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                <input type="text" name="address" placeholder="House number and street name" value={formData.address} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                <input type="text" name="landmark" placeholder="landmark, suite, unit, etc. (Optional)" value={formData.landmark} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200"/>
-
-                <div className="grid grid-cols-2 gap-4 mt-3">
-                  <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                  <input type="text" name="state" placeholder="State/Province" value={formData.state} onChange={handleChange} className="border p-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                </div>
-
-                <input type="text" name="postCode" placeholder="Post Code" value={formData.postCode} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required/>
-                <input type="text" name="phonenumber" placeholder="Phone Number" value={formData.phonenumber} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required />
-                <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} className="border p-2 rounded-md w-full mt-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200" required />
-                
-                <DeliveryOptions
-                  formData={formData}
-                  handleChange={handleChange}
-                  isDeliverySaved={isDeliverySaved}
-                  setIsDeliverySaved={setIsDeliverySaved}
-                  stores={stores}
-                />
-                
-                <h3 className="text-lg font-semibold text-gray-700 mt-6 mb-2">Additional Information</h3>
-                <textarea name="additionalInfo" placeholder="Notes about your order" value={formData.additionalInfo} onChange={handleChange} className="border p-2 rounded-md w-full h-20 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200"></textarea>
-              </form>
             )}
-          </div>
+
+  {/* Additional Info Section */}
+  <div className="mb-6">
+    <h3 className="text-lg font-semibold text-gray-700 mb-2">
+      Additional Information
+    </h3>
+    <textarea
+      name="additionalInfo"
+      placeholder="Notes about your order"
+      value={formData.additionalInfo}
+      onChange={handleChange}
+      className="border p-2 rounded-md w-full h-20 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-200"
+    ></textarea>
+  </div>
+ <div className="mt-3 mb-4 text-sm">
+  <a
+    href="/privacypolicy"
+    className="text-orange-500 hover:underline mr-4 underline"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Privacy Policy
+  </a>
+  <a
+    href="/terms-and-condition"
+    className="text-orange-500 hover:underline mr-4 underline"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Terms & Conditions
+  </a>
+  <a
+    href="/shipping"
+    className="text-orange-500 hover:underline mr-4 underline"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Shipping Policy
+  </a>
+  <a
+    href="/cancellation-refund-policy"
+    className="text-orange-500 hover:underline underline"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Cancellation & Refund Policy
+  </a>
+</div>
+
+</form>
+
+
+
+    )}
+  </div>
 
           {/* Right - Order Summary */}
-          <div className="w-full lg:w-1/3 bg-gray-50 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Orders</h3>
+          <div className="w-full lg:w-2/4 p-6 sticky top-6 self-start" style={{backgroundColor: "#F7F4F2", height: "100vh"}}>
+            <div className="mt-1" style={{marginRight: "100px"}}>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Orders</h3>
 
-            {/* <div className="border-b pb-3 mb-3">
-              {cartItems.map((item) => (
-                <div key={`order-item-${item.productId}`} className="flex justify-between text-gray-600 mb-2">
-                  <div>
-                    <span>{item.name}</span>
-                    <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
-                  </div>
-                  <span>₹{(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
-            </div> */}
-
-
-            <div className="relative border-b pb-3 mb-3">
-              {/* Scrollable List */}
-              <div
-                className="max-h-64 overflow-y-auto pr-2 scroll-smooth"
-              >
+              {/* <div className="border-b pb-3 mb-3">
                 {cartItems.map((item) => (
-                  <div
-                    key={`order-item-${item.productId}`}
-                    className="flex items-start justify-between gap-3 text-gray-700 mb-4"
-                  >
-
-                    {/* Product Image */}
-                    <div className="relative w-16 h-16 flex-shrink-0 border rounded overflow-hidden p-2">
-                      <img
-                        src={`/uploads/products/${item.image}`}
-                        alt={item.name}
-                        className="w-full h-full object-contain"
-                      />
-
-                      {/* Quantity Badge */}
-                      <div className="absolute top-0 right-0 bg-gray-700 text-white text-[10px] px-1.5 py-0.5 rounded-full">
-                        {item.quantity}
-                      </div>
+                  <div key={`order-item-${item.productId}`} className="flex justify-between text-gray-600 mb-2">
+                    <div>
+                      <span>{item.name}</span>
+                      <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
                     </div>
-
-
-                    {/* Product Details */}
-                    <div className="flex-1">
-                      <div title={item.name} className="leading-snug text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-3 min-h-[40px]">
-                        {item.name}
-                      </div>
-
-                      {/* <div className="text-xs mt-1 text-gray-600">
-                        Qty: <span className="text-red-600">{item.quantity}</span>
-                      </div> */}
-                      
-                    </div>
-
-                    {/* Price */}
-                    <div className="text-sm whitespace-nowrap text-base font-semibold text-red-600">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </div>
+                    <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
-              {/* Scroll for More Items Overlay */}
 
-              {/* {cartItems.length > 2 && (
-                <div className="flex justify-center mt-2">
-                  <div className="bg-gray-800 text-white text-xs px-3 py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
-                    <span>Scroll for more items</span>
-                    <span className="text-lg">↓</span>
-                  </div>
+              <div className="relative border-b pb-3 mb-3">
+                {/* Scrollable List */}
+                <div
+                  className="max-h-64 overflow-y-auto pr-2 scroll-smooth"
+                >
+                  {cartItems.map((item) => (
+                    <div
+                      key={`order-item-${item.productId}`}
+                      className="flex items-start justify-between gap-3 text-gray-700 mb-4"
+                    >
+
+                      {/* Product Image */}
+                      <div className="relative w-16 h-16 flex-shrink-0 border rounded overflow-hidden p-2">
+                        <img
+                          src={`/uploads/products/${item.image}`}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                        />
+
+                        {/* Quantity Badge */}
+                        <div className="absolute top-0 right-0 bg-gray-700 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                          {item.quantity}
+                        </div>
+                      </div>
+
+
+                      {/* Product Details */}
+                      <div className="flex-1">
+                        <div title={item.name} className="leading-snug text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-3 min-h-[40px]">
+                          {item.name}
+                        </div>
+
+                        {/* <div className="text-xs mt-1 text-gray-600">
+                          Qty: <span className="text-red-600">{item.quantity}</span>
+                        </div> */}
+                        
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-sm whitespace-nowrap text-base font-semibold text-red-600">
+                        ₹{(item.price > 0 ? item.price : item.actual_price) * item.quantity.toFixed(2)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              )} */}
 
-            </div>
+                {/* Scroll for More Items Overlay */}
 
+                {/* {cartItems.length > 2 && (
+                  <div className="flex justify-center mt-2">
+                    <div className="bg-gray-800 text-white text-xs px-3 py-1 rounded-full shadow-lg flex items-center gap-1 animate-bounce">
+                      <span>Scroll for more items</span>
+                      <span className="text-lg">↓</span>
+                    </div>
+                  </div>
+                )} */}
 
-
-            {/* Add Discount row if there's any discount */}
-            {totalDiscount > 0 && (
-              <div className="flex justify-between text-green-600 mb-2">
-                <span>Discount:</span>
-                <span>-₹{totalDiscount.toFixed(2)}</span>
               </div>
-            )}
 
 
-            <div className="flex justify-between text-gray-800 font-semibold">
-              <span>Subtotal:</span>
-              <span>₹{cartItems.reduce(
-        (sum, item) => sum + (item.price * item.quantity) - (item.discount || 0),
-        0
-      ).toFixed(2)}</span>
-            </div>
 
-            <div className="flex justify-between text-gray-800 font-semibold border-t pt-2 mt-2">
-              <span>Total:</span>
-              <span>₹{cartItems.reduce(
-        (sum, item) => sum + (item.price * item.quantity) - (item.discount || 0),
-        0
-      ).toFixed(2)}</span>
-            </div>
+              {/* Add Discount row if there's any discount */}
+              {totalDiscount > 0 && (
+                <div className="flex justify-between text-green-600 mb-2">
+                  <span>Discount:</span>
+                  <span>-₹{totalDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              {cartItems.some(item => item.warranty > 0) && (
+                <div className="flex justify-between text-gray-800 font-semibold">
+                  <span className="text-[#0069c6] hover:text-[#00badb] text-xs sm:text-sm font-medium">Warranty:</span>
+                  <span className="text-sm whitespace-nowrap text-base font-semibold text-red-600">
+                    ₹{cartItems.reduce((sum, item) => sum + (item.warranty || 0), 0).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              {cartItems.some(item => item.extendedWarranty > 0) && (
+                <div className="flex justify-between text-gray-800 font-semibold pt-2 mt-2">
+                  <span className="text-[#0069c6] hover:text-[#00badb] text-xs sm:text-sm font-medium">Extended Warranty:</span>
+                  <span className="text-sm whitespace-nowrap text-base font-semibold text-red-600">
+                    ₹{cartItems.reduce((sum, item) => sum + (item.extendedWarranty || 0), 0).toFixed(2)}
+                  </span>
+                </div>
+              )}
 
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Payment Method</h3>
-              <div className="space-y-2">
-                <label className="flex items-center space-x-2">
-                  <input 
-                    type="radio" 
-                    name="payment" 
-                    value="online" 
-                    checked={paymentMethod === "online"} 
-                    onChange={handlePaymentChange} 
-                    className="w-4 h-4 text-orange-500"
-                  />
-                  <span>Online Payment</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input 
-                    type="radio" 
-                    name="payment" 
-                    value="Cash on Delivery" 
-                    checked={paymentMethod === "Cash on Delivery"} 
-                    onChange={handlePaymentChange} 
-                    className="w-4 h-4 text-orange-500"
-                  />
-                  <span>Cash on Delivery</span>
-                </label>
+
+              {/* Discount Row */}
+              {orderSummary.discount > 0 && (
+                <div className="flex justify-between text-green-600 mb-2">
+                  <span>Discount:</span>
+                  <span>-₹{orderSummary.discount.toFixed(2)}</span>
+                </div>
+              )}
+
+              {/* Subtotal */}
+              <div className="flex justify-between text-gray-800 font-semibold  pt-2 mt-2">
+                <span>Subtotal:</span>
+                <span>₹{orderSummary.subtotal.toFixed(2)}</span>
               </div>
-            </div>
-<button 
+
+              {/* Total */}
+              <div className="flex justify-between text-gray-800 font-semibold pt-2 mt-2">
+                <span>Total:</span>
+                <span>₹{orderSummary.total.toFixed(2)}</span>
+              </div>
+
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Payment Method</h3>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      name="payment" 
+                      value="online" 
+                      checked={paymentMethod === "online"} 
+                      onChange={handlePaymentChange} 
+                      className="w-4 h-4 text-orange-500"
+                    />
+                    <span>Online Payment</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      name="payment" 
+                      value="Cash on Delivery" 
+                      checked={paymentMethod === "Cash on Delivery"} 
+                      onChange={handlePaymentChange} 
+                      className="w-4 h-4 text-orange-500"
+                    />
+                    <span>Cash on Delivery</span>
+                  </label>
+                </div>
+              </div>
+             <button 
   onClick={handleSubmit} 
   disabled={isSubmitting || loading || cartItems.length === 0 || !isDeliverySaved}
-  className={`mt-6 w-full text-white font-semibold py-3 rounded-lg transition ${
+  className={`mt-6 w-1/2 md:w-1/3 text-white font-semibold py-2 rounded-lg transition ${
     isSubmitting || loading || cartItems.length === 0 || !isDeliverySaved
       ? 'bg-gray-400 cursor-not-allowed' 
       : 'bg-red-500 hover:bg-red-600'
@@ -1014,26 +1414,43 @@ const grandTotal = subtotal - totalDiscount;
 >
   {isSubmitting ? (
     <span className="flex items-center justify-center">
-      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      <svg
+        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
       </svg>
       Processing...
     </span>
   ) : 'Place Order'}
 </button>
 
-            {/* <button 
-              onClick={handleSubmit} 
-              disabled={loading || cartItems.length === 0 || !isDeliverySaved}
-              className={`mt-6 w-full text-white font-semibold py-3 rounded-lg transition ${
-                loading || cartItems.length === 0 || !isDeliverySaved
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-red-500 hover:bg-red-600'
-              }`}
-            >
-              {loading ? 'Processing...' : 'Place Order'}
-            </button> */}
+              {/* <button 
+                onClick={handleSubmit} 
+                disabled={loading || cartItems.length === 0 || !isDeliverySaved}
+                className={`mt-6 w-full text-white font-semibold py-3 rounded-lg transition ${
+                  loading || cartItems.length === 0 || !isDeliverySaved
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-red-500 hover:bg-red-600'
+                }`}
+              >
+                {loading ? 'Processing...' : 'Place Order'}
+              </button> */}
+            </div>
           </div>
         </div>
       </div>
