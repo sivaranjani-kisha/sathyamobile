@@ -762,79 +762,20 @@ const grandTotal = subtotal - totalDiscount;
         });
        
        
-        // Send confirmation emails
-        // const emailResponse = await fetch('/api/send-order-email', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(emailData)
-        // });
- 
-        // if (!emailResponse.ok) {
-        //   const errorData = await emailResponse.json();
-        //   console.error('Email sending failed:', errorData.error);
-        // }
-     
-          const name = addressData.firstName + ' ' + addressData.lastName;
-       const itemsHtml = orderData.order.order_item.map(item => {
-          return `<li>${item.name} - ₹${item.price.toFixed(2)} x ${item.quantity}</li>`;
-        }).join('');
-        const itemHtml = `<ul style="padding-left: 20px; color: #555555;">${itemsHtml}</ul>`;
-        const order_amount = `₹${Number(orderData.order.order_amount).toFixed(2)}`;
-        // FIXED: Renamed this variable as well to avoid conflict
-        const emailFormData = new FormData();
-        emailFormData.append("campaign_id", "0800f221-7805-4b76-988c-bbecd66e7500");
-        emailFormData.append("email", addressData.email);
-        emailFormData.append(
-          "params",
-          JSON.stringify([name,orderData.order.order_number,order_amount,orderData.order.payment_method, itemHtml])
-        );
-       
-        const response = await fetch("https://bea.eygr.in/api/email/send-msg", {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer 2|DC7TldSOIhrILsnzAf0gzgBizJcpYz23GHHs0Y2L",
-          },
-          body: emailFormData, // Use the renamed variable
-        });
- 
-        const data = await response.json();
- 
-        
-      const adminItemsHtml = orderData.order.order_item.map(item => {
-       return `<li>${item.name} - ₹${item.price.toFixed(2)} x ${item.quantity}</li>`;
-        }).join('');
-
-      const adminItemsTableHtml = `<ul style="padding-left: 20px; color: #555555;">${adminItemsHtml}</ul>`;
-
-        const adminemailFormData = new FormData();
-        adminemailFormData.append("campaign_id", "dd7b5f8d-5bf1-45a5-9116-fcb40f69ede6");
-        adminemailFormData.append(
-          "params",
-          JSON.stringify([name,addressData.email,addressData.phonenumber,deliveryAddress, adminItemsTableHtml])
-        );
-
-        // const emailadmin = ["arunkarthik@bharathelectronics.in","ecom@bharathelectronics.in","itadmin@bharathelectronics.in","telemarketing@bharathelectronics.in","sekarcorp@bharathelectronics.in","siva96852@gmail.com"];
-
-        const emailadmin = ["sorambeevi@gmail.com"];
-        emailadmin.forEach(async (adminEmail) => {
-          adminemailFormData.set("email", adminEmail);
-        let adminresponse = await fetch("https://bea.eygr.in/api/email/send-msg", {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer 2|DC7TldSOIhrILsnzAf0gzgBizJcpYz23GHHs0Y2L",
-          },
-          body: adminemailFormData, // Use the renamed variable
+       // Send confirmation emails
+        const emailResponse = await fetch('/api/send-order-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailData)
         });
 
-        let adminData = await adminresponse.json();
-        });
-
-
-        toast.success("Order placed successfully!");
-        router.push('/orders');
-        updateCartCount(0);
-
+        if (!emailResponse.ok) {
+          const errorData = await emailResponse.json();
+          console.error('Email sending failed:', errorData.error);
+        }
       }
+       toast.success("Order placed successfully!");
+            router.push('/order');
     } catch (error) {
       console.error("Error submitting order:", error);
       toast.error("Failed to place order. Please try again.");
