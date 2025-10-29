@@ -232,7 +232,7 @@ export default function CategoryProductSection() {
                 <div key={product._id} className="w-[280px] shrink-0">
                   <motion.div
                     /* whileHover={{ y: -3 }} */
-                    className="relative bg-white border border-gray-200 hover:border-[#e20e0e] rounded-lg shadow-sm p-4 flex flex-col h-full"
+                    className="relative bg-white border border-gray-200 hover:border-[#e20e0e] rounded-lg shadow-sm p-8 flex flex-col h-full"
                   >
                     {product.special_price && (
                       <span className="absolute top-3 left-3 text-xs bg-red-500 text-white px-2 py-0.5 rounded">
