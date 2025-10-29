@@ -126,7 +126,7 @@ export default function CategoryProductSection() {
             </button>
           ))}
         </div>
-        <div className="flex justify-end  items-center space-x-3 mb-2">
+        {/* <div className="flex justify-end  items-center space-x-3 mb-2">
           {selectedCategory && (
             <Link
               href={`/category/${selectedCategory.category_slug}`}
@@ -148,7 +148,44 @@ export default function CategoryProductSection() {
           >
             <FiChevronRight size={18} />
           </button>
+        </div> */}
+
+        <div className="flex justify-between items-center mb-2">
+          {/* ✅ Left side — Category Name */}
+          {selectedCategory && (
+            <h3 className="text-lg font-semibold text-red-800">
+              {selectedCategory.category_name}
+            </h3>
+          )}
+
+          {/* ✅ Right side — View All + Arrows */}
+          <div className="flex items-center space-x-3">
+            {selectedCategory && (
+              <Link
+                href={`/category/${selectedCategory.category_slug}`}
+                className="flex items-center text-sm text-red-600 hover:underline font-medium"
+              >
+                View All Products
+                <HiArrowRight className="ml-1 text-base" />
+              </Link>
+            )}
+
+            <button
+              onClick={scrollLeft}
+              className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
+            >
+              <FiChevronLeft size={18} />
+            </button>
+
+            <button
+              onClick={scrollRight}
+              className="p-2 border border-gray-300 rounded-full hover:bg-red-600 hover:text-white transition"
+            >
+              <FiChevronRight size={18} />
+            </button>
+          </div>
         </div>
+
         {/* 🛒 Product List */}
         {filteredProducts.length === 0 ? (
           <div className="text-center text-gray-500 font-medium py-10">
@@ -163,9 +200,9 @@ export default function CategoryProductSection() {
               {/* Category Banner */}
               {selectedCategory && (
                 <div className="w-[280px] shrink-0 bg-red-50 border border-red-100 rounded-lg p-4 flex flex-col justify-between">
-                  <h3 className="text-lg font-semibold text-red-800 mb-3">
+                 {/*  <h3 className="text-lg font-semibold text-red-800 mb-3">
                     {selectedCategory.category_name}
-                  </h3>
+                  </h3> */}
                   <div className="flex items-center justify-center py-4">
                      <img
                     src={
@@ -194,7 +231,7 @@ export default function CategoryProductSection() {
               {filteredProducts.map((product) => (
                 <div key={product._id} className="w-[280px] shrink-0">
                   <motion.div
-                    whileHover={{ y: -3 }}
+                    /* whileHover={{ y: -3 }} */
                     className="relative bg-white border border-gray-200 hover:border-[#e20e0e] rounded-lg shadow-sm p-4 flex flex-col h-full"
                   >
                     {product.special_price && (
