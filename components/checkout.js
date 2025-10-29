@@ -428,7 +428,7 @@ export default function CheckoutPage() {
         }
 
     toast.success("Order placed successfully!");
-    router.push('/allorders');
+    router.push('/order');
     
   } catch (error) {
     console.error("Error submitting order:", error);
