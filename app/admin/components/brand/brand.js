@@ -502,7 +502,7 @@ const handleDeleteBrand = async (brandId) => {
       {isLoading ? (
         <p>Loading Brands...</p>
       ) : (
-        <div className="bg-white shadow-md rounded-lg p-5 overflow-x-auto">
+        <div className="bg-white shadow-md rounded-lg p-5 mb-5 overflow-x-auto">
           {/* Search and Add Brand Row */}
           <div className="flex justify-between items-center mb-5">
             {/* Search Box */}
