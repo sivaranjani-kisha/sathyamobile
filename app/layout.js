@@ -1,19 +1,7 @@
-"use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { useState } from "react";
-import CustomHeader from "@/components/Headernew";
-import CustomFooter from "@/components/Footer";
-import GlobalModals from "@/components/GlobalModals";
-import { AuthProvider } from "@/context/AuthContext";
-import { usePathname } from "next/navigation";
-import Head from "next/head";
+import ClientLayout from "@/app/ClientLayout";
 import Script from "next/script";
-import { ModalProvider } from "@/context/ModalContext";
-import { WishlistProvider } from "@/context/WishlistContext";
-import { CartProvider } from "@/context/CartContext";
-import { HeaderProvider } from "@/context/HeaderContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,46 +13,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({ children }) {
-  const pathname = usePathname();
+export const metadata = {
+  title: "Sathya Mobiles",
+  description: "Sathya Mobiles",
+  icons: {
+    icon: "/images/logo/sathyalogo.png",
+  },
+};
 
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Head>
-        <link rel="shortcut icon" href="/images/logo/favicon.png" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
-      </Head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div id="modal-root"></div>
-
-        <HeaderProvider>
-          <ModalProvider>
-            <WishlistProvider>
-              <CartProvider>
-                <AuthProvider>
-                  {!pathname?.startsWith("/admin") && <CustomHeader />}
-                  <main className="relative">{children}</main>
-                  {!pathname?.startsWith("/admin") && <CustomFooter />}
-                  <GlobalModals />
-                </AuthProvider>
-              </CartProvider>
-            </WishlistProvider>
-          </ModalProvider>
-        </HeaderProvider>
-
-        {/* External scripts */}
-        <Script
-          src="https://wowtheme7.com/tailwind/marketpro/js/app.bundle.js"
-          strategy="afterInteractive"
-        />
-
-        {/* Pixel tracking script (was causing the error) */}
-        <Script id="adtarbo-pixel" strategy="afterInteractive">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ClientLayout>{children}</ClientLayout>
+        {/* ✅ Tracking Script */}
+         <Script id="adtarbo-pixel" strategy="afterInteractive">
           {`
             (function(d, s, id) { 
               var js, ajs = d.getElementsByTagName(s)[0];
@@ -77,8 +40,6 @@ export default function RootLayout({ children }) {
             })(document, 'script', 'adtarbo-js-v2');
           `}
         </Script>
-
-        {/* Custom fonts + CSS fixes */}
         <style>{`
           @font-face {
             font-family: 'Atlassian Sans';
