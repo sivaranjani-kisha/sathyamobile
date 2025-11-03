@@ -2,74 +2,91 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import CategoryProduct from "@/models/categoryproduct";
-import Category from "@/models/ecom_category_info"; // Import the Category model
+import Category from "@/models/ecom_category_info";
 import Product from "@/models/product";
 
 export async function GET() {
   try {
     await connectDB();
-    
-    // First get all active category products
+
+    // Step 1: Get all active category products
     const categoryProducts = await CategoryProduct.find({ status: "Active" })
       .sort({ position: 1 })
       .lean();
 
-    // Get all subcategory IDs and product IDs
+    // Step 2: Collect all subcategory and product IDs
     const subcategoryIds = categoryProducts.map(cp => cp.subcategoryId);
     const allProductIds = categoryProducts.flatMap(cp => cp.products || []);
-    
-    // Fetch all subcategories in one query
-    const subcategories = await Category.find({
-      _id: { $in: subcategoryIds }
-    })
-    .select('category_name category_slug parentid')
-    .lean();
 
-    // Create a map for quick subcategory lookup
+    // Step 3: Fetch all subcategories
+    const subcategories = await Category.find({
+      _id: { $in: subcategoryIds },
+    })
+      .select("category_name category_slug parentid")
+      .lean();
+
+    // Step 4: Fetch all valid products
+    const validProducts = await Product.find({
+      _id: { $in: allProductIds },
+      // quantity: { $gt: 2 },
+      // special_price: { $gt: 2 },
+    })
+      .select("name slug images price special_price quantity stock_status brand category")
+      .lean();
+
+    // Step 5: Build maps for faster lookups
     const subcategoryMap = {};
     subcategories.forEach(cat => {
       subcategoryMap[cat._id.toString()] = cat;
     });
 
-    // Fetch all products that meet the criteria in one query
-    const validProducts = await Product.find({
-      _id: { $in: allProductIds },
-      quantity: { $gt: 2 },
-      special_price: { $gt: 2 }
-    })
-    .select('name slug images price special_price quantity stock_status brand')
-    .lean();
-    // Create a map for quick product lookup
     const productMap = {};
-    validProducts.forEach(product => {
-      productMap[product._id.toString()] = product;
+    validProducts.forEach(prod => {
+      productMap[prod._id.toString()] = prod;
     });
 
-    // Combine the data
+    // Step 6: Combine everything
     const categoryProductsWithData = categoryProducts.map(cp => {
-      const subcategory = subcategoryMap[cp.subcategoryId.toString()];
+      // Find subcategory (if exists)
+      const subcategory = subcategoryMap[cp.subcategoryId?.toString()];
+
+      // Find and filter valid products
       const filteredProducts = (cp.products || [])
-        .map(productId => productMap[productId.toString()])
-        .filter(product => product !== undefined);
+        .map(pid => productMap[pid.toString()])
+        .filter(Boolean);
+
+      // Determine the final category info
+      let finalCategory = subcategory;
+
+      // Fallback to product.category if subcategory missing
+      if (!finalCategory && filteredProducts.length > 0) {
+        const sampleProduct = filteredProducts[0];
+        if (sampleProduct.category) {
+          finalCategory = {
+            _id: sampleProduct.category._id || sampleProduct.category,
+            category_name: sampleProduct.category.category_name || "Unknown Category",
+            category_slug: sampleProduct.category.category_slug || "",
+            parentid: sampleProduct.category.parentid || null,
+          };
+        }
+      }
 
       return {
         ...cp,
-        subcategoryId: subcategory, // Replace ObjectId with populated data
-        products: filteredProducts
+        subcategoryId: finalCategory, // can be category or subcategory
+        products: filteredProducts,
       };
     });
 
-    // Filter out category products with no valid products
-    const filteredCategoryProducts = categoryProductsWithData.filter(
-      cp => cp.products && cp.products.length > 0
+    // ✅ Step 7: Show all (don’t filter out anything)
+    return NextResponse.json(
+      {
+        ok: true,
+        data: categoryProductsWithData,
+        validProducts,
+      },
+      { status: 200 }
     );
-
-    return NextResponse.json({ 
-      ok: true, 
-      data: filteredCategoryProducts ,
-      validProducts:validProducts
-    }, { status: 200 });
-    
   } catch (err) {
     console.error("Error fetching category products:", err);
     return NextResponse.json(

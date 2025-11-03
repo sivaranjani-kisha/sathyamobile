@@ -221,3 +221,34 @@ background: -webkit-linear-gradient(left, #ed3237 0%, #ffe8e9 100%);
     }
   }
 }
+/* Prevent the multi-select box from stretching too tall */
+.react-select__control {
+  flex-wrap: wrap !important;
+  max-height: 120px !important; /* Adjust as needed */
+  overflow-y: auto !important;
+  align-items: flex-start !important;
+}
+
+/* Make selected tags wrap nicely */
+.react-select__value-container {
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  padding: 6px !important;
+}
+
+/* Limit width of long product names */
+.react-select__multi-value__label {
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Optional: Better look for scrollbars */
+.react-select__control::-webkit-scrollbar {
+  width: 6px;
+}
+.react-select__control::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}

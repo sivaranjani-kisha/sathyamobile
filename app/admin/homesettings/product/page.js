@@ -79,7 +79,11 @@ export default function AllCategoriesPage() {
   const [statusModal, setStatusModal] = useState({ isOpen: false, message: "", type: "" });
   const [mainCategories, setMainCategories] = useState([]);
   const [subcategoriesByParent, setSubcategoriesByParent] = useState({});
-
+const MultiValueLabel = (props) => (
+  <components.MultiValueLabel {...props}>
+    <span title={props.data.label}>{props.data.label}</span>
+  </components.MultiValueLabel>
+);
   // ✅ Show status modal
   const showStatusModal = (message, type = "success") => {
     setStatusModal({ isOpen: true, message, type });
@@ -481,6 +485,7 @@ export default function AllCategoriesPage() {
                   Products ({allCategoryProducts.length} active products available from category and subcategories)
                 </label>
                 <Select
+                classNamePrefix="react-select"
                   options={productOptions}
                   value={selectedProducts[category._id] || []}
                   onChange={(options) =>
@@ -490,7 +495,7 @@ export default function AllCategoriesPage() {
                   isMulti
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
-                  components={{ Option }}
+                   components={{ Option, MultiValueLabel }}
                 />
                 {allCategoryProducts.length === 0 && (
                   <p className="text-sm text-gray-500 mt-1">

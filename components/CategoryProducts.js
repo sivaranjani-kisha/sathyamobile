@@ -130,6 +130,8 @@ const CategoryProducts = () => {
       try {
         const response = await fetch("/api/categoryproduct/settings");
         const result = await response.json();
+           console.log("result");
+        console.log(result);
         if (result.ok) {
           setCategoryProducts(result.data);
           // Set first category as active by default
@@ -206,18 +208,18 @@ const CategoryProducts = () => {
 
               return (
                <button
-  key={categoryProduct._id}
-  onClick={() => setActiveCategory(categoryProduct._id)}
-  className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-full border text-sm font-medium transition-all duration-300 shadow-sm transform active:scale-95
-    ${isActive 
-      ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:shadow-md' 
-      : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 hover:shadow-sm'
-    }`}
-  style={{ 
-    borderColor: isActive ? categoryStyle.borderColor : ''
-  }}
->
-                  {/* <Image
+                key={categoryProduct._id}
+                onClick={() => setActiveCategory(categoryProduct._id)}
+                className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-full border text-sm font-medium transition-all duration-300 shadow-sm transform active:scale-95
+                  ${isActive 
+                    ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:shadow-md' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 hover:shadow-sm'
+                  }`}
+                style={{ 
+                  borderColor: isActive ? categoryStyle.borderColor : ''
+                }}
+              >
+                                {/* <Image
                     alt={category.category_name}
                     src={categoryImage}
                     width={20}
@@ -325,7 +327,7 @@ const CategoryProducts = () => {
                     </motion.div>
 
                     {/* Product Cards */}
-                    {products.slice(0, 15).map((product) => (
+                    {products.map((product) => (
                       <motion.div
                         key={product._id}
                         variants={BanneritemVariants}
