@@ -709,20 +709,20 @@ const grandTotal = subtotal - totalDiscount;
         localStorage.removeItem('appliedCoupon')
         const orderData = await orderRes.json()
         // Prepare email data
-        // console.log(orderData,orderData.order.order_number);
-        // const emailData = {
-        //   orderDetails: {
-        //     order_number: orderData.order.order_number || "ORD" + Date.now(),
-        //     order_amount: totalAmount,
-        //     payment_method: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
-        //     order_item: cartItems,
-        //     order_username: `${addressData.firstName} ${addressData.lastName}`,
-        //     order_phonenumber: addressData.phonenumber,
-        //     order_deliveryaddress: deliveryAddress
-        //   },
-        //   customerEmail: addressData.email,
-        //   adminEmail: 'msivaranjani2036@gmail.com'
-        // };
+        console.log(orderData,orderData.order.order_number);
+        const emailData = {
+          orderDetails: {
+            order_number: orderData.order.order_number || "ORD" + Date.now(),
+            order_amount: totalAmount,
+            payment_method: paymentMethod === 'Cash on Delivery' ? 'Cash on Delivery' : 'Online Payment',
+            order_item: cartItems,
+            order_username: `${addressData.firstName} ${addressData.lastName}`,
+            order_phonenumber: addressData.phonenumber,
+            order_deliveryaddress: deliveryAddress
+          },
+          customerEmail: addressData.email,
+          adminEmail: 'msivaranjani2036@gmail.com'
+        };
  
        // console.log(cartItems);
  
