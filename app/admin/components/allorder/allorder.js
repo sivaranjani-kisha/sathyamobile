@@ -95,6 +95,68 @@ const OrdersTable = () => {
     dateFilter?.endDate,
   ]);
 
+  // 📧 Send cancellation emails
+  const sendCancellationEmails = async (order) => {
+    try {
+      // Send email to user
+      const userEmailRes = await fetch("/api/order-send-mail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: order.email_address || "user@example.com", // Replace with actual user email field
+          subject: `Order ${order.order_number} Cancellation Confirmation`,
+          text: `Hi ${order.order_username},
+
+            As per your request, the order with ID: ${order.order_number} has been cancelled.
+
+            If any amount was paid, it will be refunded within 3 to 5 business days.
+
+            Thank you for your understanding.
+
+            Best regards,
+            Your Store Team`,
+                    }),
+                  });
+
+      // Send email to admin
+      const adminEmailRes = await fetch("/api/order-send-mail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: "kbsiva1234@gmail.com", // Replace with your admin email
+          subject: `Order Cancelled - ${order.order_number}`,
+          text: `Admin Notification:
+
+Order ID: ${order.order_number}
+Customer: ${order.order_username}
+Status: Cancelled
+
+The order has been cancelled by the user/administrator.
+
+Please take necessary actions regarding refund if payment was made.
+
+Order Details:
+- Order Amount: ₹${order.order_amount}
+- Order Date: ${new Date(order.createdAt).toLocaleDateString()}
+- Delivery Type: ${order.delivery_type}
+- Payment Method: ${order.payment_method}
+
+Best regards,
+System Notification`,
+        }),
+      });
+
+      if (!userEmailRes.ok || !adminEmailRes.ok) {
+        throw new Error("Failed to send one or more emails");
+      }
+
+      toast.success("Order cancelled and emails sent successfully!");
+    } catch (err) {
+      console.error("Email sending error:", err);
+      toast.error("Order updated but failed to send emails");
+    }
+  };
+
   // 📅 Handle date
   const handleDateChange = ({ startDate, endDate }) => {
     setDateFilter({ startDate, endDate });
@@ -265,8 +327,12 @@ const OrdersTable = () => {
                                 )
                               );
 
-                              // 📌 If Pending → Shipped, open modal
-                              if (
+                              // 📌 If status changed to cancelled, send emails
+                              if (newStatus.toLowerCase() === "cancelled") {
+                                await sendCancellationEmails(o);
+                              }
+                              // 📌 If Pending → Shipped, open modal (existing functionality)
+                              else if (
                                 prevStatus.toLowerCase() === "pending" &&
                                 newStatus.toLowerCase() === "shipped"
                               ) {
@@ -359,7 +425,7 @@ const OrdersTable = () => {
         </div>
       )}
 
-      {/* 📧 Email Modal */}
+      {/* 📧 Email Modal (for shipped status) */}
       {showEmailModal && selectedOrder && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
