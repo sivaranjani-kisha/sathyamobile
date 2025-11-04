@@ -39,6 +39,9 @@ const ProductSchema = new mongoose.Schema({
   meta_description: { type: String, default: "" }, // Add meta_description field
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  category_new : String,
+  sub_category_new : String,
+  sub_category_name : String,
 });
 
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

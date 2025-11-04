@@ -56,6 +56,9 @@ export default function AddProductPage({ mode = "add", productData = null, produ
     warranty: "",
     extended_warranty: "",
     product_highlights: [],
+    category_new : "",
+    sub_category_new : "",
+    sub_category_name : "",
   });
 
     const [variant, setVariant] = useState([{
@@ -226,6 +229,7 @@ const removeWarranty = (index) => {
     toast.error(error.message);
   }
 };
+
 
 // ✅ Custom Option with tick symbol
 const CustomOption = (props) => (
@@ -901,13 +905,13 @@ setProduct(prev => ({
   // }, [product.variantAttributes, product.hasVariants]);
  
   const handleCategoryChange = (category) => {
-  setSelectedCategory(category._id);
+  setSelectedCategory(category.md5_cat_name);
   
   // Find the parent category
   const findParentCategory = (categories, childId) => {
     for (const cat of categories) {
-      if (cat.children && cat.children.some(child => child._id === childId)) {
-        return cat._id;
+      if (cat.children && cat.children.some(child => child.md5_cat_name === childId)) {
+        return cat;
       }
       if (cat.children) {
         const found = findParentCategory(cat.children, childId);
@@ -917,13 +921,20 @@ setProduct(prev => ({
     return null;
   };
 
-  const parentCategoryId = findParentCategory(categories, category._id);
+  const parentCategoryId = findParentCategory(categories, category.md5_cat_name);
+  /* console.log("category_new:",parentCategoryId.md5_cat_name);
+  console.log(`sub_category_new: ${parentCategoryId.md5_cat_name}##${category.md5_cat_name}`);
+  console.log(`sub_category_name: ${parentCategoryId.category_name}##${category.category_name}`); */
+
   setSelectedParentCategory(parentCategoryId);
 
   setProduct((prev) => ({
     ...prev,
     sub_category: category._id,
     category: parentCategoryId, // Set the parent category
+    category_new : parentCategoryId.md5_cat_name,
+    sub_category_new : `${parentCategoryId.md5_cat_name}##${category.md5_cat_name}`,
+    sub_category_name : `${parentCategoryId.category_name}##${category.category_name}`,
   }));
 };
 
@@ -950,15 +961,15 @@ setProduct(prev => ({
               }}
               className="mr-2 text-blue-500"
             >
-              {expandedCategories[category._id] ? <FaMinus /> : <FaPlus />}
+              {expandedCategories[category.md5_cat_name] ? <FaMinus /> : <FaPlus />}
             </button>
           )}
           {category.children.length == 0 && (
           <input
              type="checkbox"
             name="category"
-            value={category._id}
-            checked={selectedCategory === category._id}
+            value={category.md5_cat_name}
+            checked={selectedCategory === category.md5_cat_name}
             onChange={() => handleCategoryChange(category)}
             className="mr-2"
           />
