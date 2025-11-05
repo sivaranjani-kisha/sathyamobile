@@ -299,16 +299,11 @@ const CategoryProducts = () => {
                 </div>
 
                 {/* Products Section */}
-                <div className="relative">
-                  <div
-                    className="flex overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 pb-3 scrollbar-hide scroll-smooth snap-x"
-                    ref={(el) => (categoryScrollRefs.current[activeCategoryData._id] = el)}
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                  >
-                    {/* Category Banner Card - Responsive Height */}
+                <div className="flex">
+                   {/* Category Banner Card - Responsive Height */}
                     <motion.div 
                       variants={BanneritemVariants}
-                      className="w-48 sm:w-64 md:w-80 shrink-0 rounded-lg overflow-hidden shadow-md border snap-start"
+                      className="w-48 sm:w-64 md:w-80 shrink-0 rounded-lg overflow-hidden shadow-md border snap-start mr-6"
                       style={{ 
                         borderColor: categoryStyle.borderColor,
                         backgroundColor: categoryStyle.bgColor,
@@ -339,6 +334,12 @@ const CategoryProducts = () => {
                         </div>
                       </div>
                     </motion.div>
+                  <div
+                    className="flex overflow-x-auto space-x-3 sm:space-x-4 md:space-x-6 pb-3 scrollbar-hide scroll-smooth snap-x"
+                    ref={(el) => (categoryScrollRefs.current[activeCategoryData._id] = el)}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                   
 
                     {/* Product Cards - Responsive Height */}
                     {products.map((product) => (
