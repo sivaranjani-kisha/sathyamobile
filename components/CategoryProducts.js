@@ -206,8 +206,9 @@ const CategoryProducts = () => {
           </div>
 
           {/* Category Tabs - Horizontal Scroll for Mobile */}
-          <div className="relative mb-4 sm:mb-6">
-            <div className="flex overflow-x-auto pb-2 space-x-2 scrollbar-hide snap-x">
+         <div className="relative mb-4 sm:mb-6">
+          <div className="flex justify-center overflow-x-auto pb-2 space-x-2 scrollbar-hide snap-x">
+            <div className="flex justify-center space-x-2">
               {categoryProducts.map((categoryProduct) => {
                 const category = categoryProduct.subcategoryId;
                 if (!category) return null;
@@ -227,9 +228,7 @@ const CategoryProducts = () => {
                         ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:shadow-md' 
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 hover:shadow-sm'
                       }`}
-                    style={{ 
-                      borderColor: isActive ? categoryStyle.borderColor : ''
-                    }}
+                    style={{ borderColor: isActive ? categoryStyle.borderColor : '' }}
                   >
                     <span className="whitespace-nowrap">{category.category_name}</span>
                   </button>
@@ -237,6 +236,8 @@ const CategoryProducts = () => {
               })}
             </div>
           </div>
+        </div>
+
 
           {/* Active Category Products Section */}
           {activeCategoryData && (() => {
