@@ -357,30 +357,67 @@ const exportToExcel = () => {
     return result;
   };
 
-  const renderCategoryOptions = () => {
-    const mainCategories = categories.filter(cat => cat.parentid === "none").slice() // prevent mutating original
-    .sort((a, b) => a.category_name.localeCompare(b.category_name)); // ✅ sort ascending A–Z;
-    const options = [];
-    
+   const renderCategoryOptions = () => {
+  const mainCategories = categories
+    .filter(cat => cat.parentid === "none")
+    .sort((a, b) => a.category_name.localeCompare(b.category_name));
+
+  const options = [];
+
+  options.push(
+    <option key="all" value="">
+      All Categories
+    </option>
+  );
+
+  // Group and sort subcategories
+  const subCategoriesByParent = {};
+  categories.forEach(cat => {
+    if (cat.parentid !== "none") {
+      if (!subCategoriesByParent[cat.parentid]) {
+        subCategoriesByParent[cat.parentid] = [];
+      }
+      subCategoriesByParent[cat.parentid].push(cat);
+    }
+  });
+
+  // Sort subcategories alphabetically
+  Object.keys(subCategoriesByParent).forEach(parentId => {
+    subCategoriesByParent[parentId].sort((a, b) =>
+      a.category_name.localeCompare(b.category_name)
+    );
+  });
+
+  mainCategories.forEach(mainCat => {
+    // Main category with +
     options.push(
-      <option key="all" value="">
-        All Categories
+      <option
+        key={mainCat._id}
+        value={mainCat._id.toString()}
+        className="font-semibold bg-gray-100"
+      >
+        + {mainCat.category_name}
       </option>
     );
 
-    mainCategories.forEach(mainCat => {
+    // Subcategories with -
+    const subCategories = subCategoriesByParent[mainCat._id] || [];
+    subCategories.forEach(subCat => {
       options.push(
-        <option 
-          key={mainCat._id} 
-          value={mainCat._id.toString()}
+        <option
+          key={subCat._id}
+          value={subCat._id.toString()}
+          className="pl-4"
         >
-          {mainCat.category_name}
+          &nbsp;&nbsp;- {subCat.category_name}
         </option>
       );
     });
+  });
 
-    return options;
-  };
+  return options;
+};
+
 
   const renderBrandOptions = () => {
     return [
@@ -430,11 +467,12 @@ const getFilteredProducts = () => {
  
       // Category filter
       let matchesCategory = true;
+       
       if (categoryFilter) {
         if (product.category && typeof product.category === 'object') {
           const productCategoryId = product.category._id.toString();
           const selectedCategory = categories.find(cat => cat._id.toString() === categoryFilter);
-         
+       
           if (selectedCategory.parentid === "none") {
             const subCategoryIds = categories
               .filter(cat => cat.parentid === categoryFilter)
@@ -446,6 +484,7 @@ const getFilteredProducts = () => {
             matchesCategory = productCategoryId === categoryFilter;
           }
         } else if (product.category) {
+           console.log(categoryFilter);
           const productCategoryId = product.category.toString();
           const selectedCategory = categories.find(cat => cat._id.toString() === categoryFilter);
          
@@ -456,8 +495,18 @@ const getFilteredProducts = () => {
            
             matchesCategory = productCategoryId === categoryFilter ||
                             subCategoryIds.includes(productCategoryId);
+                           
+            
           } else {
             matchesCategory = productCategoryId === categoryFilter;
+             console.log(matchesCategory);
+            if(matchesCategory == false){
+              console.log(product);
+              if(product.sub_category != null && product.sub_category !=""){
+              const productSubCategoryId = product.sub_category.toString();
+               matchesCategory = productSubCategoryId === categoryFilter;
+              }
+            }
           }
         } else {
           matchesCategory = false;
@@ -606,16 +655,20 @@ if (stockFilter) {
           {/* Search and Filters */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end mb-4">
             {/* Search Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <input
-                type="text"
-                placeholder="Search Product..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-              />
-            </div>
+           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input
+              type="text"
+              placeholder="Search Product..."
+              value={searchQuery}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[+-]/g, ""); // remove + and -
+                setSearchQuery(value);
+              }}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+            />
+          </div>
+
 
             {/* Status Filter */}
             <div>
