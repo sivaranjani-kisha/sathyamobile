@@ -429,7 +429,7 @@ const CategoryProducts = () => {
                                 className="flex-1 text-xs sm:text-sm py-1.5 sm:py-2"
                               />
                               <a
-                                href={`https://wa.me/919865555000?text=${encodeURIComponent(`Check Out This Product: ${typeof window !== 'undefined' ? window.location.origin : ''}/product/${product.slug}`)}`}
+                                href={`https://wa.me/919942699800?text=${encodeURIComponent(`Check Out This Product: ${typeof window !== 'undefined' ? window.location.origin : ''}/product/${product.slug}`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-green-500 hover:bg-green-600 text-white p-1.5 sm:p-2 rounded-full flex items-center justify-center transition flex-shrink-0"
