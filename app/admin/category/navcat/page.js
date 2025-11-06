@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-
+import Link from "next/link";
 export default function CategoryNavPage() {
   const [categories, setCategories] = useState([]);
   const [originalCategories, setOriginalCategories] = useState([]);
@@ -120,6 +120,7 @@ export default function CategoryNavPage() {
   if (loading) {
     return (
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+       
         <h1 style={{ color: '#333', marginBottom: '10px' }}>Category Navigation Management</h1>
         <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading categories...</div>
       </div>
@@ -128,6 +129,12 @@ export default function CategoryNavPage() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        <Link
+      href="/admin/category/"
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 r mb-2 ounded-md text-sm font-medium shadow-sm transition duration-150 inline-block"
+    >
+      Back
+    </Link>
       <h1 style={{ color: '#333', marginBottom: '10px' }}>Category Navigation Management</h1>
       
       
