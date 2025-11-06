@@ -925,7 +925,7 @@ setProduct(prev => ({
   /* console.log("category_new:",parentCategoryId.md5_cat_name);
   console.log(`sub_category_new: ${parentCategoryId.md5_cat_name}##${category.md5_cat_name}`);
   console.log(`sub_category_name: ${parentCategoryId.category_name}##${category.category_name}`); */
-
+ 
   setSelectedParentCategory(parentCategoryId);
 
   setProduct((prev) => ({

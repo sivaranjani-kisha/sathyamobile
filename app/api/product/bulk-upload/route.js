@@ -107,7 +107,13 @@ export async function POST(req) {
       const sub_category = await Category.findOne({ category_name: row[4] }).select("_id");
       const brand = await Brand.findOne({ brand_name: row[5] }).select("_id");
 
-      // Process filters
+      const category_new = await Category.findOne({ category_name: row[3] }).select("md5_cat_name");
+      const sub_category_new_value = await Category.findOne({ category_name: row[4] }).select("md5_cat_name");
+      const sub_category_new = `${category_new}##${sub_category_new_value}`;
+      const category_new_name_1 = await Category.findOne({ category_name: row[3] }).select("category_name");
+      const sub_category_new_name_1 = await Category.findOne({ category_name: row[4] }).select("category_name");
+      const sub_category_name = `${category_new_name_1}##${sub_category_new_name_1}`;
+      // Process filters 
       const size = row[6] || '';
       const star = row[7] || '';
       const filterString = `${size},${star}`;
@@ -197,6 +203,12 @@ export async function POST(req) {
         status: row[19],
         stock_status: row[2] > 0 ? "In Stock" : "Out of Stock",
         product_highlights: highlights,
+        category_new : category_new?.md5_cat_name || null,
+        sub_category_new_value : sub_category_new_value?.md5_cat_name || null,
+        sub_category_new : `${category_new?.md5_cat_name}##${sub_category_new_value?.md5_cat_name}`,
+        category_new_name_1 : category_new?.category_name || null,
+        sub_category_new_name_1 : sub_category_new_value?.category_name || null,
+        sub_category_name : `${category_new_name_1?.category_name}##${sub_category_new_name_1?.category_name}`,
       };
 
       // Only update images if new ones are provided in Excel
