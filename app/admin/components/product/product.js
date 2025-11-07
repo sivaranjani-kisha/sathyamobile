@@ -396,7 +396,7 @@ const exportToExcel = () => {
         value={mainCat._id.toString()}
         className="font-semibold bg-gray-100"
       >
-        + {mainCat.category_name}
+        + {mainCat.category_name.charAt(0).toUpperCase() + mainCat.category_name.slice(1)}
       </option>
     );
 
@@ -409,7 +409,7 @@ const exportToExcel = () => {
           value={subCat._id.toString()}
           className="pl-4"
         >
-          &nbsp;&nbsp;- {subCat.category_name}
+          &nbsp;&nbsp;- {subCat.category_name.charAt(0).toUpperCase() + subCat.category_name.slice(1)}
         </option>
       );
     });
