@@ -208,33 +208,34 @@ const CategoryProducts = () => {
           {/* Category Tabs - Horizontal Scroll for Mobile */}
          <div className="relative mb-4 sm:mb-6">
           <div className="flex justify-center overflow-x-auto pb-2 space-x-2 scrollbar-hide snap-x">
-            <div className="flex justify-center space-x-2">
-              {categoryProducts.map((categoryProduct) => {
-                const category = categoryProduct.subcategoryId;
-                if (!category) return null;
+            <div className="flex overflow-x-auto space-x-2 no-scrollbar px-2 sm:justify-center snap-x">
+  {categoryProducts.map((categoryProduct) => {
+    const category = categoryProduct.subcategoryId;
+    if (!category) return null;
 
-                const isActive = activeCategory === categoryProduct._id;
-                const categoryStyle = categoryStyles[category.category_slug] || {
-                  borderColor: '#1F3A8C',
-                  bgColor: '#f3f4f6'
-                };
+    const isActive = activeCategory === categoryProduct._id;
+    const categoryStyle = categoryStyles[category.category_slug] || {
+      borderColor: '#1F3A8C',
+      bgColor: '#f3f4f6'
+    };
 
-                return (
-                  <button
-                    key={categoryProduct._id}
-                    onClick={() => setActiveCategory(categoryProduct._id)}
-                    className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-full border text-xs sm:text-sm font-medium transition-all duration-300 shadow-sm transform active:scale-95 snap-start
-                      ${isActive 
-                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:shadow-md' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 hover:shadow-sm'
-                      }`}
-                    style={{ borderColor: isActive ? categoryStyle.borderColor : '' }}
-                  >
-                    <span className="whitespace-nowrap">{category.category_name}</span>
-                  </button>
-                );
-              })}
-            </div>
+    return (
+      <button
+        key={categoryProduct._id}
+        onClick={() => setActiveCategory(categoryProduct._id)}
+        className={`flex-shrink-0 px-3 sm:px-4 py-2 rounded-full border text-xs sm:text-sm font-medium transition-all duration-300 shadow-sm transform active:scale-95 snap-start
+          ${isActive 
+            ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 hover:shadow-md' 
+            : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-400 hover:text-red-600 hover:shadow-sm'
+          }`}
+        style={{ borderColor: isActive ? categoryStyle.borderColor : '' }}
+      >
+        <span className="whitespace-nowrap">{category.category_name}</span>
+      </button>
+    );
+  })}
+</div>
+
           </div>
         </div>
 
