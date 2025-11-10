@@ -38,7 +38,7 @@ const Footer = () => {
   useEffect(() => {
     const fetchStores = async () => {
       try {
-        const response = await fetch('/api/store/get'); // Your new API endpoint
+        const response = await fetch('/api/store/get');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -58,24 +58,27 @@ const Footer = () => {
     };
 
     fetchStores();
-  }, []); // Empty dependency array means this runs once on mount
-
+  }, []);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch("/api/categories/get");
-        const data = await res.json();
-        
-        if (data) {
-          setCategories(data);
-          const grouped = groupCategories(data);
-          setGroupedCategories(grouped);
-        }
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    };
+   const fetchCategories = async () => {
+  try {
+    const res = await fetch("/api/categories/get");
+    const data = await res.json();
+    
+    if (data) {
+      // ✅ Filter only Active categories
+      const activeCategories = data.filter(cat => cat.status === "Active");
+
+      setCategories(activeCategories);
+      const grouped = groupCategories(activeCategories);
+      setGroupedCategories(grouped);
+    }
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+  }
+};
+
 
     fetchCategories();
     checkAuthStatus();
@@ -151,8 +154,10 @@ const Footer = () => {
     setIsLoggedIn(false);
     setUserData(null);
   };
-const capitalizeFirstLetter = (str) =>
-  str.charAt(0).toUpperCase() + str.slice(1);
+
+  const capitalizeFirstLetter = (str) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+
   const groupCategories = (categories) => {
     const grouped = { main: [], subs: {} };
     
@@ -167,199 +172,242 @@ const capitalizeFirstLetter = (str) =>
     return grouped;
   };
 
+  // Function to get unique brands for a category
+// Updated function to get brands with slugs
+const getCategoryBrands = (category) => {
+  if (!category.brands || category.brands.length === 0) return [];
+  
+  // Get unique brands with name and slug
+  const uniqueBrands = category.brands.reduce((acc, brand) => {
+    if (brand && brand.brand_name) {
+      // Check if brand already exists
+      const exists = acc.find(b => b.brand_name === brand.brand_name);
+      if (!exists) {
+        acc.push({
+          brand_name: brand.brand_name,
+          brand_slug: brand.brand_slug || brand.brand_name.toLowerCase().replace(/\s+/g, '-')
+        });
+      }
+    }
+    return acc;
+  }, []);
+  
+  return uniqueBrands;
+};
+
   return (
     <>
       <footer className="bg-[#222529] text-gray-300 text-sm py-5">
-       <div className="bg-[#222529] text-gray-400  border-white ">
-        <div className="w-full flex justify-center">
-          <div className="w-full container mx-auto px-3  grid grid-cols-1 md:grid-cols-4 gap-16 justify-between mt-3">
-            
-            {/* Corporate Office */}
-            <div className="space-y-3">
-              <h3 className="text-white font-semibold text-lg mb-1">Corporate Office</h3>
-            <p>
-              SATHYA Mobiles India Pvt. Ltd., <br />
-              No.27, 27/1, 27/A, 27/B, Gipson Puram, <br />
-              Thoothukudi-628002, Tamilnadu, India.
-            </p>
-              <hr className="border-gray-600 my-3" />
-              <div className="flex items-center gap-2">
-                <FiPhone /> <span>+91 90470 48777</span>
-              </div>
-              <hr className="border-gray-600 my-3" />
-              <div className="flex items-center gap-2">
-                <FiMail /> <span>contact@sathyamobiles.store</span>
-              </div>
-
-              <hr className="border-gray-600 my-3" />
-            <div className="flex items-center gap-2 whitespace-nowrap">
-              <Ri24HoursLine /><span>Online Support 24/7: +91 90470 48777</span>
-              </div>
-            </div>
-
-            {/* My Account & Policy */}
-            <div className="flex flex-col space-y-3 md:mx-auto">
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-1">My Account</h3>
-                <ul className="space-y-1">
-                  {isLoggedIn ? (
-                    <>
-                      <li>
-                        <Link href="/order" className="hover:underline hover:text-white flex items-center gap-2">
-                          <FaShoppingBag /> My Orders
-                        </Link>
-                      </li>
-                      <li>
-                        <button 
-                          onClick={handleLogout}
-                          className="hover:underline hover:text-white flex items-center gap-2"
-                        >
-                          <IoLogOut /> Logout
-                        </button>
-                      </li>
-                    </>
-                  ) : (
-                    <li>
-                      <button 
-                        onClick={() => setShowAuthModal(true)}
-                        className="hover:underline hover:text-white"
-                      >
-                        Sign In / Register
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-1">Policy</h3>
-                <ul className="space-y-1">
-                  <li><Link href="/privacypolicy" className="hover:underline hover:text-white">Privacy Policy</Link></li>
-                  <li><Link href="/terms-and-condition" className="hover:underline hover:text-white">Terms and Conditions</Link></li>
-                  <li><Link href="/cancellation-refund-policy" className="hover:underline hover:text-white">Cancellation Policy</Link></li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Company & Social Media */}
-            <div className="md:ml-12">
-              <div className="mb-4">
-                <h3 className="text-white font-semibold text-lg mb-1">Company</h3>
-                <ul className="space-y-1">
-                  <li><Link href="/aboutus" className="hover:underline hover:text-white">About Us</Link></li>
-                  <li><Link href="/contact" className="hover:underline hover:text-white">Contact Us</Link></li>
-                  <li><Link href="/blog" className="hover:underline hover:text-white">FAQ</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold text-lg mb-2">Connect With Us</h3>
-                <div className="flex space-x-3"> 
-                <Link href="https://www.facebook.com/SathyaRetail.mobiles/">
-                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-red-500 group">
-                    <FaFacebookF className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
-                  </div>
-                </Link>
-                <Link href="https://www.instagram.com/sathyamobiles.store/">
-                  <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-pink-500 group">
-                    <FaInstagram className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
-                  </div>
-                </Link>
+        <div className="bg-[#222529] text-gray-400 border-white">
+          <div className="w-full flex justify-center">
+            <div className="w-full container mx-auto px-3 grid grid-cols-1 md:grid-cols-4 gap-16 justify-between mt-3">
+              
+              {/* Corporate Office */}
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-lg mb-1">Corporate Office</h3>
+                <p>
+                  SATHYA Mobiles India Pvt. Ltd., <br />
+                  No.27, 27/1, 27/A, 27/B, Gipson Puram, <br />
+                  Thoothukudi-628002, Tamilnadu, India.
+                </p>
+                <hr className="border-gray-600 my-3" />
+                <div className="flex items-center gap-2">
+                  <FiPhone /> <span>+91 90470 48777</span>
+                </div>
+                <hr className="border-gray-600 my-3" />
+                <div className="flex items-center gap-2">
+                  <FiMail /> <span>contact@sathyamobiles.store</span>
+                </div>
+                <hr className="border-gray-600 my-3" />
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Ri24HoursLine /><span>Online Support 24/7: +91 90470 48777</span>
                 </div>
               </div>
-            </div>
 
-            {/* --- NEW SECTION: Our Stores --- */}
-              <div className="space-y-3">
-                    <h3 className="text-white font-semibold text-lg mb-1">Our Stores</h3>
-                    {loadingStores ? (
-                      <p className="text-white">Loading stores...</p> // Use p tag for loading/error messages
-                    ) : errorStores ? (
-                      <p className="text-red-400">Error: {errorStores}</p>
-                    ) : stores.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-x-8"> {/* New grid container for two columns */}
-                        {/* Left Column (first 5 stores) */}
-                        <ul className="space-y-1">
-                          {stores.slice(0, 5).map(store => ( // Take the first 5 stores
-                            <li key={store._id}>
-                              <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
-                                {store.organisation_name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-
-                        {/* Right Column (remaining stores, if any) */}
-                        <ul className="space-y-1">
-                          {stores.slice(5, 10).map(store => ( // Take the next 5 stores (from index 5 to 9)
-                            <li key={store._id}>
-                              <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
-                                {store.organisation_name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+              {/* My Account & Policy */}
+              <div className="flex flex-col space-y-3 md:mx-auto">
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-1">My Account</h3>
+                  <ul className="space-y-1">
+                    {isLoggedIn ? (
+                      <>
+                        <li>
+                          <Link href="/order" className="hover:underline hover:text-white flex items-center gap-2">
+                            <FaShoppingBag /> My Orders
+                          </Link>
+                        </li>
+                        <li>
+                          <button 
+                            onClick={handleLogout}
+                            className="hover:underline hover:text-white flex items-center gap-2"
+                          >
+                            <IoLogOut /> Logout
+                          </button>
+                        </li>
+                      </>
                     ) : (
-                      <p className="text-white">No active stores found.</p> // Use p tag for no stores message
+                      <li>
+                        <button 
+                          onClick={() => setShowAuthModal(true)}
+                          className="hover:underline hover:text-white"
+                        >
+                          Sign In / Register
+                        </button>
+                      </li>
                     )}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-1">Policy</h3>
+                  <ul className="space-y-1">
+                    <li><Link href="/privacypolicy" className="hover:underline hover:text-white">Privacy Policy</Link></li>
+                    <li><Link href="/terms-and-condition" className="hover:underline hover:text-white">Terms and Conditions</Link></li>
+                    <li><Link href="/cancellation-refund-policy" className="hover:underline hover:text-white">Cancellation Policy</Link></li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Company & Social Media */}
+              <div className="md:ml-12">
+                <div className="mb-4">
+                  <h3 className="text-white font-semibold text-lg mb-1">Company</h3>
+                  <ul className="space-y-1">
+                    <li><Link href="/aboutus" className="hover:underline hover:text-white">About Us</Link></li>
+                    <li><Link href="/contact" className="hover:underline hover:text-white">Contact Us</Link></li>
+                    <li><Link href="/blog" className="hover:underline hover:text-white">FAQ</Link></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold text-lg mb-2">Connect With Us</h3>
+                  <div className="flex space-x-3"> 
+                    <Link href="https://www.facebook.com/SathyaRetail.mobiles/">
+                      <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-red-500 group">
+                        <FaFacebookF className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
+                      </div>
+                    </Link>
+                    <Link href="https://www.instagram.com/sathyamobiles.store/">
+                      <div className="p-2 rounded-full border border-gray transition-colors duration-300 hover:border-white hover:bg-pink-500 group">
+                        <FaInstagram className="text-sm text-white transition-colors duration-300 group-hover:text-white" />
+                      </div>
+                    </Link>
                   </div>
-                  {/* --- END OF Our Stores Section --- */}
+                </div>
+              </div>
 
+              {/* Our Stores */}
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-lg mb-1">Our Stores</h3>
+                {loadingStores ? (
+                  <p className="text-white">Loading stores...</p>
+                ) : errorStores ? (
+                  <p className="text-red-400">Error: {errorStores}</p>
+                ) : stores.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-x-8">
+                    <ul className="space-y-1">
+                      {stores.slice(0, 5).map(store => (
+                        <li key={store._id}>
+                          <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
+                            {store.organisation_name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    <ul className="space-y-1">
+                      {stores.slice(5, 10).map(store => (
+                        <li key={store._id}>
+                          <Link href={`/stores/${store.slug}`} className="hover:underline hover:text-white">
+                            {store.organisation_name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p className="text-white">No active stores found.</p>
+                )}
+              </div>
 
+            </div>
           </div>
         </div>
-      </div>
-
 
         {/* Bottom Section */}
         <div className="bg-[#222529] text-gray-400 mt-10 pt-5 border-t border-white">
-          <div className="container mx-auto px-3 flex flex-col md:flex-row justify-between items-center gap-6 ">
+          <div className="container mx-auto px-3 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left mb-4">
               <p>
                 <a href="#" className="hover:underline text-white">© 2023-2024 SATHYA.</a> All Rights Reserved.
               </p>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4">
-           
               <div>
                 <img src="https://sathyamobiles.com/storefront/assets/images/payments.png" alt="Payment methods" className="p-2 w-[200px]" />
               </div>
             </div>
           </div>
-          <div className="bg-[#222529] ">
-            <div className="container mx-auto px-4 text-base font-medium space-y-2">
+          
+          {/* Categories Section with Brands */}
+          <div className="bg-[#222529]">
+            <div className="container mx-auto px-4 text-base font-medium space-y-2 mt-4">
               <h3 className="text-white font-semibold text-lg mb-1">Categories</h3>
               {groupedCategories.main
                 .filter((mainCat) => groupedCategories.subs[mainCat._id]?.length > 0)
-                .map((mainCat) => (
-                  <div key={mainCat._id}>
-                    <Link
-                      href={`/category/${mainCat.category_slug}`}
-                      className=" text-white hover:underline whitespace-nowrap"
-                    >
-                      {capitalizeFirstLetter(mainCat.category_name)} :
-                    </Link>
-                    <span className="text-gray-400 ml-2">
-                      {groupedCategories.subs[mainCat._id].map((subcat, index) => (
-                        <span key={subcat._id}>
-                          <Link
-                            href={`/category/${mainCat.category_slug}/${subcat.category_slug}`}
-                            className="hover:text-white hover:underline"
-                          >
-                            {capitalizeFirstLetter(subcat.category_name)}
-                          </Link>
-                          {index < groupedCategories.subs[mainCat._id].length - 1 && ' / '}
+                .map((mainCat) => {
+                  const categoryBrands = getCategoryBrands(mainCat);
+                  
+                  return (
+                    <div key={mainCat._id} className="mb-2">
+                      <Link
+                        href={`/category/${mainCat.category_slug}`}
+                        className="text-white hover:underline whitespace-nowrap"
+                      >
+                        {capitalizeFirstLetter(mainCat.category_name)} :
+                      </Link>
+                      
+                      {/* Subcategories */}
+                      <span className="text-gray-400 ml-2">
+                        {groupedCategories.subs[mainCat._id].map((subcat, index) => (
+                          <span key={subcat._id}>
+                            <Link
+                              href={`/category/${mainCat.category_slug}/${subcat.category_slug}`}
+                              className="hover:text-white hover:underline"
+                            >
+                              {capitalizeFirstLetter(subcat.category_name)}
+                            </Link>
+                            {index < groupedCategories.subs[mainCat._id].length - 1 && ' / '}
+                          </span>
+                        ))}
+                      </span>
+
+                      {/* Brands Section */}
+                    {/* Brands Section */}
+                    {categoryBrands.length > 0 && (
+                      <div className="">
+                        <span className="text-white text-sm">Brands: </span>
+                        <span className="text-gray-400 text-sm">
+                          {categoryBrands.map((brand, index) => (
+                            <span key={brand.brand_name}>
+                              <Link
+                                href={`/category/brand/${mainCat.category_slug}/${brand.brand_slug}`}
+                                className="hover:text-white hover:underline"
+                              >
+                                {capitalizeFirstLetter(brand.brand_name)}
+                              </Link>
+                              {index < categoryBrands.length - 1 && ' / '}
+                            </span>
+                          ))}
                         </span>
-                      ))}
-                    </span>
-                  </div>
-                ))}
+                      </div>
+                    )}
+                    </div>
+                  );
+                })}
             </div>
           </div>
-
         </div>
       </footer>
 
-      {/* Auth Modal */}
+      {/* Auth Modal (unchanged) */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 w-96 max-w-full relative">
