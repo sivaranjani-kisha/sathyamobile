@@ -841,19 +841,19 @@ export default function BrandPage() {
                     {Object.values(filterGroups).map(group => (
                       <div key={group._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                        <button
-  onClick={() => toggleFilterGroup(group._id)}
-  className="flex justify-between items-center w-full group"
->
-  <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors uppercase">
-    {group.name}
-  </span>
-  <ChevronDown
-    size={18}
-    className={`text-gray-400 transition-transform duration-200 ${
-      expandedFilters[group._id] ? "rotate-180" : ""
-    }`}
-  />
-</button>
+                        onClick={() => toggleFilterGroup(group._id)}
+                        className="flex justify-between items-center w-full group"
+                      >
+                        <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors uppercase">
+                          {group.name}
+                        </span>
+                        <ChevronDown
+                          size={18}
+                          className={`text-gray-400 transition-transform duration-200 ${
+                            expandedFilters[group._id] ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
 
   
                         {expandedFilters[group._id] && (

@@ -306,7 +306,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                 className={`flex-1 p-2 rounded hover:bg-gray-100 inline-flex items-center ${
                   (level === 0 && selectedCategories.includes(category._id)) ||
                   (level > 0 && selectedSubcategories.includes(category._id))
-                    ? 'bg-blue-50 text-blue-600 font-medium'
+                    ? 'bg-red-50 text-red-600 font-medium'
                     : 'text-gray-600'
                 }`}
               >
@@ -402,7 +402,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
           onClick={() => handlePageChange(i)}
           className={`px-3 py-1 rounded-md ${
             pagination.currentPage === i
-              ? 'bg-blue-600 text-white'
+              ? 'bg-red-600 text-white'
               : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}
         >
@@ -462,7 +462,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
         </div>
       </div>
     );
@@ -498,7 +498,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                   <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="px-4 py-2 border rounded-md text-sm bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="px-4 py-2 border rounded-md text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="">Featured</option>
                     <option value="price-low-high">Price: Low to High</option>
@@ -525,7 +525,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                     <h3 className="font-semibold">Active Filters</h3>
                     <button 
                       onClick={clearAllFilters}
-                      className="text-blue-600 text-sm hover:underline"
+                      className="text-red-600 text-sm hover:underline"
                     >
                       Clear all
                     </button>
@@ -675,7 +675,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                         key={key}
                         {...rest}
                         className={`w-4 h-4 rounded-full border-2 border-black shadow cursor-pointer relative
-                          ${index === 0 ? "bg-blue-500 z-10" : "bg-green-500 z-20"}`}
+                          ${index === 0 ? "bg-red-500 z-10" : "bg-green-500 z-20"}`}
                       />
                     );
                   }}
@@ -705,7 +705,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                               type="checkbox"
                               checked={selectedFilters.brands.includes(brand._id)}
                               onChange={() => handleFilterChange("brands", brand._id)}
-                              className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                              className="mr-2 h-4 w-4 text-red-600 border-gray-300 rounded"
                             />
                             <span className="text-sm text-gray-600">{brand.brand_name} ({brand.count})</span>
                           </label>
@@ -727,7 +727,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                       {Object.values(filterGroups).map(group => (
                         <div key={group._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                           <button onClick={() => toggleFilterGroup(group._id)} className="flex justify-between items-center w-full group">
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">{group.name}</span>
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">{group.name}</span>
                             <ChevronDown 
                               size={18}
                               className={`text-gray-400 transition-transform duration-200 ${
@@ -745,7 +745,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                                       type="checkbox"
                                       checked={selectedFilters.filters.includes(filter._id)}
                                       onChange={() => handleFilterChange('filters', filter._id)}
-                                      className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                      className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                                     />
                                     <span className="text-sm text-gray-600">{filter.filter_name}</span>
                                     {filter.count && (
@@ -772,7 +772,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
                     {getSortedProducts().map(product => (
-                      <div key={product._id} className="group relative bg-white rounded-lg border hover:border-blue-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full">
+                      <div key={product._id} className="group relative bg-white rounded-lg border hover:border-red-200 transition-all shadow-sm hover:shadow-md flex flex-col h-full">
                         {/* Product Image */}
                         <div className="relative aspect-square bg-white">
                           {product.images?.[0] && (
@@ -809,7 +809,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                           <h4 className="text-xs text-gray-500 mb-2 uppercase">
                             <Link
                               href={`/brand/${brandMap[product.brand] ? brandMap[product.brand].toLowerCase().replace(/\s+/g, "-") : ""}`}
-                              className="hover:text-blue-600"
+                              className="hover:text-red-600"
                             >
                               {brandMap[product.brand] || ""}
                             </Link>
@@ -821,9 +821,9 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
                             className="block mb-2"
                             onClick={() => handleProductClick(product)}
                           >
-                            <h3 className="text-xs sm:text-sm font-medium text-[#0069c6] hover:text-[#00badb] line-clamp-2 min-h-[40px]">
-                              {product.name}
-                            </h3>
+                              <h3 className="text-xs sm:text-sm font-medium text-red-800 hover:text-red-600 line-clamp-2 min-h-[40px]">
+                          {product.name}
+                        </h3>
                           </Link>
        
                           {/* Price Row (same level always) */}
@@ -906,7 +906,7 @@ export default function CategoryBrandComponent({ categorySlug, brandSlug }) {
 
               {loading && (
                 <div className="text-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mx-auto"></div>
                 </div>
               )}
             </div>
